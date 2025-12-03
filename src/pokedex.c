@@ -2205,26 +2205,8 @@ static void CreatePokedexList(u8 dexMode, u8 order)
 
     sPokedexView->pokemonListCount = 0;
 
-    switch (dexMode)
-    {
-    default:
-    case DEX_MODE_HOENN:
-        temp_dexCount = HOENN_DEX_COUNT;
-        temp_isHoennDex = TRUE;
-        break;
-    case DEX_MODE_NATIONAL:
-        if (IsNationalPokedexEnabled())
-        {
-            temp_dexCount = NATIONAL_DEX_COUNT;
-            temp_isHoennDex = FALSE;
-        }
-        else
-        {
-            temp_dexCount = HOENN_DEX_COUNT;
-            temp_isHoennDex = TRUE;
-        }
-        break;
-    }
+    temp_dexCount = HOENN_DEX_COUNT;
+    temp_isHoennDex = TRUE;
 
     switch (order)
     {
