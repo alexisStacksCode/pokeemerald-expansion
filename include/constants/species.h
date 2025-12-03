@@ -1664,8 +1664,13 @@
 #define SPECIES_ZYGARDE_MEGA                            1547
 #define SPECIES_DRAMPA_MEGA                             1548
 #define SPECIES_FALINKS_MEGA                            1549
+// Custom
+#define SPECIES_DAPHNE_BLAKE                            1550
+#define SPECIES_SCARAB                                  1551
+#define SPECIES_KHOPESH                                 1552
+#define SPECIES_HORUS                                   1553
 
-#define SPECIES_EGG                                     (SPECIES_FALINKS_MEGA + 1)
+#define SPECIES_EGG                                     (SPECIES_HORUS + 1)
 
 #define NUM_SPECIES SPECIES_EGG
 
