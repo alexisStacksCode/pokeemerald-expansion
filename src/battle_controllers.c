@@ -51,7 +51,6 @@ static void SpriteCB_FreePlayerSpriteLoadMonSprite(struct Sprite *sprite);
 static void SpriteCB_FreeOpponentSprite(struct Sprite *sprite);
 static u32 ReturnAnimIdForBattler(bool32 isPlayerSide, u32 specificBattler);
 static void LaunchKOAnimation(u32 battlerId, u16 animId, bool32 isFront);
-static void AnimateMonAfterKnockout(u32 battler);
 
 void HandleLinkBattleSetup(void)
 {
@@ -2465,7 +2464,6 @@ void BtlController_HandleFaintAnimation(u32 battler)
             // The player's sprite is removed in Controller_FaintPlayerMon. Controller_FaintOpponentMon only removes the healthbox once the sprite is removed by SpriteCB_FaintOpponentMon.
         }
     }
-    AnimateMonAfterKnockout(battler);
 }
 
 #undef sSpeedX
@@ -2902,31 +2900,6 @@ void BtlController_HandleBattleAnimation(u32 battler)
         if (ShouldUpdateTvData(battler))
             BattleTv_SetDataBasedOnAnimation(animationId);
     }
-}
-
-void AnimateMonAfterPokeBallFail(u32 battler)
-{
-    if (B_ANIMATE_MON_AFTER_FAILED_POKEBALL == FALSE)
-        return;
-
-    LaunchKOAnimation(battler, ReturnAnimIdForBattler(TRUE, battler), TRUE);
-    TryShinyAnimation(gBattlerTarget, GetBattlerMon(gBattlerTarget));
-}
-
-static void AnimateMonAfterKnockout(u32 battler)
-{
-    if (B_ANIMATE_MON_AFTER_KO == FALSE)
-        return;
-
-    u32 oppositeBattler = BATTLE_OPPOSITE(battler);
-    u32 partnerBattler = BATTLE_PARTNER(oppositeBattler);
-    bool32 wasPlayerSideKnockedOut = (IsOnPlayerSide(battler));
-
-    if (IsBattlerAlive(oppositeBattler))
-        LaunchKOAnimation(oppositeBattler, ReturnAnimIdForBattler(wasPlayerSideKnockedOut, oppositeBattler), wasPlayerSideKnockedOut);
-
-    if (gBattleTypeFlags & BATTLE_TYPE_DOUBLE && IsBattlerAlive(partnerBattler))
-        LaunchKOAnimation(partnerBattler, ReturnAnimIdForBattler(wasPlayerSideKnockedOut, partnerBattler), wasPlayerSideKnockedOut);
 }
 
 static void LaunchKOAnimation(u32 battlerId, u16 animId, bool32 isFront)

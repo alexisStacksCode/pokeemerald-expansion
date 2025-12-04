@@ -11049,8 +11049,6 @@ static void Cmd_copybidedmg(void)
 static void Cmd_animatewildpokemonafterfailedpokeball(void)
 {
     CMD_ARGS(u8 battler);
-    u8 battler = GetBattlerForBattleScript(cmd->battler);
-    AnimateMonAfterPokeBallFail(battler);
     gBattlescriptCurrInstr = cmd->nextInstr;
 }
 
