@@ -327,9 +327,6 @@ static void PrintSelectorArrow(u32);
 static void PrintSearchParameterTitle(u32, const u8 *);
 static void ClearSearchParameterBoxText(void);
 
-// const rom data
-#include "data/pokemon/pokedex_orders.h"
-
 static const struct OamData sOamData_ScrollBar =
 {
     .y = DISPLAY_HEIGHT,
@@ -2197,121 +2194,31 @@ static void FreeWindowAndBgBuffers(void)
 
 static void CreatePokedexList(u8 dexMode, u8 order)
 {
-    u32 vars[3]; //I have no idea why three regular variables are stored in an array, but whatever.
-#define temp_dexCount   vars[0]
-#define temp_isHoennDex vars[1]
-#define temp_dexNum     vars[2]
+    u32 temp_dexCount = HOENN_DEX_COUNT;
+    u32 temp_dexNum;
     s32 i;
 
     sPokedexView->pokemonListCount = 0;
 
-    temp_dexCount = HOENN_DEX_COUNT;
-    temp_isHoennDex = TRUE;
-
     switch (order)
     {
     case ORDER_NUMERICAL:
-        if (temp_isHoennDex)
+        for (i = 0; i < temp_dexCount; i++)
         {
-            for (i = 0; i < temp_dexCount; i++)
-            {
-                temp_dexNum = HoennToNationalOrder(i + 1);
-                sPokedexView->pokedexList[i].dexNum = temp_dexNum;
-                sPokedexView->pokedexList[i].seen = GetSetPokedexFlag(temp_dexNum, FLAG_GET_SEEN);
-                sPokedexView->pokedexList[i].owned = GetSetPokedexFlag(temp_dexNum, FLAG_GET_CAUGHT);
-                if (sPokedexView->pokedexList[i].seen)
-                    sPokedexView->pokemonListCount = i + 1;
-            }
-        }
-        else
-        {
-            s16 r5, r10;
-            for (i = 0, r5 = 0, r10 = 0; i < temp_dexCount; i++)
-            {
-                temp_dexNum = i + 1;
-                if (GetSetPokedexFlag(temp_dexNum, FLAG_GET_SEEN))
-                    r10 = 1;
-                if (r10)
-                {
-                    sPokedexView->pokedexList[r5].dexNum = temp_dexNum;
-                    sPokedexView->pokedexList[r5].seen = GetSetPokedexFlag(temp_dexNum, FLAG_GET_SEEN);
-                    sPokedexView->pokedexList[r5].owned = GetSetPokedexFlag(temp_dexNum, FLAG_GET_CAUGHT);
-                    if (sPokedexView->pokedexList[r5].seen)
-                        sPokedexView->pokemonListCount = r5 + 1;
-                    r5++;
-                }
-            }
+            temp_dexNum = HoennToNationalOrder(i + 1);
+            sPokedexView->pokedexList[i].dexNum = temp_dexNum;
+            sPokedexView->pokedexList[i].seen = GetSetPokedexFlag(temp_dexNum, FLAG_GET_SEEN);
+            sPokedexView->pokedexList[i].owned = GetSetPokedexFlag(temp_dexNum, FLAG_GET_CAUGHT);
+            if (sPokedexView->pokedexList[i].seen)
+                sPokedexView->pokemonListCount = i + 1;
         }
         break;
     case ORDER_ALPHABETICAL:
-        for (i = 0; i < ARRAY_COUNT(gPokedexOrder_Alphabetical); i++)
-        {
-            temp_dexNum = gPokedexOrder_Alphabetical[i];
-
-            if (temp_dexNum <= NATIONAL_DEX_COUNT && (!temp_isHoennDex || NationalToHoennOrder(temp_dexNum) != 0) && GetSetPokedexFlag(temp_dexNum, FLAG_GET_SEEN))
-            {
-                sPokedexView->pokedexList[sPokedexView->pokemonListCount].dexNum = temp_dexNum;
-                sPokedexView->pokedexList[sPokedexView->pokemonListCount].seen = TRUE;
-                sPokedexView->pokedexList[sPokedexView->pokemonListCount].owned = GetSetPokedexFlag(temp_dexNum, FLAG_GET_CAUGHT);
-                sPokedexView->pokemonListCount++;
-            }
-        }
-        break;
     case ORDER_HEAVIEST:
-        for (i = ARRAY_COUNT(gPokedexOrder_Weight) - 1; i >= 0; i--)
-        {
-            temp_dexNum = gPokedexOrder_Weight[i];
-
-            if (temp_dexNum <= NATIONAL_DEX_COUNT && (!temp_isHoennDex || NationalToHoennOrder(temp_dexNum) != 0) && GetSetPokedexFlag(temp_dexNum, FLAG_GET_CAUGHT))
-            {
-                sPokedexView->pokedexList[sPokedexView->pokemonListCount].dexNum = temp_dexNum;
-                sPokedexView->pokedexList[sPokedexView->pokemonListCount].seen = TRUE;
-                sPokedexView->pokedexList[sPokedexView->pokemonListCount].owned = TRUE;
-                sPokedexView->pokemonListCount++;
-            }
-        }
-        break;
     case ORDER_LIGHTEST:
-        for (i = 0; i < ARRAY_COUNT(gPokedexOrder_Weight); i++)
-        {
-            temp_dexNum = gPokedexOrder_Weight[i];
-
-            if (temp_dexNum <= NATIONAL_DEX_COUNT && (!temp_isHoennDex || NationalToHoennOrder(temp_dexNum) != 0) && GetSetPokedexFlag(temp_dexNum, FLAG_GET_CAUGHT))
-            {
-                sPokedexView->pokedexList[sPokedexView->pokemonListCount].dexNum = temp_dexNum;
-                sPokedexView->pokedexList[sPokedexView->pokemonListCount].seen = TRUE;
-                sPokedexView->pokedexList[sPokedexView->pokemonListCount].owned = TRUE;
-                sPokedexView->pokemonListCount++;
-            }
-        }
-        break;
     case ORDER_TALLEST:
-        for (i = ARRAY_COUNT(gPokedexOrder_Height) - 1; i >= 0; i--)
-        {
-            temp_dexNum = gPokedexOrder_Height[i];
-
-            if (temp_dexNum <= NATIONAL_DEX_COUNT && (!temp_isHoennDex || NationalToHoennOrder(temp_dexNum) != 0) && GetSetPokedexFlag(temp_dexNum, FLAG_GET_CAUGHT))
-            {
-                sPokedexView->pokedexList[sPokedexView->pokemonListCount].dexNum = temp_dexNum;
-                sPokedexView->pokedexList[sPokedexView->pokemonListCount].seen = TRUE;
-                sPokedexView->pokedexList[sPokedexView->pokemonListCount].owned = TRUE;
-                sPokedexView->pokemonListCount++;
-            }
-        }
-        break;
     case ORDER_SMALLEST:
-        for (i = 0; i < ARRAY_COUNT(gPokedexOrder_Height); i++)
-        {
-            temp_dexNum = gPokedexOrder_Height[i];
-
-            if (temp_dexNum <= NATIONAL_DEX_COUNT && (!temp_isHoennDex || NationalToHoennOrder(temp_dexNum) != 0) && GetSetPokedexFlag(temp_dexNum, FLAG_GET_CAUGHT))
-            {
-                sPokedexView->pokedexList[sPokedexView->pokemonListCount].dexNum = temp_dexNum;
-                sPokedexView->pokedexList[sPokedexView->pokemonListCount].seen = TRUE;
-                sPokedexView->pokedexList[sPokedexView->pokemonListCount].owned = TRUE;
-                sPokedexView->pokemonListCount++;
-            }
-        }
+        // TODO
         break;
     }
 
