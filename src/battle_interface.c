@@ -927,7 +927,7 @@ static void UpdateLvlInHealthbox(u8 healthboxSpriteId, u8 lvl)
             text[2] = CHAR_COLON;
         }
 
-        objVram = ConvertIntToDecimalStringN(text + 2, lvl, STR_CONV_MODE_LEFT_ALIGN, 3);
+        objVram = ConvertIntToDecimalStringN(text + 2, lvl, STR_CONV_MODE_LEFT_ALIGN, 4);
         xPos = 5 * (3 - (objVram - (text + 2)));
         UpdateIndicatorVisibilityAndType(healthboxSpriteId, TRUE);
     }
