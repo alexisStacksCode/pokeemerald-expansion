@@ -116,14 +116,14 @@ SootopolisCity_Gym_1F_EventScript_JuanDefeated::
 	end
 
 SootopolisCity_Gym_1F_EventScript_GiveWaterPulse::
-	giveitem ITEM_TM_WATER_PULSE
+	giveitem ITEM_TM_FLING
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_BagIsFull
 	msgbox SootopolisCity_Gym_1F_Text_ExplainWaterPulse, MSGBOX_DEFAULT
 	setflag FLAG_RECEIVED_TM_WATER_PULSE
 	return
 
 SootopolisCity_Gym_1F_EventScript_GiveWaterPulse2::
-	giveitem ITEM_TM_WATER_PULSE
+	giveitem ITEM_TM_FLING
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
 	msgbox SootopolisCity_Gym_1F_Text_ExplainWaterPulse, MSGBOX_DEFAULT
 	setflag FLAG_RECEIVED_TM_WATER_PULSE
@@ -316,4 +316,3 @@ SootopolisCity_Gym_1F_Text_JuanRematchNeedTwoMons:
 	.string "You have with you but one POKéMON.\p"
 	.string "I wish that you would return with\n"
 	.string "two, perhaps more, POKéMON, please.$"
-
