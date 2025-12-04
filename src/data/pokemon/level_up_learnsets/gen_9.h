@@ -22314,3 +22314,32 @@ static const struct LevelUpMove sPecharuntLevelUpLearnset[] = {
 };
 #endif //P_FAMILY_PECHARUNT
 
+static const struct LevelUpMove sCloudStrifeLevelUpLearnset[] = {
+    LEVEL_UP_MOVE( 1, MOVE_TACKLE),
+    LEVEL_UP_MOVE( 1, MOVE_GROWL),
+    LEVEL_UP_MOVE( 3, MOVE_BRANCH_POKE),
+    LEVEL_UP_MOVE( 6, MOVE_MAT_BLOCK),
+    LEVEL_UP_MOVE( 10, MOVE_KARATE_CHOP),
+    LEVEL_UP_MOVE(15, MOVE_SEISMIC_TOSS),
+    LEVEL_UP_END
+};
+
+static const struct LevelUpMove sDaphneBlakeLevelUpLearnset[] = {
+    LEVEL_UP_MOVE( 1, MOVE_SCRATCH),
+    LEVEL_UP_MOVE( 1, MOVE_BABY_DOLL_EYES),
+    LEVEL_UP_MOVE( 3, MOVE_EMBER),
+    LEVEL_UP_MOVE( 6, MOVE_FORESIGHT),
+    LEVEL_UP_MOVE( 9, MOVE_CONFUSION),
+    LEVEL_UP_MOVE(14, MOVE_SWEET_KISS),
+    LEVEL_UP_END
+};
+
+static const struct LevelUpMove sDukeNukemLevelUpLearnset[] = {
+    LEVEL_UP_MOVE( 1, MOVE_POUND),
+    LEVEL_UP_MOVE( 1, MOVE_LEER),
+    LEVEL_UP_MOVE( 3, MOVE_WATER_GUN),
+    LEVEL_UP_MOVE( 6, MOVE_POWER_TRIP),
+    LEVEL_UP_MOVE( 10, MOVE_SMOKESCREEN),
+    LEVEL_UP_MOVE(15, MOVE_RAPID_SPIN),
+    LEVEL_UP_END
+};
