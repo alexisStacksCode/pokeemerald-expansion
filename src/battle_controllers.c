@@ -49,8 +49,6 @@ static void Task_HandleCopyReceivedLinkBuffersData(u8 taskId);
 static void Task_StartSendOutAnim(u8 taskId);
 static void SpriteCB_FreePlayerSpriteLoadMonSprite(struct Sprite *sprite);
 static void SpriteCB_FreeOpponentSprite(struct Sprite *sprite);
-static u32 ReturnAnimIdForBattler(bool32 isPlayerSide, u32 specificBattler);
-static void LaunchKOAnimation(u32 battlerId, u16 animId, bool32 isFront);
 
 void HandleLinkBattleSetup(void)
 {
@@ -2900,37 +2898,6 @@ void BtlController_HandleBattleAnimation(u32 battler)
         if (ShouldUpdateTvData(battler))
             BattleTv_SetDataBasedOnAnimation(animationId);
     }
-}
-
-static void LaunchKOAnimation(u32 battlerId, u16 animId, bool32 isFront)
-{
-    u32 species = GetBattlerVisualSpecies(battlerId);
-    u32 spriteId = gBattlerSpriteIds[battlerId];
-
-    gBattleStruct->battlerKOAnimsRunning++;
-
-    if (isFront)
-    {
-        LaunchAnimationTaskForFrontSprite(&gSprites[spriteId], animId);
-
-        if (HasTwoFramesAnimation(species))
-            StartSpriteAnim(&gSprites[spriteId], 1);
-    }
-    else
-    {
-        LaunchAnimationTaskForBackSprite(&gSprites[spriteId], animId);
-    }
-
-    PlayCry_Normal(species, CRY_PRIORITY_NORMAL);
-}
-
-static u32 ReturnAnimIdForBattler(bool32 wasPlayerSideKnockedOut, u32 specificBattler)
-{
-    u32 species = GetBattlerVisualSpecies(specificBattler);
-    if (wasPlayerSideKnockedOut)
-        return gSpeciesInfo[species].frontAnimId;
-    else
-        return GetSpeciesBackAnimSet(species);
 }
 
 void TrySetBattlerShadowSpriteCallback(u32 battler)
