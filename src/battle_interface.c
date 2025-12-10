@@ -922,12 +922,8 @@ static void UpdateLvlInHealthbox(u8 healthboxSpriteId, u8 lvl)
     {
         text[0] = CHAR_EXTRA_SYMBOL;
         text[1] = CHAR_LV_2;
-        if (lvl < 100)
-        {
-            text[2] = CHAR_COLON;
-        }
 
-        objVram = ConvertIntToDecimalStringN(text + 2, lvl, STR_CONV_MODE_LEFT_ALIGN, 4);
+        objVram = ConvertIntToDecimalStringN(text + 2, lvl, STR_CONV_MODE_LEFT_ALIGN, 3);
         xPos = 5 * (3 - (objVram - (text + 2)));
         UpdateIndicatorVisibilityAndType(healthboxSpriteId, TRUE);
     }
