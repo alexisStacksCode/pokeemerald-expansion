@@ -453,10 +453,6 @@ struct SpeciesInfo /*0xC4*/
     enum BodyColor bodyColor:7;
     // Graphical Data
     u8 noFlip:1;
-    u8 frontAnimDelay;
-    u8 frontAnimId;
-    u8 backAnimId;
-    const union AnimCmd *const *frontAnimFrames;
     const u32 *frontPic;
     const u32 *backPic;
     const u16 *palette;
@@ -605,7 +601,6 @@ struct NatureInfo
     const u8 *name;
     enum Stat statUp;
     enum Stat statDown;
-    u8 backAnim;
     u8 pokeBlockAnim[2];
     u8 battlePalacePercents[4];
     u8 battlePalaceFlavorText;
@@ -874,15 +869,11 @@ bool8 IsMonShiny(struct Pokemon *mon);
 const u8 *GetTrainerPartnerName(void);
 void BattleAnimateFrontSprite(struct Sprite *sprite, u16 species, bool8 noCry, u8 panMode);
 void DoMonFrontSpriteAnimation(struct Sprite *sprite, u16 species, bool8 noCry, u8 panModeAnimFlag);
-void PokemonSummaryDoMonAnimation(struct Sprite *sprite, u16 species, bool8 oneFrame);
-void StopPokemonAnimationDelayTask(void);
-void BattleAnimateBackSprite(struct Sprite *sprite, u16 species);
 u8 GetOpposingLinkMultiBattlerId(bool8 rightSide, u8 multiplayerId);
 u16 FacilityClassToPicIndex(u16 facilityClass);
 u16 PlayerGenderToFrontTrainerPicId(u8 playerGender);
 void HandleSetPokedexFlag(enum NationalDexOrder nationalNum, u8 caseId, u32 personality);
 void HandleSetPokedexFlagFromMon(struct Pokemon *mon, u32 caseId);
-bool8 HasTwoFramesAnimation(u16 species);
 struct MonSpritesGfxManager *CreateMonSpritesGfxManager(u8 managerId, u8 mode);
 void DestroyMonSpritesGfxManager(u8 managerId);
 u8 *MonSpritesGfxManager_GetSpritePtr(u8 managerId, u8 spriteNum);

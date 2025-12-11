@@ -23,7 +23,6 @@
 #include "palette_util.h"
 #include "pokedex.h"
 #include "pokemon.h"
-#include "pokemon_animation.h"
 #include "pokemon_sprite_visualizer.h"
 #include "pokemon_icon.h"
 #include "reset_rtc_screen.h"
@@ -182,193 +181,6 @@ static const struct WindowTemplate sPokemonSpriteVisualizerWindowTemplate[] =
     DUMMY_WIN_TEMPLATE,
 };
 
-//Lookup tables
-const u8 gBackAnimNames[][23 + 1] =
-{
-    [BACK_ANIM_NONE]                    = _("NONE"),
-    [BACK_ANIM_H_VIBRATE]               = _("H VIBRATE"),
-    [BACK_ANIM_H_SLIDE]                 = _("H SLIDE"),
-    [BACK_ANIM_H_SPRING]                = _("H SPRING"),
-    [BACK_ANIM_H_SPRING_REPEATED]       = _("H SPRING REPEATED"),
-    [BACK_ANIM_SHRINK_GROW]             = _("SHRINK GROW"),
-    [BACK_ANIM_GROW]                    = _("GROW"),
-    [BACK_ANIM_CIRCLE_COUNTERCLOCKWISE] = _("CIRCLE COUNTERCLOCKWISE"),
-    [BACK_ANIM_H_SHAKE]                 = _("H SHAKE"),
-    [BACK_ANIM_V_SHAKE]                 = _("V SHAKE"),
-    [BACK_ANIM_V_SHAKE_H_SLIDE]         = _("V SHAKE H SLIDE"),
-    [BACK_ANIM_V_STRETCH]               = _("V STRETCH"),
-    [BACK_ANIM_H_STRETCH]               = _("H STRETCH"),
-    [BACK_ANIM_GROW_STUTTER]            = _("GROW STUTTER"),
-    [BACK_ANIM_V_SHAKE_LOW]             = _("V SHAKE LOW"),
-    [BACK_ANIM_TRIANGLE_DOWN]           = _("TRIANGLE DOWN"),
-    [BACK_ANIM_CONCAVE_ARC_LARGE]       = _("CONCAVE ARC LARGE"),
-    [BACK_ANIM_CONVEX_DOUBLE_ARC]       = _("CONVEX DOUBLE ARC"),
-    [BACK_ANIM_CONCAVE_ARC_SMALL]       = _("CONCAVE ARC SMALL"),
-    [BACK_ANIM_DIP_RIGHT_SIDE]          = _("DIP RIGHT SIDE"),
-    [BACK_ANIM_SHRINK_GROW_VIBRATE]     = _("SHRINK GROW VIBRATE"),
-    [BACK_ANIM_JOLT_RIGHT]              = _("JOLT RIGHT"),
-    [BACK_ANIM_SHAKE_FLASH_YELLOW]      = _("SHAKE FLASH YELLOW"),
-    [BACK_ANIM_SHAKE_GLOW_RED]          = _("SHAKE GLOW RED"),
-    [BACK_ANIM_SHAKE_GLOW_GREEN]        = _("SHAKE GLOW GREEN"),
-    [BACK_ANIM_SHAKE_GLOW_BLUE]         = _("SHAKE GLOW BLUE"),
-};
-const u8 gFrontAnimNames[][34] =
-{
-    [ANIM_V_SQUISH_AND_BOUNCE]               = _("V SQUISH AND BOUNCE"),
-    [ANIM_CIRCULAR_STRETCH_TWICE]            = _("CIRCULAR STRETCH TWICE"),
-    [ANIM_H_VIBRATE]                         = _("H VIBRATE"),
-    [ANIM_H_SLIDE]                           = _("H SLIDE"),
-    [ANIM_V_SLIDE]                           = _("V SLIDE"),
-    [ANIM_BOUNCE_ROTATE_TO_SIDES]            = _("BOUNCE ROTATE TO SIDES"),
-    [ANIM_V_JUMPS_H_JUMPS]                   = _("V JUMPS H JUMPS"),
-    [ANIM_ROTATE_TO_SIDES]                   = _("ROTATE TO SIDES"),
-    [ANIM_ROTATE_TO_SIDES_TWICE]             = _("ROTATE TO SIDES TWICE"),
-    [ANIM_GROW_VIBRATE]                      = _("GROW VIBRATE"),
-    [ANIM_ZIGZAG_FAST]                       = _("ZIGZAG FAST"),
-    [ANIM_SWING_CONCAVE]                     = _("SWING CONCAVE"),
-    [ANIM_SWING_CONCAVE_FAST]                = _("SWING CONCAVE FAST"),
-    [ANIM_SWING_CONVEX]                      = _("SWING CONVEX"),
-    [ANIM_SWING_CONVEX_FAST]                 = _("SWING CONVEX FAST"),
-    [ANIM_H_SHAKE]                           = _("H SHAKE"),
-    [ANIM_V_SHAKE]                           = _("V SHAKE"),
-    [ANIM_CIRCULAR_VIBRATE]                  = _("CIRCULAR VIBRATE"),
-    [ANIM_TWIST]                             = _("TWIST"),
-    [ANIM_SHRINK_GROW]                       = _("SHRINK GROW"),
-    [ANIM_CIRCLE_C_CLOCKWISE]                = _("CIRCLE C CLOCKWISE"),
-    [ANIM_GLOW_BLACK]                        = _("GLOW BLACK"),
-    [ANIM_H_STRETCH]                         = _("H STRETCH"),
-    [ANIM_V_STRETCH]                         = _("V STRETCH"),
-    [ANIM_RISING_WOBBLE]                     = _("RISING WOBBLE"),
-    [ANIM_V_SHAKE_TWICE]                     = _("V SHAKE TWICE"),
-    [ANIM_TIP_MOVE_FORWARD]                  = _("TIP MOVE FORWARD"),
-    [ANIM_H_PIVOT]                           = _("H PIVOT"),
-    [ANIM_V_SLIDE_WOBBLE]                    = _("V SLIDE WOBBLE"),
-    [ANIM_H_SLIDE_WOBBLE]                    = _("H SLIDE WOBBLE"),
-    [ANIM_V_JUMPS_BIG]                       = _("V JUMPS BIG"),
-    [ANIM_SPIN_LONG]                         = _("SPIN LONG"),
-    [ANIM_GLOW_ORANGE]                       = _("GLOW ORANGE"),
-    [ANIM_GLOW_RED]                          = _("GLOW RED"),
-    [ANIM_GLOW_BLUE]                         = _("GLOW BLUE"),
-    [ANIM_GLOW_YELLOW]                       = _("GLOW YELLOW"),
-    [ANIM_GLOW_PURPLE]                       = _("GLOW PURPLE"),
-    [ANIM_BACK_AND_LUNGE]                    = _("BACK AND LUNGE"),
-    [ANIM_BACK_FLIP]                         = _("BACK FLIP"),
-    [ANIM_FLICKER]                           = _("FLICKER"),
-    [ANIM_BACK_FLIP_BIG]                     = _("BACK FLIP BIG"),
-    [ANIM_FRONT_FLIP]                        = _("FRONT FLIP"),
-    [ANIM_TUMBLING_FRONT_FLIP]               = _("TUMBLING FRONT FLIP"),
-    [ANIM_FIGURE_8]                          = _("FIGURE 8"),
-    [ANIM_FLASH_YELLOW]                      = _("FLASH YELLOW"),
-    [ANIM_SWING_CONCAVE_FAST_SHORT]          = _("SWING CONCAVE FAST SHORT"),
-    [ANIM_SWING_CONVEX_FAST_SHORT]           = _("SWING CONVEX FAST SHORT"),
-    [ANIM_ROTATE_UP_SLAM_DOWN]               = _("ROTATE UP SLAM DOWN"),
-    [ANIM_DEEP_V_SQUISH_AND_BOUNCE]          = _("DEEP V SQUISH AND BOUNCE"),
-    [ANIM_H_JUMPS]                           = _("H JUMPS"),
-    [ANIM_H_JUMPS_V_STRETCH]                 = _("H JUMPS V STRETCH"),
-    [ANIM_ROTATE_TO_SIDES_FAST]              = _("ROTATE TO SIDES FAST"),
-    [ANIM_ROTATE_UP_TO_SIDES]                = _("ROTATE UP TO SIDES"),
-    [ANIM_FLICKER_INCREASING]                = _("FLICKER INCREASING"),
-    [ANIM_TIP_HOP_FORWARD]                   = _("TIP HOP FORWARD"),
-    [ANIM_PIVOT_SHAKE]                       = _("PIVOT SHAKE"),
-    [ANIM_TIP_AND_SHAKE]                     = _("TIP AND SHAKE"),
-    [ANIM_VIBRATE_TO_CORNERS]                = _("VIBRATE TO CORNERS"),
-    [ANIM_GROW_IN_STAGES]                    = _("GROW IN STAGES"),
-    [ANIM_V_SPRING]                          = _("V SPRING"),
-    [ANIM_V_REPEATED_SPRING]                 = _("V REPEATED SPRING"),
-    [ANIM_SPRING_RISING]                     = _("SPRING RISING"),
-    [ANIM_H_SPRING]                          = _("H SPRING"),
-    [ANIM_H_REPEATED_SPRING_SLOW]            = _("H REPEATED SPRING SLOW"),
-    [ANIM_H_SLIDE_SHRINK]                    = _("H SLIDE SHRINK"),
-    [ANIM_LUNGE_GROW]                        = _("LUNGE GROW"),
-    [ANIM_CIRCLE_INTO_BG]                    = _("CIRCLE INTO BG"),
-    [ANIM_RAPID_H_HOPS]                      = _("RAPID H HOPS"),
-    [ANIM_FOUR_PETAL]                        = _("FOUR PETAL"),
-    [ANIM_V_SQUISH_AND_BOUNCE_SLOW]          = _("V SQUISH AND BOUNCE SLOW"),
-    [ANIM_H_SLIDE_SLOW]                      = _("H SLIDE SLOW"),
-    [ANIM_V_SLIDE_SLOW]                      = _("V SLIDE SLOW"),
-    [ANIM_BOUNCE_ROTATE_TO_SIDES_SMALL]      = _("BOUNCE ROTATE TO SIDES SMALL"),
-    [ANIM_BOUNCE_ROTATE_TO_SIDES_SLOW]       = _("BOUNCE ROTATE TO SIDES SLOW"),
-    [ANIM_BOUNCE_ROTATE_TO_SIDES_SMALL_SLOW] = _("BOUNCE ROTATE TO SIDES SMALL SLOW"),
-    [ANIM_ZIGZAG_SLOW]                       = _("ZIGZAG SLOW"),
-    [ANIM_H_SHAKE_SLOW]                      = _("H SHAKE SLOW"),
-    [ANIM_V_SHAKE_SLOW]                      = _("V SHAKE SLOW"),
-    [ANIM_TWIST_TWICE]                       = _("TWIST TWICE"),
-    [ANIM_CIRCLE_C_CLOCKWISE_SLOW]           = _("CIRCLE C CLOCKWISE SLOW"),
-    [ANIM_V_SHAKE_TWICE_SLOW]                = _("V SHAKE TWICE SLOW"),
-    [ANIM_V_SLIDE_WOBBLE_SMALL]              = _("V SLIDE WOBBLE SMALL"),
-    [ANIM_V_JUMPS_SMALL]                     = _("V JUMPS SMALL"),
-    [ANIM_SPIN]                              = _("SPIN"),
-    [ANIM_TUMBLING_FRONT_FLIP_TWICE]         = _("TUMBLING FRONT FLIP TWICE"),
-    [ANIM_DEEP_V_SQUISH_AND_BOUNCE_TWICE]    = _("DEEP V SQUISH AND BOUNCE TWICE"),
-    [ANIM_H_JUMPS_V_STRETCH_TWICE]           = _("H JUMPS V STRETCH TWICE"),
-    [ANIM_V_SHAKE_BACK]                      = _("V SHAKE BACK"),
-    [ANIM_V_SHAKE_BACK_SLOW]                 = _("V SHAKE BACK SLOW"),
-    [ANIM_V_SHAKE_H_SLIDE_SLOW]              = _("V SHAKE H SLIDE SLOW"),
-    [ANIM_V_STRETCH_BOTH_ENDS_SLOW]          = _("V STRETCH BOTH ENDS SLOW"),
-    [ANIM_H_STRETCH_FAR_SLOW]                = _("H STRETCH FAR SLOW"),
-    [ANIM_V_SHAKE_LOW_TWICE]                 = _("V SHAKE LOW TWICE"),
-    [ANIM_H_SHAKE_FAST]                      = _("H SHAKE FAST"),
-    [ANIM_H_SLIDE_FAST]                      = _("H SLIDE FAST"),
-    [ANIM_H_VIBRATE_FAST]                    = _("H VIBRATE FAST"),
-    [ANIM_H_VIBRATE_FASTEST]                 = _("H VIBRATE FASTEST"),
-    [ANIM_V_SHAKE_BACK_FAST]                 = _("V SHAKE BACK FAST"),
-    [ANIM_V_SHAKE_LOW_TWICE_SLOW]            = _("V SHAKE LOW TWICE SLOW"),
-    [ANIM_V_SHAKE_LOW_TWICE_FAST]            = _("V SHAKE LOW TWICE FAST"),
-    [ANIM_CIRCLE_C_CLOCKWISE_LONG]           = _("CIRCLE C CLOCKWISE LONG"),
-    [ANIM_GROW_STUTTER_SLOW]                 = _("GROW STUTTER SLOW"),
-    [ANIM_V_SHAKE_H_SLIDE]                   = _("V SHAKE H SLIDE"),
-    [ANIM_V_SHAKE_H_SLIDE_FAST]              = _("V SHAKE H SLIDE FAST"),
-    [ANIM_TRIANGLE_DOWN_SLOW]                = _("TRIANGLE DOWN SLOW"),
-    [ANIM_TRIANGLE_DOWN]                     = _("TRIANGLE DOWN"),
-    [ANIM_TRIANGLE_DOWN_TWICE]               = _("TRIANGLE DOWN TWICE"),
-    [ANIM_GROW]                              = _("GROW"),
-    [ANIM_GROW_TWICE]                        = _("GROW TWICE"),
-    [ANIM_H_SPRING_FAST]                     = _("H SPRING FAST"),
-    [ANIM_H_SPRING_SLOW]                     = _("H SPRING SLOW"),
-    [ANIM_H_REPEATED_SPRING_FAST]            = _("H REPEATED SPRING FAST"),
-    [ANIM_H_REPEATED_SPRING]                 = _("H REPEATED SPRING"),
-    [ANIM_SHRINK_GROW_FAST]                  = _("SHRINK GROW FAST"),
-    [ANIM_SHRINK_GROW_SLOW]                  = _("SHRINK GROW SLOW"),
-    [ANIM_V_STRETCH_BOTH_ENDS]               = _("V STRETCH BOTH ENDS"),
-    [ANIM_V_STRETCH_BOTH_ENDS_TWICE]         = _("V STRETCH BOTH ENDS TWICE"),
-    [ANIM_H_STRETCH_FAR_TWICE]               = _("H STRETCH FAR TWICE"),
-    [ANIM_H_STRETCH_FAR]                     = _("H STRETCH FAR"),
-    [ANIM_GROW_STUTTER_TWICE]                = _("GROW STUTTER TWICE"),
-    [ANIM_GROW_STUTTER]                      = _("GROW STUTTER"),
-    [ANIM_CONCAVE_ARC_LARGE_SLOW]            = _("CONCAVE ARC LARGE SLOW"),
-    [ANIM_CONCAVE_ARC_LARGE]                 = _("CONCAVE ARC LARGE"),
-    [ANIM_CONCAVE_ARC_LARGE_TWICE]           = _("CONCAVE ARC LARGE TWICE"),
-    [ANIM_CONVEX_DOUBLE_ARC_SLOW]            = _("CONVEX DOUBLE ARC SLOW"),
-    [ANIM_CONVEX_DOUBLE_ARC]                 = _("CONVEX DOUBLE ARC"),
-    [ANIM_CONVEX_DOUBLE_ARC_TWICE]           = _("CONVEX DOUBLE ARC TWICE"),
-    [ANIM_CONCAVE_ARC_SMALL_SLOW]            = _("CONCAVE ARC SMALL SLOW"),
-    [ANIM_CONCAVE_ARC_SMALL]                 = _("CONCAVE ARC SMALL"),
-    [ANIM_CONCAVE_ARC_SMALL_TWICE]           = _("CONCAVE ARC SMALL TWICE"),
-    [ANIM_H_DIP]                             = _("H DIP"),
-    [ANIM_H_DIP_FAST]                        = _("H DIP FAST"),
-    [ANIM_H_DIP_TWICE]                       = _("H DIP TWICE"),
-    [ANIM_SHRINK_GROW_VIBRATE_FAST]          = _("SHRINK GROW VIBRATE FAST"),
-    [ANIM_SHRINK_GROW_VIBRATE]               = _("SHRINK GROW VIBRATE"),
-    [ANIM_SHRINK_GROW_VIBRATE_SLOW]          = _("SHRINK GROW VIBRATE SLOW"),
-    [ANIM_JOLT_RIGHT_FAST]                   = _("JOLT RIGHT FAST"),
-    [ANIM_JOLT_RIGHT]                        = _("JOLT RIGHT"),
-    [ANIM_JOLT_RIGHT_SLOW]                   = _("JOLT RIGHT SLOW"),
-    [ANIM_SHAKE_FLASH_YELLOW_FAST]           = _("SHAKE FLASH YELLOW FAST"),
-    [ANIM_SHAKE_FLASH_YELLOW]                = _("SHAKE FLASH YELLOW"),
-    [ANIM_SHAKE_FLASH_YELLOW_SLOW]           = _("SHAKE FLASH YELLOW SLOW"),
-    [ANIM_SHAKE_GLOW_RED_FAST]               = _("SHAKE GLOW RED FAST"),
-    [ANIM_SHAKE_GLOW_RED]                    = _("SHAKE GLOW RED"),
-    [ANIM_SHAKE_GLOW_RED_SLOW]               = _("SHAKE GLOW RED SLOW"),
-    [ANIM_SHAKE_GLOW_GREEN_FAST]             = _("SHAKE GLOW GREEN FAST"),
-    [ANIM_SHAKE_GLOW_GREEN]                  = _("SHAKE GLOW GREEN"),
-    [ANIM_SHAKE_GLOW_GREEN_SLOW]             = _("SHAKE GLOW GREEN SLOW"),
-    [ANIM_SHAKE_GLOW_BLUE_FAST]              = _("SHAKE GLOW BLUE FAST"),
-    [ANIM_SHAKE_GLOW_BLUE]                   = _("SHAKE GLOW BLUE"),
-    [ANIM_SHAKE_GLOW_BLUE_SLOW]              = _("SHAKE GLOW BLUE SLOW"),
-    [ANIM_SHAKE_GLOW_BLACK_SLOW]             = _("SHAKE GLOW BLACK SLOW"),
-    [ANIM_SHAKE_GLOW_WHITE_SLOW]             = _("SHAKE GLOW WHITE SLOW"),
-    [ANIM_SHAKE_GLOW_PURPLE_SLOW]            = _("SHAKE GLOW PURPLE SLOW"),
-};
 const u8 gBattleBackgroundNames[][30] =
 {
     [MAP_BATTLE_SCENE_NORMAL]   = _("NORMAL                  "),
@@ -1072,31 +884,6 @@ static void UpdateBattleBg(u8 taskId, bool8 increment)
 
 // *******************************
 // Main functions
-static void UpdateMonAnimNames(u8 taskId)
-{
-    struct PokemonSpriteVisualizer *data = GetStructPtr(taskId);
-    u8 frontAnim = data->animIdFront;
-    u8 backAnim = data->animIdBack;
-    u8 text[34];
-    u8 fontId = 0;
-    u8 textNum[4];
-
-    FillWindowPixelBuffer(WIN_BOTTOM_RIGHT, PIXEL_FILL(0));
-
-    //Back
-    StringCopy(text, gBackAnimNames[backAnim]);
-    ConvertIntToDecimalStringN(textNum, backAnim, STR_CONV_MODE_LEADING_ZEROS, 3);
-    AddTextPrinterParameterized(WIN_BOTTOM_RIGHT, fontId, textNum, 0, 0, 0, NULL);
-    AddTextPrinterParameterized(WIN_BOTTOM_RIGHT, fontId, text, 18, 0, 0, NULL);
-    //Front
-    StringCopy(text, gFrontAnimNames[frontAnim]);
-    ConvertIntToDecimalStringN(textNum, frontAnim, STR_CONV_MODE_LEADING_ZEROS, 3);
-    AddTextPrinterParameterized(WIN_BOTTOM_RIGHT, fontId, textNum, 0, 12, 0, NULL);
-    AddTextPrinterParameterized(WIN_BOTTOM_RIGHT, fontId, text, 18, 12, 0, NULL);
-
-    PrintBattleBgName(taskId);
-}
-
 static void UpdateYPosOffsetText(struct PokemonSpriteVisualizer *data)
 {
     u8 text[34];
@@ -1329,11 +1116,6 @@ void CB2_Pokemon_Sprite_Visualizer(void)
             //Modify Y Pos Arrow
             SetUpYPosModifyArrows(data);
 
-            //Anim names
-            data->animIdBack = GetSpeciesBackAnimSet(species) + 1;
-            data->animIdFront = gSpeciesInfo[data->currentmonId].frontAnimId;
-            UpdateMonAnimNames(taskId);
-
             //BattleNg Name
             PrintBattleBgName(taskId);
 
@@ -1419,38 +1201,8 @@ static void UpdateSubmenuOneOptionValue(u8 taskId, bool8 increment)
     switch (option)
     {
     case 0:
-        if (increment)
-        {
-            if (data->animIdBack >= BACK_ANIM_SHAKE_GLOW_BLUE)
-                data->animIdBack = 1;
-            else
-                data->animIdBack += 1;
-        }
-        else
-        {
-            if (data->animIdBack <= 1)
-                data->animIdBack = BACK_ANIM_SHAKE_GLOW_BLUE;
-            else
-                data->animIdBack -= 1;
-        }
-        UpdateMonAnimNames(taskId);
         break;
     case 1:
-        if (increment)
-        {
-            if (data->animIdFront >= ANIM_SHAKE_GLOW_PURPLE_SLOW)
-                data->animIdFront = 0;
-            else
-                data->animIdFront += 1;
-            }
-        else
-        {
-            if (data->animIdFront <= 0)
-                data->animIdFront = ANIM_SHAKE_GLOW_PURPLE_SLOW;
-            else
-                data->animIdFront -= 1;
-        }
-        UpdateMonAnimNames(taskId);
         break;
     case 2:
         UpdateBattleBg(taskId, increment);
@@ -1483,9 +1235,6 @@ static void UpdateSubmenuOneOptionValue(u8 taskId, bool8 increment)
                 else
                     modArrows->currValue = GetFormSpeciesId(data->currentmonId, formId - 1);
             }
-            data->animIdBack = GetSpeciesBackAnimSet(modArrows->currValue) + 1;
-            data->animIdFront = gSpeciesInfo[modArrows->currValue].frontAnimId;
-            UpdateMonAnimNames(taskId);
             ResetOffsetSpriteValues(data);
             ResetShadowSettings(data, modArrows->currValue);
 
@@ -1659,18 +1408,6 @@ static void UpdateShadowSizeValue(u8 taskId, bool8 increment)
     gTasks[taskId].data[dataId + 1] = (u32)(ptr) >> 16;        \
 }
 
-#define sAnimId    data[2]
-#define sAnimDelay data[3]
-
-static void Task_AnimateAfterDelay(u8 taskId)
-{
-    if (--gTasks[taskId].sAnimDelay == 0)
-    {
-        LaunchAnimationTaskForFrontSprite(READ_PTR_FROM_TASK(taskId, 0), gTasks[taskId].sAnimId);
-        DestroyTask(taskId);
-    }
-}
-
 static void HandleInput_PokemonSpriteVisualizer(u8 taskId)
 {
     struct PokemonSpriteVisualizer *data = GetStructPtr(taskId);
@@ -1680,27 +1417,10 @@ static void HandleInput_PokemonSpriteVisualizer(u8 taskId)
     if (JOY_NEW(L_BUTTON)  && (Backsprite->callback == SpriteCallbackDummy))
     {
         PlayCryInternal(data->currentmonId, 0, 120, 10, CRY_MODE_NORMAL);
-        LaunchAnimationTaskForBackSprite(Backsprite, data->animIdBack-1);
     }
     if (JOY_NEW(R_BUTTON) && (Frontsprite->callback == SpriteCallbackDummy))
     {
         PlayCryInternal(data->currentmonId, 0, 120, 10, CRY_MODE_NORMAL);
-        if (HasTwoFramesAnimation(data->currentmonId))
-            StartSpriteAnim(Frontsprite, 1);
-
-        if (gSpeciesInfo[data->currentmonId].frontAnimDelay != 0)
-        {
-            // Animation has delay, start delay task
-            u8 taskId = CreateTask(Task_AnimateAfterDelay, 0);
-            STORE_PTR_IN_TASK(Frontsprite, taskId, 0);
-            gTasks[taskId].sAnimId = data->animIdFront;
-            gTasks[taskId].sAnimDelay = gSpeciesInfo[data->currentmonId].frontAnimDelay;
-        }
-        else
-        {
-            // No delay, start animation
-            LaunchAnimationTaskForFrontSprite(Frontsprite, data->animIdFront);
-        }
     }
 
     if (JOY_NEW(START_BUTTON))
@@ -1746,9 +1466,6 @@ static void HandleInput_PokemonSpriteVisualizer(u8 taskId)
                 UpdateBattlerValue(data);
                 ResetShadowSettings(data, data->currentmonId);
                 ReloadPokemonSprites(data);
-                data->animIdBack = GetSpeciesBackAnimSet(data->currentmonId) + 1;
-                data->animIdFront = gSpeciesInfo[data->currentmonId].frontAnimId;
-                UpdateMonAnimNames(taskId);
                 ResetOffsetSpriteValues(data);
             }
             PlaySE(SE_DEX_SCROLL);
@@ -1763,9 +1480,6 @@ static void HandleInput_PokemonSpriteVisualizer(u8 taskId)
                 UpdateBattlerValue(data);
                 ResetShadowSettings(data, data->currentmonId);
                 ReloadPokemonSprites(data);
-                data->animIdBack = GetSpeciesBackAnimSet(data->currentmonId) + 1;
-                data->animIdFront = gSpeciesInfo[data->currentmonId].frontAnimId;
-                UpdateMonAnimNames(taskId);
                 ResetOffsetSpriteValues(data);
             }
 
@@ -1865,7 +1579,6 @@ static void HandleInput_PokemonSpriteVisualizer(u8 taskId)
 
             SetArrowInvisibility(data);
             PrintInstructionsOnWindow(data);
-            UpdateMonAnimNames(taskId);
 
             gSprites[data->followerspriteId].invisible = FALSE;
         }
@@ -1942,8 +1655,6 @@ static void HandleInput_PokemonSpriteVisualizer(u8 taskId)
         }
     }
 }
-#undef sDelay
-#undef sAnimId
 
 static void ReloadPokemonSprites(struct PokemonSpriteVisualizer *data)
 {

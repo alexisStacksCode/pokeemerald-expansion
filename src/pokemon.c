@@ -34,7 +34,6 @@
 #include "pokedex.h"
 #include "pokeblock.h"
 #include "pokemon.h"
-#include "pokemon_animation.h"
 #include "pokemon_icon.h"
 #include "pokemon_summary_screen.h"
 #include "pokemon_storage_system.h"
@@ -152,7 +151,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Hardy"),
         .statUp = STAT_ATK,
         .statDown = STAT_ATK,
-        .backAnim = 0,
         .pokeBlockAnim = {ANIM_HARDY, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlAttackHighAttackLow,
         .battlePalacePercents = PALACE_STYLE(61, 7, 61, 7), //32% support >= 50% HP, 32% support < 50% HP
@@ -164,7 +162,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Lonely"),
         .statUp = STAT_ATK,
         .statDown = STAT_DEF,
-        .backAnim = 2,
         .pokeBlockAnim = {ANIM_LONELY, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlSupportHighAttackLow,
         .battlePalacePercents = PALACE_STYLE(20, 25, 84, 8), //55%,  8%
@@ -176,7 +173,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Brave"),
         .statUp = STAT_ATK,
         .statDown = STAT_SPEED,
-        .backAnim = 0,
         .pokeBlockAnim = {ANIM_BRAVE, AFFINE_TURN_UP},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlAttackHighDefenseLow,
         .battlePalacePercents = PALACE_STYLE(70, 15, 32, 60), //15%, 8%
@@ -188,7 +184,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Adamant"),
         .statUp = STAT_ATK,
         .statDown = STAT_SPATK,
-        .backAnim = 0,
         .pokeBlockAnim = {ANIM_ADAMANT, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlAttackHighAttackLow,
         .battlePalacePercents = PALACE_STYLE(38, 31, 70, 15), //31%, 15%
@@ -200,7 +195,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Naughty"),
         .statUp = STAT_ATK,
         .statDown = STAT_SPDEF,
-        .backAnim = 0,
         .pokeBlockAnim = {ANIM_NAUGHTY, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlDefenseHighAttackLow,
         .battlePalacePercents = PALACE_STYLE(20, 70, 70, 22), //10%, 8%
@@ -212,7 +206,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Bold"),
         .statUp = STAT_DEF,
         .statDown = STAT_ATK,
-        .backAnim = 1,
         .pokeBlockAnim = {ANIM_BOLD, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlSupportHighDefenseLow,
         .battlePalacePercents = PALACE_STYLE(30, 20, 32, 58), //50%, 10%
@@ -224,7 +217,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Docile"),
         .statUp = STAT_DEF,
         .statDown = STAT_DEF,
-        .backAnim = 1,
         .pokeBlockAnim = {ANIM_DOCILE, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlAttackHighAttackLow,
         .battlePalacePercents = PALACE_STYLE(56, 22, 56, 22), //22%, 22%
@@ -236,7 +228,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Relaxed"),
         .statUp = STAT_DEF,
         .statDown = STAT_SPEED,
-        .backAnim = 1,
         .pokeBlockAnim = {ANIM_RELAXED, AFFINE_TURN_UP_AND_DOWN},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlSupportHighAttackLow,
         .battlePalacePercents = PALACE_STYLE(25, 15, 75, 15), //60%, 10%
@@ -248,7 +239,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Impish"),
         .statUp = STAT_DEF,
         .statDown = STAT_SPATK,
-        .backAnim = 0,
         .pokeBlockAnim = {ANIM_IMPISH, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlAttackHighDefenseLow,
         .battlePalacePercents = PALACE_STYLE(69, 6, 28, 55), //25%, 17%
@@ -260,7 +250,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Lax"),
         .statUp = STAT_DEF,
         .statDown = STAT_SPDEF,
-        .backAnim = 1,
         .pokeBlockAnim = {ANIM_LAX, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlSupportHighSupportLow,
         .battlePalacePercents = PALACE_STYLE(35, 10, 29, 6), //55%, 65%
@@ -272,7 +261,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Timid"),
         .statUp = STAT_SPEED,
         .statDown = STAT_ATK,
-        .backAnim = 2,
         .pokeBlockAnim = {ANIM_TIMID, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlAttackHighSupportLow,
         .battlePalacePercents = PALACE_STYLE(62, 10, 30, 20), //28%, 50%
@@ -284,7 +272,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Hasty"),
         .statUp = STAT_SPEED,
         .statDown = STAT_DEF,
-        .backAnim = 0,
         .pokeBlockAnim = {ANIM_HASTY, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlAttackHighAttackLow,
         .battlePalacePercents = PALACE_STYLE(58, 37, 88, 6), //5%, 6%
@@ -296,7 +283,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Serious"),
         .statUp = STAT_SPEED,
         .statDown = STAT_SPEED,
-        .backAnim = 1,
         .pokeBlockAnim = {ANIM_SERIOUS, AFFINE_TURN_DOWN},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlSupportHighSupportLow,
         .battlePalacePercents = PALACE_STYLE(34, 11, 29, 11), //55%, 60%
@@ -308,7 +294,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Jolly"),
         .statUp = STAT_SPEED,
         .statDown = STAT_SPATK,
-        .backAnim = 0,
         .pokeBlockAnim = {ANIM_JOLLY, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlSupportHighDefenseLow,
         .battlePalacePercents = PALACE_STYLE(35, 5, 35, 60), //60%, 5%
@@ -320,7 +305,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Naive"),
         .statUp = STAT_SPEED,
         .statDown = STAT_SPDEF,
-        .backAnim = 0,
         .pokeBlockAnim = {ANIM_NAIVE, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlAttackHighAttackLow,
         .battlePalacePercents = PALACE_STYLE(56, 22, 56, 22), //22%, 22%
@@ -332,7 +316,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Modest"),
         .statUp = STAT_SPATK,
         .statDown = STAT_ATK,
-        .backAnim = 2,
         .pokeBlockAnim = {ANIM_MODEST, AFFINE_TURN_DOWN_SLOW},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlDefenseHighDefenseLow,
         .battlePalacePercents = PALACE_STYLE(35, 45, 34, 60), //20%, 6%
@@ -344,7 +327,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Mild"),
         .statUp = STAT_SPATK,
         .statDown = STAT_DEF,
-        .backAnim = 2,
         .pokeBlockAnim = {ANIM_MILD, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlDefenseHighSupportLow,
         .battlePalacePercents = PALACE_STYLE(44, 50, 34, 6), //6%, 60%
@@ -356,7 +338,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Quiet"),
         .statUp = STAT_SPATK,
         .statDown = STAT_SPEED,
-        .backAnim = 2,
         .pokeBlockAnim = {ANIM_QUIET, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlAttackHighAttackLow,
         .battlePalacePercents = PALACE_STYLE(56, 22, 56, 22), //22%, 22%
@@ -368,7 +349,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Bashful"),
         .statUp = STAT_SPATK,
         .statDown = STAT_SPATK,
-        .backAnim = 2,
         .pokeBlockAnim = {ANIM_BASHFUL, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlDefenseHighDefenseLow,
         .battlePalacePercents = PALACE_STYLE(30, 58, 30, 58), //12%, 12%
@@ -380,7 +360,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Rash"),
         .statUp = STAT_SPATK,
         .statDown = STAT_SPDEF,
-        .backAnim = 1,
         .pokeBlockAnim = {ANIM_RASH, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlSupportHighSupportLow,
         .battlePalacePercents = PALACE_STYLE(30, 13, 27, 6), //57%, 67%
@@ -392,7 +371,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Calm"),
         .statUp = STAT_SPDEF,
         .statDown = STAT_ATK,
-        .backAnim = 1,
         .pokeBlockAnim = {ANIM_CALM, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlDefenseHighDefenseLow,
         .battlePalacePercents = PALACE_STYLE(40, 50, 25, 62), //10%, 13%
@@ -404,7 +382,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Gentle"),
         .statUp = STAT_SPDEF,
         .statDown = STAT_DEF,
-        .backAnim = 2,
         .pokeBlockAnim = {ANIM_GENTLE, AFFINE_TURN_DOWN_SLIGHT},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlDefenseHighAttackLow,
         .battlePalacePercents = PALACE_STYLE(18, 70, 90, 5), //12%, 5%
@@ -416,7 +393,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Sassy"),
         .statUp = STAT_SPDEF,
         .statDown = STAT_SPEED,
-        .backAnim = 1,
         .pokeBlockAnim = {ANIM_SASSY, AFFINE_TURN_UP_HIGH},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlAttackHighSupportLow,
         .battlePalacePercents = PALACE_STYLE(88, 6, 22, 20), //6%, 58%
@@ -428,7 +404,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Careful"),
         .statUp = STAT_SPDEF,
         .statDown = STAT_SPATK,
-        .backAnim = 2,
         .pokeBlockAnim = {ANIM_CAREFUL, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlDefenseHighSupportLow,
         .battlePalacePercents = PALACE_STYLE(42, 50, 42, 5), //8%, 53%
@@ -440,7 +415,6 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
         .name = COMPOUND_STRING("Quirky"),
         .statUp = STAT_SPDEF,
         .statDown = STAT_SPDEF,
-        .backAnim = 1,
         .pokeBlockAnim = {ANIM_QUIRKY, AFFINE_NONE},
         .natureGirlMessage = BattleFrontier_Lounge5_Text_NatureGirlAttackHighAttackLow,
         .battlePalacePercents = PALACE_STYLE(56, 22, 56, 22), //22%, 22%
@@ -1930,19 +1904,14 @@ void SetMultiuseSpriteTemplateToPokemon(u16 speciesTag, u8 battlerPosition)
         gMultiuseSpriteTemplate = gBattlerSpriteTemplates[battlerPosition];
 
     gMultiuseSpriteTemplate.paletteTag = speciesTag;
-    if (battlerPosition == B_POSITION_PLAYER_LEFT || battlerPosition == B_POSITION_PLAYER_RIGHT)
-        gMultiuseSpriteTemplate.anims = gAnims_MonPic;
-    else
+    if (battlerPosition == B_POSITION_OPPONENT_LEFT || battlerPosition == B_POSITION_OPPONENT_RIGHT)
     {
         if (speciesTag > SPECIES_SHINY_TAG)
             speciesTag = speciesTag - SPECIES_SHINY_TAG;
 
         speciesTag = SanitizeSpeciesId(speciesTag);
-        if (gSpeciesInfo[speciesTag].frontAnimFrames != NULL)
-            gMultiuseSpriteTemplate.anims = gSpeciesInfo[speciesTag].frontAnimFrames;
-        else
-            gMultiuseSpriteTemplate.anims = gSpeciesInfo[SPECIES_NONE].frontAnimFrames;
     }
+    gMultiuseSpriteTemplate.anims = gAnims_MonPic;
 }
 
 void SetMultiuseSpriteTemplateToTrainerBack(u16 trainerPicId, u8 battlerPosition)
@@ -6164,25 +6133,6 @@ const u8 *GetTrainerPartnerName(void)
 #define sAnimId    data[2]
 #define sAnimDelay data[3]
 
-static void Task_AnimateAfterDelay(u8 taskId)
-{
-    if (--gTasks[taskId].sAnimDelay == 0)
-    {
-        LaunchAnimationTaskForFrontSprite(READ_PTR_FROM_TASK(taskId, 0), gTasks[taskId].sAnimId);
-        DestroyTask(taskId);
-    }
-}
-
-static void Task_PokemonSummaryAnimateAfterDelay(u8 taskId)
-{
-    if (--gTasks[taskId].sAnimDelay == 0)
-    {
-        StartMonSummaryAnimation(READ_PTR_FROM_TASK(taskId, 0), gTasks[taskId].sAnimId);
-        SummaryScreen_SetAnimDelayTaskId(TASK_NONE);
-        DestroyTask(taskId);
-    }
-}
-
 void BattleAnimateFrontSprite(struct Sprite *sprite, u16 species, bool8 noCry, u8 panMode)
 {
     if (gHitMarker & HITMARKER_NO_ANIMATIONS && !(gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK)))
@@ -6218,91 +6168,9 @@ void DoMonFrontSpriteAnimation(struct Sprite *sprite, u16 species, bool8 noCry, 
         if (!noCry)
         {
             PlayCry_Normal(species, pan);
-            if (HasTwoFramesAnimation(species))
-                StartSpriteAnim(sprite, 1);
-        }
-        if (gSpeciesInfo[species].frontAnimDelay != 0)
-        {
-            // Animation has delay, start delay task
-            u8 taskId = CreateTask(Task_AnimateAfterDelay, 0);
-            STORE_PTR_IN_TASK(sprite, taskId, 0);
-            gTasks[taskId].sAnimId = gSpeciesInfo[species].frontAnimId;
-            gTasks[taskId].sAnimDelay = gSpeciesInfo[species].frontAnimDelay;
-        }
-        else
-        {
-            // No delay, start animation
-            LaunchAnimationTaskForFrontSprite(sprite, gSpeciesInfo[species].frontAnimId);
         }
         sprite->callback = SpriteCallbackDummy_2;
     }
-}
-
-void PokemonSummaryDoMonAnimation(struct Sprite *sprite, u16 species, bool8 oneFrame)
-{
-    if (!oneFrame && HasTwoFramesAnimation(species))
-        StartSpriteAnim(sprite, 1);
-    if (gSpeciesInfo[species].frontAnimDelay != 0)
-    {
-        // Animation has delay, start delay task
-        u8 taskId = CreateTask(Task_PokemonSummaryAnimateAfterDelay, 0);
-        STORE_PTR_IN_TASK(sprite, taskId, 0);
-        gTasks[taskId].sAnimId = gSpeciesInfo[species].frontAnimId;
-        gTasks[taskId].sAnimDelay = gSpeciesInfo[species].frontAnimDelay;
-        SummaryScreen_SetAnimDelayTaskId(taskId);
-        SetSpriteCB_MonAnimDummy(sprite);
-    }
-    else
-    {
-        // No delay, start animation
-        StartMonSummaryAnimation(sprite, gSpeciesInfo[species].frontAnimId);
-    }
-}
-
-void StopPokemonAnimationDelayTask(void)
-{
-    u8 delayTaskId = FindTaskIdByFunc(Task_PokemonSummaryAnimateAfterDelay);
-    if (delayTaskId != TASK_NONE)
-        DestroyTask(delayTaskId);
-}
-
-void BattleAnimateBackSprite(struct Sprite *sprite, u16 species)
-{
-    if (gHitMarker & HITMARKER_NO_ANIMATIONS && !(gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK)))
-    {
-        sprite->callback = SpriteCallbackDummy;
-    }
-    else
-    {
-        LaunchAnimationTaskForBackSprite(sprite, GetSpeciesBackAnimSet(species));
-        sprite->callback = SpriteCallbackDummy_2;
-    }
-}
-
-// Identical to GetOpposingLinkMultiBattlerId but for the player
-// "rightSide" from that team's perspective, i.e. B_POSITION_*_RIGHT
-static u8 UNUSED GetOwnOpposingLinkMultiBattlerId(bool8 rightSide)
-{
-    s32 i;
-    s32 battler = 0;
-    u8 multiplayerId = GetMultiplayerId();
-    switch (gLinkPlayers[multiplayerId].id)
-    {
-    case 0:
-    case 2:
-        battler = rightSide ? 1 : 3;
-        break;
-    case 1:
-    case 3:
-        battler = rightSide ? 2 : 0;
-        break;
-    }
-    for (i = 0; i < MAX_LINK_PLAYERS; i++)
-    {
-        if (gLinkPlayers[i].id == (s16)battler)
-            break;
-    }
-    return i;
 }
 
 u8 GetOpposingLinkMultiBattlerId(bool8 rightSide, u8 multiplayerId)
@@ -6360,14 +6228,6 @@ void HandleSetPokedexFlagFromMon(struct Pokemon *mon, u32 caseId)
     enum NationalDexOrder nationalNum = SpeciesToNationalPokedexNum(GetMonData(mon, MON_DATA_SPECIES));
 
     HandleSetPokedexFlag(nationalNum, caseId, personality);
-}
-
-bool8 HasTwoFramesAnimation(u16 species)
-{
-    return P_TWO_FRAME_FRONT_SPRITES
-        && gSpeciesInfo[species].frontAnimFrames != sAnims_SingleFramePlaceHolder
-        && species != SPECIES_UNOWN
-        && !gTestRunnerHeadless;
 }
 
 bool8 ShouldSkipFriendshipChange(void)
