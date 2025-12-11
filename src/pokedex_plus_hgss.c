@@ -2474,9 +2474,9 @@ static bool8 LoadPokedexListPage(u8 page)
 
 static void CreatePokedexList(u8 dexMode, u8 order)
 {
-    u16 temp_dexCount = HOENN_DEX_COUNT;
-    u16 temp_dexNum;
-    s16 i;
+    u32 temp_dexCount = HOENN_DEX_COUNT;
+    u32 temp_dexNum;
+    s32 i;
 
     sPokedexView->pokemonListCount = 0;
 
