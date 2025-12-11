@@ -7,7 +7,7 @@ MID2AGB_DIR: str = "tools/mid2agb"
 MUSIC_DIR: str = "sound/songs/midi"
 
 
-music_files_to_process: list[str] = [file for file in os.listdir("tools/mid2agb") if os.path.splitext(file)[1] == ".mid"]
+music_files_to_process: list[str] = [file for file in os.listdir(MID2AGB_DIR) if os.path.splitext(file)[1] == ".mid"]
 
 
 if os.name == "posix":
