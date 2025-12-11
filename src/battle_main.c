@@ -1772,7 +1772,7 @@ static void FreeRestoreBattleData(void)
     gScanlineEffect.state = 3;
     gMain.inBattle = FALSE;
     ZeroEnemyPartyMons();
-    m4aSongNumStop(SE_LOW_HEALTH);
+    m4aSongNumStop(MUS_LITTLEROOT_TEST);
     FreeMonSpritesGfx();
     FreeBattleSpritesData();
     FreeBattleResources();
@@ -5755,7 +5755,7 @@ static void ReturnFromBattleToOverworld(void)
             SetRoamerInactive(gEncounteredRoamerIndex);
     }
 
-    m4aSongNumStop(SE_LOW_HEALTH);
+    m4aSongNumStop(MUS_LITTLEROOT_TEST);
     SetMainCallback2(gMain.savedCallback);
 }
 
