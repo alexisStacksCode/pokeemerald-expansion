@@ -32,7 +32,6 @@
 #include "test/battle.h"
 #include "test/test.h"
 #include "test/test_runner_battle.h"
-#include "pokemon_animation.h"
 
 static EWRAM_DATA u8 sLinkSendTaskId = 0;
 static EWRAM_DATA u8 sLinkReceiveTaskId = 0;
@@ -49,9 +48,6 @@ static void Task_HandleCopyReceivedLinkBuffersData(u8 taskId);
 static void Task_StartSendOutAnim(u8 taskId);
 static void SpriteCB_FreePlayerSpriteLoadMonSprite(struct Sprite *sprite);
 static void SpriteCB_FreeOpponentSprite(struct Sprite *sprite);
-static u32 ReturnAnimIdForBattler(bool32 isPlayerSide, u32 specificBattler);
-static void LaunchKOAnimation(u32 battlerId, u16 animId, bool32 isFront);
-static void AnimateMonAfterKnockout(u32 battler);
 
 void HandleLinkBattleSetup(void)
 {
@@ -2495,7 +2491,6 @@ void BtlController_HandleFaintAnimation(u32 battler)
             // The player's sprite is removed in Controller_FaintPlayerMon. Controller_FaintOpponentMon only removes the healthbox once the sprite is removed by SpriteCB_FaintOpponentMon.
         }
     }
-    AnimateMonAfterKnockout(battler);
 }
 
 #undef sSpeedX
@@ -2932,62 +2927,6 @@ void BtlController_HandleBattleAnimation(u32 battler)
         if (ShouldUpdateTvData(battler))
             BattleTv_SetDataBasedOnAnimation(animationId);
     }
-}
-
-void AnimateMonAfterPokeBallFail(u32 battler)
-{
-    if (B_ANIMATE_MON_AFTER_FAILED_POKEBALL == FALSE)
-        return;
-
-    LaunchKOAnimation(battler, ReturnAnimIdForBattler(TRUE, battler), TRUE);
-    TryShinyAnimation(gBattlerTarget, GetBattlerMon(gBattlerTarget));
-}
-
-static void AnimateMonAfterKnockout(u32 battler)
-{
-    if (B_ANIMATE_MON_AFTER_KO == FALSE)
-        return;
-
-    u32 oppositeBattler = BATTLE_OPPOSITE(battler);
-    u32 partnerBattler = BATTLE_PARTNER(oppositeBattler);
-    bool32 wasPlayerSideKnockedOut = (IsOnPlayerSide(battler));
-
-    if (IsBattlerAlive(oppositeBattler))
-        LaunchKOAnimation(oppositeBattler, ReturnAnimIdForBattler(wasPlayerSideKnockedOut, oppositeBattler), wasPlayerSideKnockedOut);
-
-    if (gBattleTypeFlags & BATTLE_TYPE_DOUBLE && IsBattlerAlive(partnerBattler))
-        LaunchKOAnimation(partnerBattler, ReturnAnimIdForBattler(wasPlayerSideKnockedOut, partnerBattler), wasPlayerSideKnockedOut);
-}
-
-static void LaunchKOAnimation(u32 battlerId, u16 animId, bool32 isFront)
-{
-    u32 species = GetBattlerVisualSpecies(battlerId);
-    u32 spriteId = gBattlerSpriteIds[battlerId];
-
-    gBattleStruct->battlerKOAnimsRunning++;
-
-    if (isFront)
-    {
-        LaunchAnimationTaskForFrontSprite(&gSprites[spriteId], animId);
-
-        if (HasTwoFramesAnimation(species))
-            StartSpriteAnim(&gSprites[spriteId], 1);
-    }
-    else
-    {
-        LaunchAnimationTaskForBackSprite(&gSprites[spriteId], animId);
-    }
-
-    PlayCry_Normal(species, CRY_PRIORITY_NORMAL);
-}
-
-static u32 ReturnAnimIdForBattler(bool32 wasPlayerSideKnockedOut, u32 specificBattler)
-{
-    u32 species = GetBattlerVisualSpecies(specificBattler);
-    if (wasPlayerSideKnockedOut)
-        return gSpeciesInfo[species].frontAnimId;
-    else
-        return GetSpeciesBackAnimSet(species);
 }
 
 void TrySetBattlerShadowSpriteCallback(u32 battler)

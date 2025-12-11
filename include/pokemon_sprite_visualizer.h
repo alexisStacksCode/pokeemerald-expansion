@@ -4,8 +4,19 @@
 #include "constants/global.h"
 #include "constants/pokemon_sprite_visualizer.h"
 
-//Structs
-struct PokemonSpriteVisualizerModifyArrows
+struct PokemonSpriteVisualizerSubmenu
+{
+    u8 textInstructionWithoutGenderDifferences[48];
+    u8 textInstructionWithGenderDifferences[48];
+    u8 textBottomWithoutAlternateForms[32];
+    u8 textBottomWithAlternateForms[32];
+    bool8 showModifyArrow1;
+    bool8 showModifyArrow2;
+    bool8 showOptionArrow;
+    bool8 showYPosModifyArrow;
+};
+
+struct PokemonSpriteVisualizerModifyArrow
 {
     u8 arrowSpriteId[2];
     u16 minValue;
@@ -18,26 +29,26 @@ struct PokemonSpriteVisualizerModifyArrows
     u8 typeOfVal;
 };
 
-struct PokemonSpriteVisualizerOptionArrows
+struct PokemonSpriteVisualizerOptionArrow
 {
     u8 arrowSpriteId[1];
     u8 currentDigit;
 };
 
-struct PokemonSpriteVisualizerYPosModifiyArrows
+struct PokemonSpriteVisualizerYPosModifyArrow
 {
     u8 arrowSpriteId[1];
     u8 currentDigit;
 };
 
-struct PokemonSpriteConstValues
+struct PokemonSpriteConstValue
 {
     u8 backPicCoords;
     u8 frontPicCoords;
     u8 frontElevation;
 };
 
-struct PokemonSpriteOffsets
+struct PokemonSpriteOffset
 {
     s8 offset_back_picCoords;
     s8 offset_front_picCoords;
@@ -72,11 +83,11 @@ struct PokemonSpriteVisualizer
     u8 frontShadowSpriteIdSecondary;
     struct PokemonShadowSettings shadowSettings;
 
-    struct PokemonSpriteVisualizerModifyArrows modifyArrows;
-    struct PokemonSpriteVisualizerOptionArrows optionArrows;
-    struct PokemonSpriteVisualizerYPosModifiyArrows yPosModifyArrows;
-    struct PokemonSpriteConstValues constSpriteValues;
-    struct PokemonSpriteOffsets offsetsSpriteValues;
+    struct PokemonSpriteVisualizerModifyArrow modifyArrows;
+    struct PokemonSpriteVisualizerOptionArrow optionArrows;
+    struct PokemonSpriteVisualizerYPosModifyArrow yPosModifyArrows;
+    struct PokemonSpriteConstValue constSpriteValues;
+    struct PokemonSpriteOffset offsetsSpriteValues;
 
     u8 animIdBack;
     u8 animIdFront;
@@ -87,6 +98,5 @@ struct PokemonSpriteVisualizer
 };
 
 void CB2_Pokemon_Sprite_Visualizer(void);
-
 
 #endif // GUARD_POKEMON_SPRITE_VISUALIZER_H

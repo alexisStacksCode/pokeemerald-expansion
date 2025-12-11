@@ -2770,19 +2770,6 @@ void SpriteCB_HideAsMoveTarget(struct Sprite *sprite)
     sprite->callback = SpriteCallbackDummy_2;
 }
 
-void SpriteCB_OpponentMonFromBall(struct Sprite *sprite)
-{
-    if (sprite->affineAnimEnded)
-    {
-        if (!(gHitMarker & HITMARKER_NO_ANIMATIONS) || gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK))
-        {
-            if (HasTwoFramesAnimation(sprite->sSpeciesId))
-                StartSpriteAnim(sprite, 1);
-        }
-        BattleAnimateFrontSprite(sprite, sprite->sSpeciesId, TRUE, 1);
-    }
-}
-
 // This callback is frequently overwritten by SpriteCB_TrainerSlideIn
 void SpriteCB_BattleSpriteStartSlideLeft(struct Sprite *sprite)
 {
@@ -2917,12 +2904,6 @@ static void SpriteCB_BounceEffect(struct Sprite *sprite)
 #undef sBouncerSpriteId
 #undef sWhich
 
-void SpriteCB_PlayerMonFromBall(struct Sprite *sprite)
-{
-    if (sprite->affineAnimEnded)
-        BattleAnimateBackSprite(sprite, sprite->sSpeciesId);
-}
-
 void SpriteCB_PlayerMonSlideIn(struct Sprite *sprite)
 {
     if (sprite->data[3] == 0)
@@ -2949,7 +2930,6 @@ void SpriteCB_PlayerMonSlideIn(struct Sprite *sprite)
         sprite->data[3] = 0;
         sprite->x = sprite->data[4];
         sprite->data[4] = 0;
-        sprite->callback = SpriteCB_PlayerMonFromBall;
         PlayCry_ByMode(sprite->sSpeciesId, -25, CRY_MODE_NORMAL);
     }
 }
