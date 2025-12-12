@@ -6220,7 +6220,6 @@ struct MonSpritesGfxManager *CreateMonSpritesGfxManager(u8 managerId, u8 mode)
     {
     case MON_SPR_GFX_MODE_FULL_PARTY:
         gfx->numSprites = PARTY_SIZE + 1;
-        gfx->numSprites2 = PARTY_SIZE + 1;
         gfx->numFrames = MAX_MON_PIC_FRAMES;
         gfx->dataSize = 1;
         gfx->mode = MON_SPR_GFX_MODE_FULL_PARTY;
@@ -6229,7 +6228,6 @@ struct MonSpritesGfxManager *CreateMonSpritesGfxManager(u8 managerId, u8 mode)
     case MON_SPR_GFX_MODE_NORMAL:
     default:
         gfx->numSprites = MAX_BATTLERS_COUNT;
-        gfx->numSprites2 = MAX_BATTLERS_COUNT;
         gfx->numFrames = MAX_MON_PIC_FRAMES;
         gfx->dataSize = 1;
         gfx->mode = MON_SPR_GFX_MODE_NORMAL;

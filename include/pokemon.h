@@ -264,7 +264,6 @@ struct BoxPokemon
     u8 isBadEgg:1;
     u8 hasSpecies:1;
     u8 isEgg:1;
-    u8 blockBoxRS:1; // Unused, but Pokémon Box Ruby & Sapphire will refuse to deposit a Pokémon with this flag set.
     u8 daysSinceFormChange:3; // 7 days.
     u8 unused_13:1;
     u8 otName[PLAYER_NAME_LENGTH];
@@ -300,7 +299,6 @@ struct Pokemon
 struct MonSpritesGfxManager
 {
     u32 numSprites:4;
-    u32 numSprites2:4; // Never read
     u32 numFrames:8;
     u32 active:8;
     u32 dataSize:4;
