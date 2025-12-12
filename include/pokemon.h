@@ -319,7 +319,6 @@ enum {
 
 enum {
     MON_SPR_GFX_MANAGER_A,
-    MON_SPR_GFX_MANAGER_B, // Nothing ever sets up this manager.
     MON_SPR_GFX_MANAGERS_COUNT
 };
 
