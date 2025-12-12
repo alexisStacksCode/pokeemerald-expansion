@@ -2090,6 +2090,7 @@ const u16 gMonIconPalettes[][16] =
     INCBIN_U16("graphics/pokemon/icon_palettes/pal3.gbapal"),
     INCBIN_U16("graphics/pokemon/icon_palettes/pal4.gbapal"),
     INCBIN_U16("graphics/pokemon/icon_palettes/pal5.gbapal"),
+    INCBIN_U16("graphics/pokemon/icon_palettes/pal6.gbapal"),
 };
 
 const u16 gTitleScreenBgPalettes[]         = INCBIN_U16("graphics/title_screen/pokemon_logo.gbapal",
@@ -2118,4 +2119,3 @@ const u32 gBattleIcons_Gfx1[] = INCBIN_U32("graphics/types/battle_icons1.4bpp.sm
 const u32 gBattleIcons_Gfx2[] = INCBIN_U32("graphics/types/battle_icons2.4bpp.smol");
 const u16 gBattleIcons_Pal1[] = INCBIN_U16("graphics/types/battle_icons1.gbapal");
 const u16 gBattleIcons_Pal2[] = INCBIN_U16("graphics/types/battle_icons2.gbapal");
-
