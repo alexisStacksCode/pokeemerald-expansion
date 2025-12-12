@@ -92,7 +92,7 @@ void EnableNationalPokedex(void)
 
 bool32 IsNationalPokedexEnabled(void)
 {
-    return FALSE;
+    return TRUE;
 }
 
 void DisableMysteryEvent(void)

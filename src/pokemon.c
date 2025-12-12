@@ -115,19 +115,6 @@ static const struct CombinedMove sCombinedMoves[2] =
     {0xFFFF, 0xFFFF, 0xFFFF}
 };
 
-// NOTE: The order of the elements in the array below is irrelevant.
-// To reorder the pokedex, see the values in include/constants/pokedex.h.
-
-#define HOENN_TO_NATIONAL(name)     [HOENN_DEX_##name - 1] = NATIONAL_DEX_##name
-
-// Assigns all Hoenn Dex Indexes to a National Dex Index
-static const enum NationalDexOrder sHoennToNationalOrder[HOENN_DEX_COUNT - 1] =
-{
-    HOENN_TO_NATIONAL(CLOUD_STRIFE),
-    HOENN_TO_NATIONAL(DAPHNE_BLAKE),
-    HOENN_TO_NATIONAL(DUKE_NUKEM),
-};
-
 const struct SpindaSpot gSpindaSpotGraphics[] =
 {
     {.x = 16, .y =  7, .image = INCBIN_U16("graphics/pokemon/spinda/spots/spot_0.1bpp")},
@@ -4758,24 +4745,6 @@ u16 NationalPokedexNumToSpecies(enum NationalDexOrder nationalNum)
     return GET_BASE_SPECIES_ID(species);
 }
 
-enum HoennDexOrder NationalToHoennOrder(enum NationalDexOrder nationalNum)
-{
-    u16 hoennNum;
-
-    if (!nationalNum)
-        return 0;
-
-    hoennNum = 0;
-
-    while (hoennNum < (HOENN_DEX_COUNT - 1) && sHoennToNationalOrder[hoennNum] != nationalNum)
-        hoennNum++;
-
-    if (hoennNum >= HOENN_DEX_COUNT - 1)
-        return 0;
-
-    return hoennNum + 1;
-}
-
 enum NationalDexOrder SpeciesToNationalPokedexNum(u16 species)
 {
     species = SanitizeSpeciesId(species);
@@ -4783,21 +4752,6 @@ enum NationalDexOrder SpeciesToNationalPokedexNum(u16 species)
         return NATIONAL_DEX_NONE;
 
     return gSpeciesInfo[species].natDexNum;
-}
-
-enum HoennDexOrder SpeciesToHoennPokedexNum(u16 species)
-{
-    if (!species)
-        return 0;
-    return NationalToHoennOrder(gSpeciesInfo[species].natDexNum);
-}
-
-enum NationalDexOrder HoennToNationalOrder(enum HoennDexOrder hoennNum)
-{
-    if (!hoennNum || hoennNum >= HOENN_DEX_COUNT)
-        return 0;
-
-    return sHoennToNationalOrder[hoennNum - 1];
 }
 
 // Spots can be drawn on Spinda's color indexes 1, 2, or 3
@@ -5732,25 +5686,7 @@ u8 GetLevelUpMovesBySpecies(u16 species, u16 *moves)
 
 u16 SpeciesToPokedexNum(u16 species)
 {
-    if (IsNationalPokedexEnabled())
-    {
-        return SpeciesToNationalPokedexNum(species);
-    }
-    else
-    {
-        species = SpeciesToHoennPokedexNum(species);
-        if (species <= HOENN_DEX_COUNT)
-            return species;
-        return 0xFFFF;
-    }
-}
-
-bool32 IsSpeciesInHoennDex(u16 species)
-{
-    if (SpeciesToHoennPokedexNum(species) > HOENN_DEX_COUNT)
-        return FALSE;
-    else
-        return TRUE;
+    return SpeciesToNationalPokedexNum(species);
 }
 
 u16 GetBattleBGM(void)
@@ -5797,9 +5733,10 @@ u16 GetBattleBGM(void)
             return MUS_VS_AQUA_MAGMA_LEADER;
         case TRAINER_CLASS_TEAM_AQUA:
         case TRAINER_CLASS_TEAM_MAGMA:
+            return MUS_VS_AQUA_MAGMA;
         case TRAINER_CLASS_AQUA_ADMIN:
         case TRAINER_CLASS_MAGMA_ADMIN:
-            return MUS_VS_AQUA_MAGMA;
+            return MUS_GSC_ROUTE38;
         case TRAINER_CLASS_LEADER:
             return MUS_VS_GYM_LEADER;
         case TRAINER_CLASS_CHAMPION:
@@ -6900,6 +6837,14 @@ enum PokemonCry GetCryIdBySpecies(u16 species)
     if (P_CRIES_ENABLED == FALSE || gSpeciesInfo[species].cryId >= CRY_COUNT || gTestRunnerHeadless)
         return CRY_NONE;
     return gSpeciesInfo[species].cryId;
+}
+
+enum PokemonCry GetFaintCryIdBySpecies(u16 species)
+{
+    species = SanitizeSpeciesId(species);
+    if (P_CRIES_ENABLED == FALSE || gSpeciesInfo[species].faintCryId >= CRY_COUNT || gTestRunnerHeadless)
+        return CRY_NONE;
+    return gSpeciesInfo[species].faintCryId;
 }
 
 u16 GetSpeciesPreEvolution(u16 species)

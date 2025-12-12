@@ -1232,116 +1232,8 @@ static const u8 sSearchMovementMap_ShiftNatDex[SEARCH_COUNT][4] =
     },
 };
 
-// Left, Right, Up, Down
-static const u8 sSearchMovementMap_SearchHoennDex[SEARCH_COUNT][4] =
-{
-    [SEARCH_NAME] =
-    {
-        0xFF,
-        0xFF,
-        0xFF,
-        SEARCH_COLOR
-    },
-    [SEARCH_COLOR] =
-    {
-        0xFF,
-        0xFF,
-        SEARCH_NAME,
-        SEARCH_TYPE_LEFT
-    },
-    [SEARCH_TYPE_LEFT] =
-    {
-        0xFF,
-        SEARCH_TYPE_RIGHT,
-        SEARCH_COLOR,
-        SEARCH_ORDER
-    },
-    [SEARCH_TYPE_RIGHT] =
-    {   SEARCH_TYPE_LEFT,
-        0xFF,
-        SEARCH_COLOR,
-        SEARCH_ORDER
-    },
-    [SEARCH_ORDER] =
-    {
-        0xFF,
-        0xFF,
-        SEARCH_TYPE_LEFT,
-        SEARCH_OK
-    },
-    [SEARCH_MODE] =
-    {
-        0xFF,
-        0xFF,
-        0xFF,
-        0xFF
-    },
-    [SEARCH_OK] =
-    {
-        0xFF,
-        0xFF,
-        SEARCH_ORDER,
-        0xFF
-    },
-};
-
-// Left, Right, Up, Down
-static const u8 sSearchMovementMap_ShiftHoennDex[SEARCH_COUNT][4] =
-{
-    [SEARCH_NAME] =
-    {
-        0xFF,
-        0xFF,
-        0xFF,
-        0xFF
-    },
-    [SEARCH_COLOR] =
-    {
-        0xFF,
-        0xFF,
-        0xFF,
-        0xFF
-    },
-    [SEARCH_TYPE_LEFT] =
-    {
-        0xFF,
-        0xFF,
-        0xFF,
-        0xFF
-    },
-    [SEARCH_TYPE_RIGHT] =
-    {
-        0xFF,
-        0xFF,
-        0xFF,
-        0xFF
-    },
-    [SEARCH_ORDER] =
-    {
-        0xFF,
-        0xFF,
-        0xFF,
-        SEARCH_OK
-    },
-    [SEARCH_MODE] =
-    {
-        0xFF,
-        0xFF,
-        0xFF,
-        0xFF
-    },
-    [SEARCH_OK] =
-    {
-        0xFF,
-        0xFF,
-        SEARCH_ORDER,
-        0xFF
-    },
-};
-
 static const struct SearchOptionText sDexModeOptions[] =
 {
-    [DEX_MODE_HOENN]    = {gText_DexHoennDescription, gText_DexHoennTitle},
     [DEX_MODE_NATIONAL] = {gText_DexNatDescription,   gText_DexNatTitle},
     {},
 };
@@ -1412,7 +1304,7 @@ static const struct SearchOptionText sDexSearchTypeOptions[] =
     {},
 };
 
-static const u8 sPokedexModes[] = {DEX_MODE_HOENN, DEX_MODE_NATIONAL};
+static const u8 sPokedexModes[] = {DEX_MODE_NATIONAL};
 static const u8 sOrderOptions[] =
 {
     ORDER_NUMERICAL,
@@ -1521,7 +1413,7 @@ void ResetPokedex(void)
     sLastSelectedPokemon = 0;
     sPokeBallRotation = POKEBALL_ROTATION_TOP;
     gUnusedPokedexU8 = 0;
-    gSaveBlock2Ptr->pokedex.mode = DEX_MODE_HOENN;
+    gSaveBlock2Ptr->pokedex.mode = DEX_MODE_NATIONAL;
     gSaveBlock2Ptr->pokedex.order = 0;
     gSaveBlock2Ptr->pokedex.nationalMagic = 0;
     gSaveBlock2Ptr->pokedex.unknown2 = 0;
@@ -1565,8 +1457,8 @@ static void ResetPokedexView(struct PokedexView *pokedexView)
     pokedexView->pokemonListCount = 0;
     pokedexView->selectedPokemon = 0;
     pokedexView->selectedPokemonBackup = 0;
-    pokedexView->dexMode = DEX_MODE_HOENN;
-    pokedexView->dexModeBackup = DEX_MODE_HOENN;
+    pokedexView->dexMode = DEX_MODE_NATIONAL;
+    pokedexView->dexModeBackup = DEX_MODE_NATIONAL;
     pokedexView->dexOrder = ORDER_NUMERICAL;
     pokedexView->dexOrderBackup = ORDER_NUMERICAL;
     pokedexView->seenCount = 0;
@@ -1634,22 +1526,12 @@ void CB2_OpenPokedex(void)
         ResetPokedexView(sPokedexView);
         CreateTask(Task_OpenPokedexMainPage, 0);
         sPokedexView->dexMode = gSaveBlock2Ptr->pokedex.mode;
-        if (!IsNationalPokedexEnabled())
-            sPokedexView->dexMode = DEX_MODE_HOENN;
         sPokedexView->dexOrder = gSaveBlock2Ptr->pokedex.order;
         sPokedexView->selectedPokemon = sLastSelectedPokemon;
         sPokedexView->pokeBallRotation = sPokeBallRotation;
         sPokedexView->selectedScreen = AREA_SCREEN;
-        if (!IsNationalPokedexEnabled())
-        {
-            sPokedexView->seenCount = GetHoennPokedexCount(FLAG_GET_SEEN);
-            sPokedexView->ownCount = GetHoennPokedexCount(FLAG_GET_CAUGHT);
-        }
-        else
-        {
-            sPokedexView->seenCount = GetNationalPokedexCount(FLAG_GET_SEEN);
-            sPokedexView->ownCount = GetNationalPokedexCount(FLAG_GET_CAUGHT);
-        }
+        sPokedexView->seenCount = GetNationalPokedexCount(FLAG_GET_SEEN);
+        sPokedexView->ownCount = GetNationalPokedexCount(FLAG_GET_CAUGHT);
         sPokedexView->initialVOffset = 8;
         gMain.state++;
         break;
@@ -1851,8 +1733,6 @@ static void Task_WaitForExitSearch(u8 taskId)
             sPokedexView->pokeBallRotation = sPokedexView->pokeBallRotationBackup;
             sPokedexView->selectedPokemon = sPokedexView->selectedPokemonBackup;
             sPokedexView->dexMode = sPokedexView->dexModeBackup;
-            if (!IsNationalPokedexEnabled())
-                sPokedexView->dexMode = DEX_MODE_HOENN;
             sPokedexView->dexOrder = sPokedexView->dexOrderBackup;
             gTasks[taskId].func = Task_OpenPokedexMainPage;
         }
@@ -1864,8 +1744,6 @@ static void Task_ClosePokedex(u8 taskId)
     if (!gPaletteFade.active)
     {
         gSaveBlock2Ptr->pokedex.mode = sPokedexView->dexMode;
-        if (!IsNationalPokedexEnabled())
-            gSaveBlock2Ptr->pokedex.mode = DEX_MODE_HOENN;
         gSaveBlock2Ptr->pokedex.order = sPokedexView->dexOrder;
         ClearMonSprites();
         FreeWindowAndBgBuffers();
@@ -2042,8 +1920,6 @@ static void Task_ReturnToPokedexFromSearchResults(u8 taskId)
         sPokedexView->pokeBallRotation = sPokedexView->pokeBallRotationBackup;
         sPokedexView->selectedPokemon = sPokedexView->selectedPokemonBackup;
         sPokedexView->dexMode = sPokedexView->dexModeBackup;
-        if (!IsNationalPokedexEnabled())
-            sPokedexView->dexMode = DEX_MODE_HOENN;
         sPokedexView->dexOrder = sPokedexView->dexOrderBackup;
         gTasks[taskId].func = Task_OpenPokedexMainPage;
         ClearMonSprites();
@@ -2058,8 +1934,6 @@ static void Task_ClosePokedexFromSearchResultsStartMenu(u8 taskId)
         sPokedexView->pokeBallRotation = sPokedexView->pokeBallRotationBackup;
         sPokedexView->selectedPokemon = sPokedexView->selectedPokemonBackup;
         sPokedexView->dexMode = sPokedexView->dexModeBackup;
-        if (!IsNationalPokedexEnabled())
-            sPokedexView->dexMode = DEX_MODE_HOENN;
         sPokedexView->dexOrder = sPokedexView->dexOrderBackup;
         gTasks[taskId].func = Task_ClosePokedex;
     }
@@ -2194,7 +2068,7 @@ static void FreeWindowAndBgBuffers(void)
 
 static void CreatePokedexList(u8 dexMode, u8 order)
 {
-    u32 temp_dexCount = HOENN_DEX_COUNT;
+    u32 temp_dexCount = NATIONAL_DEX_COUNT;
     u32 temp_dexNum;
     s32 i;
 
@@ -2205,7 +2079,7 @@ static void CreatePokedexList(u8 dexMode, u8 order)
     case ORDER_NUMERICAL:
         for (i = 0; i < temp_dexCount; i++)
         {
-            temp_dexNum = HoennToNationalOrder(i + 1);
+            temp_dexNum = i + 1;
             sPokedexView->pokedexList[i].dexNum = temp_dexNum;
             sPokedexView->pokedexList[i].seen = GetSetPokedexFlag(temp_dexNum, FLAG_GET_SEEN);
             sPokedexView->pokedexList[i].owned = GetSetPokedexFlag(temp_dexNum, FLAG_GET_CAUGHT);
@@ -2339,10 +2213,8 @@ static void CreateMonDexNum(u16 entryNum, u8 left, u8 top, u16 unused)
     u16 dexNum, offset = 2;
 
     dexNum = sPokedexView->pokedexList[entryNum].dexNum;
-    if (sPokedexView->dexMode == DEX_MODE_HOENN)
-        dexNum = NationalToHoennOrder(dexNum);
     memcpy(text, sText_No0000, ARRAY_COUNT(sText_No0000));
-    if (NATIONAL_DEX_COUNT > 999 && sPokedexView->dexMode != DEX_MODE_HOENN)
+    if (NATIONAL_DEX_COUNT > 999)
     {
         text[2] = CHAR_0 + dexNum / 1000;
         offset++;
@@ -2735,207 +2607,58 @@ static void CreateInterfaceSprites(u8 page)
     {
         bool32 drawNextDigit;
 
-        if (!IsNationalPokedexEnabled())
-        {
-            // Seen text
-            CreateSprite(&sSeenOwnTextSpriteTemplate, 32, 40, 1);
-            // Own text
-            spriteId = CreateSprite(&sSeenOwnTextSpriteTemplate, 32, 72, 1);
-            StartSpriteAnim(&gSprites[spriteId], 1);
+        // Seen text
+        CreateSprite(&sSeenOwnTextSpriteTemplate, 32, 40, 1);
+        // Own text
+        spriteId = CreateSprite(&sSeenOwnTextSpriteTemplate, 32, 72, 1);
+        StartSpriteAnim(&gSprites[spriteId], 1);
 
-            // Seen value - 100s
-            drawNextDigit = FALSE;
-            spriteId = CreateSprite(&sHoennDexSeenOwnNumberSpriteTemplate, 24, 48, 1);
-            digitNum = sPokedexView->seenCount / 100;
-            StartSpriteAnim(&gSprites[spriteId], digitNum);
-            if (digitNum != 0)
-                drawNextDigit = TRUE;
-            else
-                gSprites[spriteId].invisible = TRUE;
-
-            // Seen value - 10s
-            spriteId = CreateSprite(&sHoennDexSeenOwnNumberSpriteTemplate, 32, 48, 1);
-            digitNum = (sPokedexView->seenCount % 100) / 10;
-            if (digitNum != 0 || drawNextDigit)
-                StartSpriteAnim(&gSprites[spriteId], digitNum);
-            else
-                gSprites[spriteId].invisible = TRUE;
-
-            // Seen value - 1s
-            spriteId = CreateSprite(&sHoennDexSeenOwnNumberSpriteTemplate, 40, 48, 1);
-            digitNum = (sPokedexView->seenCount % 100) % 10;
-            StartSpriteAnim(&gSprites[spriteId], digitNum);
-
-            // Owned value - 100s
-            drawNextDigit = FALSE;
-            spriteId = CreateSprite(&sHoennDexSeenOwnNumberSpriteTemplate, 24, 80, 1);
-            digitNum = sPokedexView->ownCount / 100;
-            StartSpriteAnim(&gSprites[spriteId], digitNum);
-            if (digitNum != 0)
-                drawNextDigit = TRUE;
-            else
-                gSprites[spriteId].invisible = TRUE;
-
-            // Owned value - 10s
-            spriteId = CreateSprite(&sHoennDexSeenOwnNumberSpriteTemplate, 32, 80, 1);
-            digitNum = (sPokedexView->ownCount % 100) / 10;
-            if (digitNum != 0 || drawNextDigit)
-                StartSpriteAnim(&gSprites[spriteId], digitNum);
-            else
-                gSprites[spriteId].invisible = TRUE;
-
-            // Owned value - 1s
-            spriteId = CreateSprite(&sHoennDexSeenOwnNumberSpriteTemplate, 40, 80, 1);
-            digitNum = (sPokedexView->ownCount % 100) % 10;
-            StartSpriteAnim(&gSprites[spriteId], digitNum);
-        }
+        // Seen value - 100s
+        drawNextDigit = FALSE;
+        spriteId = CreateSprite(&sHoennDexSeenOwnNumberSpriteTemplate, 24, 48, 1);
+        digitNum = sPokedexView->seenCount / 100;
+        StartSpriteAnim(&gSprites[spriteId], digitNum);
+        if (digitNum != 0)
+            drawNextDigit = TRUE;
         else
-        {
-            u16 seenOwnedCount;
-            // Changes sprite distance based on the seen count (owned count can't ever be bigger than it)
-            u8 counterXDist  = 7;
-            u8 counterX1s    = sPokedexView->seenCount > 999 ? 57 : 56;
-            u8 counterX10s   = counterX1s - counterXDist;
-            u8 counterX100s  = counterX10s - counterXDist;
-            u8 counterX1000s = counterX100s - counterXDist;
+            gSprites[spriteId].invisible = TRUE;
 
-            // Seen text
-            CreateSprite(&sSeenOwnTextSpriteTemplate, 32, 40, 1);
-            // Own text
-            spriteId = CreateSprite(&sSeenOwnTextSpriteTemplate, 32, 76, 1);
-            StartSpriteAnim(&gSprites[spriteId], 1);
-
-            // Hoenn text (seen)
-            CreateSprite(&sHoennNationalTextSpriteTemplate, 17, 45, 1);
-
-            // National text (seen)
-            spriteId = CreateSprite(&sHoennNationalTextSpriteTemplate, 17, 55, 1);
-            StartSpriteAnim(&gSprites[spriteId], 1);
-
-            // Hoenn text (own)
-            CreateSprite(&sHoennNationalTextSpriteTemplate, 17, 81, 1);
-
-            // National text (own)
-            spriteId = CreateSprite(&sHoennNationalTextSpriteTemplate, 17, 91, 1);
-            StartSpriteAnim(&gSprites[spriteId], 1);
-
-            // Hoenn seen value - 100s
-            seenOwnedCount = GetHoennPokedexCount(FLAG_GET_SEEN);
-            drawNextDigit = FALSE;
-            spriteId = CreateSprite(&sNationalDexSeenOwnNumberSpriteTemplate, counterX100s, 45, 1);
-            digitNum = seenOwnedCount / 100;
+        // Seen value - 10s
+        spriteId = CreateSprite(&sHoennDexSeenOwnNumberSpriteTemplate, 32, 48, 1);
+        digitNum = (sPokedexView->seenCount % 100) / 10;
+        if (digitNum != 0 || drawNextDigit)
             StartSpriteAnim(&gSprites[spriteId], digitNum);
-            if (digitNum != 0)
-                drawNextDigit = TRUE;
-            else
-                gSprites[spriteId].invisible = TRUE;
+        else
+            gSprites[spriteId].invisible = TRUE;
 
-            // Hoenn seen value - 10s
-            spriteId = CreateSprite(&sNationalDexSeenOwnNumberSpriteTemplate, counterX10s, 45, 1);
-            digitNum = (seenOwnedCount % 100) / 10;
-            if (digitNum != 0 || drawNextDigit)
-                StartSpriteAnim(&gSprites[spriteId], digitNum);
-            else
-                gSprites[spriteId].invisible = TRUE;
+        // Seen value - 1s
+        spriteId = CreateSprite(&sHoennDexSeenOwnNumberSpriteTemplate, 40, 48, 1);
+        digitNum = (sPokedexView->seenCount % 100) % 10;
+        StartSpriteAnim(&gSprites[spriteId], digitNum);
 
-            // Hoenn seen value - 1s
-            spriteId = CreateSprite(&sNationalDexSeenOwnNumberSpriteTemplate, counterX1s, 45, 1);
-            digitNum = (seenOwnedCount % 100) % 10;
+        // Owned value - 100s
+        drawNextDigit = FALSE;
+        spriteId = CreateSprite(&sHoennDexSeenOwnNumberSpriteTemplate, 24, 80, 1);
+        digitNum = sPokedexView->ownCount / 100;
+        StartSpriteAnim(&gSprites[spriteId], digitNum);
+        if (digitNum != 0)
+            drawNextDigit = TRUE;
+        else
+            gSprites[spriteId].invisible = TRUE;
+
+        // Owned value - 10s
+        spriteId = CreateSprite(&sHoennDexSeenOwnNumberSpriteTemplate, 32, 80, 1);
+        digitNum = (sPokedexView->ownCount % 100) / 10;
+        if (digitNum != 0 || drawNextDigit)
             StartSpriteAnim(&gSprites[spriteId], digitNum);
+        else
+            gSprites[spriteId].invisible = TRUE;
 
-            // National seen value - 1000s
-            drawNextDigit = FALSE;
-            spriteId = CreateSprite(&sNationalDexSeenOwnNumberSpriteTemplate, counterX1000s, 55, 1);
-            digitNum = sPokedexView->seenCount / 1000;
-            StartSpriteAnim(&gSprites[spriteId], digitNum);
-            if (digitNum != 0)
-                drawNextDigit = TRUE;
-            else
-                gSprites[spriteId].invisible = TRUE;
+        // Owned value - 1s
+        spriteId = CreateSprite(&sHoennDexSeenOwnNumberSpriteTemplate, 40, 80, 1);
+        digitNum = (sPokedexView->ownCount % 100) % 10;
+        StartSpriteAnim(&gSprites[spriteId], digitNum);
 
-            // National seen value - 100s
-            spriteId = CreateSprite(&sNationalDexSeenOwnNumberSpriteTemplate, counterX100s, 55, 1);
-            digitNum = (sPokedexView->seenCount % 1000) / 100;
-            if (digitNum != 0 || drawNextDigit)
-            {
-                drawNextDigit = TRUE;
-                StartSpriteAnim(&gSprites[spriteId], digitNum);
-            }
-            else
-                gSprites[spriteId].invisible = TRUE;
-
-            // National seen value - 10s
-            spriteId = CreateSprite(&sNationalDexSeenOwnNumberSpriteTemplate, counterX10s, 55, 1);
-            digitNum = ((sPokedexView->seenCount % 1000) % 100) / 10;
-            if (digitNum != 0 || drawNextDigit)
-                StartSpriteAnim(&gSprites[spriteId], digitNum);
-            else
-                gSprites[spriteId].invisible = TRUE;
-
-            // National seen value - 1s
-            spriteId = CreateSprite(&sNationalDexSeenOwnNumberSpriteTemplate, counterX1s, 55, 1);
-            digitNum = ((sPokedexView->seenCount % 1000) % 100) % 10;
-            StartSpriteAnim(&gSprites[spriteId], digitNum);
-
-            seenOwnedCount = GetHoennPokedexCount(FLAG_GET_CAUGHT);
-
-            // Hoenn owned value - 100s
-            drawNextDigit = FALSE;
-            spriteId = CreateSprite(&sNationalDexSeenOwnNumberSpriteTemplate, counterX100s, 81, 1);
-            digitNum = seenOwnedCount / 100;
-            StartSpriteAnim(&gSprites[spriteId], digitNum);
-            if (digitNum != 0)
-                drawNextDigit = TRUE;
-            else
-                gSprites[spriteId].invisible = TRUE;
-
-            // Hoenn owned value - 10s
-            spriteId = CreateSprite(&sNationalDexSeenOwnNumberSpriteTemplate, counterX10s, 81, 1);
-            digitNum = (seenOwnedCount % 100) / 10;
-            if (digitNum != 0 || drawNextDigit)
-                StartSpriteAnim(&gSprites[spriteId], digitNum);
-            else
-                gSprites[spriteId].invisible = TRUE;
-
-            // Hoenn owned value - 1s
-            spriteId = CreateSprite(&sNationalDexSeenOwnNumberSpriteTemplate, counterX1s, 81, 1);
-            digitNum = (seenOwnedCount % 100) % 10;
-            StartSpriteAnim(&gSprites[spriteId], digitNum);
-
-            // National owned value - 1000s
-            drawNextDigit = FALSE;
-            spriteId = CreateSprite(&sNationalDexSeenOwnNumberSpriteTemplate, counterX1000s, 91, 1);
-            digitNum = sPokedexView->ownCount / 1000;
-            StartSpriteAnim(&gSprites[spriteId], digitNum);
-            if (digitNum != 0)
-                drawNextDigit = TRUE;
-            else
-                gSprites[spriteId].invisible = TRUE;
-
-            // National owned value - 100s
-            spriteId = CreateSprite(&sNationalDexSeenOwnNumberSpriteTemplate, counterX100s, 91, 1);
-            digitNum = (sPokedexView->ownCount % 1000) / 100;
-            if (digitNum != 0 || drawNextDigit)
-            {
-                drawNextDigit = TRUE;
-                StartSpriteAnim(&gSprites[spriteId], digitNum);
-            }
-            else
-                gSprites[spriteId].invisible = TRUE;
-
-            // National owned value  - 10s
-            spriteId = CreateSprite(&sNationalDexSeenOwnNumberSpriteTemplate, counterX10s, 91, 1);
-            digitNum = ((sPokedexView->ownCount % 1000) % 100) / 10;
-            if (digitNum != 0 || drawNextDigit)
-                StartSpriteAnim(&gSprites[spriteId], digitNum);
-            else
-                gSprites[spriteId].invisible = TRUE;
-
-            // National owned value - 1s
-            spriteId = CreateSprite(&sNationalDexSeenOwnNumberSpriteTemplate, counterX1s, 91, 1);
-            digitNum = ((sPokedexView->ownCount % 1000) % 100) % 10;
-            StartSpriteAnim(&gSprites[spriteId], digitNum);
-        }
         spriteId = CreateSprite(&sDexListStartMenuCursorSpriteTemplate, 136, 96, 1);
         gSprites[spriteId].invisible = TRUE;
     }
@@ -3218,7 +2941,7 @@ static void Task_LoadInfoScreen(u8 taskId)
         gMain.state++;
         break;
     case 4:
-        PrintMonInfo(sPokedexListItem->dexNum, sPokedexView->dexMode == DEX_MODE_HOENN ? FALSE : TRUE, sPokedexListItem->owned, 0);
+        PrintMonInfo(sPokedexListItem->dexNum, TRUE, sPokedexListItem->owned, 0);
         if (!sPokedexListItem->owned)
             LoadPalette(&gPlttBufferUnfaded[BG_PLTT_ID(0) + 1], BG_PLTT_ID(3) + 1, PLTT_SIZEOF(16 - 1));
         CopyWindowToVram(WIN_INFO, COPYWIN_FULL);
@@ -4100,10 +3823,7 @@ static void PrintMonInfo(u32 num, u32 value, u32 owned, u32 newEntry)
 
     if (newEntry)
         PrintInfoScreenText(gText_PokedexRegistration, GetStringCenterAlignXOffset(FONT_NORMAL, gText_PokedexRegistration, DISPLAY_WIDTH), 0);
-    if (value == 0)
-        value = NationalToHoennOrder(num);
-    else
-        value = num;
+    value = num;
 
     ConvertIntToDecimalStringN(StringCopy(str, gText_NumberClear01), value, STR_CONV_MODE_LEADING_ZEROS, digitCount);
     PrintInfoScreenText(str, 0x60, 0x19);
@@ -4466,76 +4186,6 @@ u16 GetNationalPokedexCount(u8 caseID)
         }
     }
     return count;
-}
-
-u16 GetHoennPokedexCount(u8 caseID)
-{
-    u16 count = 0;
-    u16 i;
-
-    for (i = 0; i < HOENN_DEX_COUNT - 1; i++)
-    {
-        switch (caseID)
-        {
-        case FLAG_GET_SEEN:
-            if (GetSetPokedexFlag(HoennToNationalOrder(i + 1), FLAG_GET_SEEN))
-                count++;
-            break;
-        case FLAG_GET_CAUGHT:
-            if (GetSetPokedexFlag(HoennToNationalOrder(i + 1), FLAG_GET_CAUGHT))
-                count++;
-            break;
-        }
-    }
-    return count;
-}
-
-u16 GetKantoPokedexCount(u8 caseID)
-{
-    u16 count = 0;
-    u16 i;
-
-    for (i = 0; i < KANTO_DEX_COUNT; i++)
-    {
-        switch (caseID)
-        {
-        case FLAG_GET_SEEN:
-            if (GetSetPokedexFlag(i + 1, FLAG_GET_SEEN))
-                count++;
-            break;
-        case FLAG_GET_CAUGHT:
-            if (GetSetPokedexFlag(i + 1, FLAG_GET_CAUGHT))
-                count++;
-            break;
-        }
-    }
-    return count;
-}
-
-bool16 HasAllHoennMons(void)
-{
-    u32 i, j;
-
-    for (i = 0; i < HOENN_DEX_COUNT - 1; i++)
-    {
-        j = HoennToNationalOrder(i + 1);
-        if (!(gSpeciesInfo[j].isMythical && !gSpeciesInfo[j].dexForceRequired) && !GetSetPokedexFlag(j, FLAG_GET_CAUGHT))
-            return FALSE;
-    }
-    return TRUE;
-}
-
-bool8 HasAllKantoMons(void)
-{
-    u32 i;
-
-    // -1 excludes Mew
-    for (i = 0; i < KANTO_DEX_COUNT - 1; i++)
-    {
-        if (!GetSetPokedexFlag(i + 1, FLAG_GET_CAUGHT))
-            return FALSE;
-    }
-    return TRUE;
 }
 
 bool16 HasAllMons(void)
@@ -5146,17 +4796,11 @@ static void Task_HandleSearchMenuInput(u8 taskId)
 
     if (gTasks[taskId].tTopBarItem != SEARCH_TOPBAR_SEARCH)
     {
-        if (!IsNationalPokedexEnabled())
-            movementMap = sSearchMovementMap_ShiftHoennDex;
-        else
-            movementMap = sSearchMovementMap_ShiftNatDex;
+        movementMap = sSearchMovementMap_ShiftNatDex;
     }
     else
     {
-        if (!IsNationalPokedexEnabled())
-            movementMap = sSearchMovementMap_SearchHoennDex;
-        else
-            movementMap = sSearchMovementMap_SearchNatDex;
+        movementMap = sSearchMovementMap_SearchNatDex;
     }
 
     if (JOY_NEW(B_BUTTON))
@@ -5177,8 +4821,6 @@ static void Task_HandleSearchMenuInput(u8 taskId)
                 sLastSelectedPokemon = 0;
                 sPokedexView->selectedPokemonBackup = 0;
                 gSaveBlock2Ptr->pokedex.mode = GetSearchModeSelection(taskId, SEARCH_MODE);
-                if (!IsNationalPokedexEnabled())
-                    gSaveBlock2Ptr->pokedex.mode = DEX_MODE_HOENN;
                 sPokedexView->dexModeBackup = gSaveBlock2Ptr->pokedex.mode;
                 gSaveBlock2Ptr->pokedex.order = GetSearchModeSelection(taskId, SEARCH_ORDER);
                 sPokedexView->dexOrderBackup = gSaveBlock2Ptr->pokedex.order;
@@ -5675,18 +5317,8 @@ static u8 GetSearchModeSelection(u8 taskId, u8 option)
 
 static void SetDefaultSearchModeAndOrder(u8 taskId)
 {
-    u16 selected;
+    u16 selected = DEX_MODE_NATIONAL;
 
-    switch (sPokedexView->dexModeBackup)
-    {
-    default:
-    case DEX_MODE_HOENN:
-        selected = DEX_MODE_HOENN;
-        break;
-    case DEX_MODE_NATIONAL:
-        selected = DEX_MODE_NATIONAL;
-        break;
-    }
     gTasks[taskId].tCursorPos_Mode = selected;
 
     switch (sPokedexView->dexOrderBackup)

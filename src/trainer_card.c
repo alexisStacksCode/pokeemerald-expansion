@@ -667,7 +667,7 @@ u32 CountPlayerTrainerStars(void)
 
     if (GetGameStat(GAME_STAT_ENTERED_HOF))
         stars++;
-    if (HasAllHoennMons())
+    if (HasAllMons())
         stars++;
     if (CountPlayerMuseumPaintings() >= CONTEST_CATEGORIES_COUNT)
         stars++;
@@ -683,7 +683,7 @@ static u8 GetRubyTrainerStars(struct TrainerCard *trainerCard)
 
     if (trainerCard->hofDebutHours || trainerCard->hofDebutMinutes || trainerCard->hofDebutSeconds)
         stars++;
-    if (trainerCard->caughtAllHoenn)
+    if (trainerCard->caughtAll)
         stars++;
     if (trainerCard->battleTowerStraightWins > 49)
         stars++;
@@ -717,7 +717,7 @@ static void SetPlayerCardData(struct TrainerCard *trainerCard, u8 cardType)
     }
 
     trainerCard->hasPokedex = FlagGet(FLAG_SYS_POKEDEX_GET);
-    trainerCard->caughtAllHoenn = HasAllHoennMons();
+    trainerCard->caughtAll = HasAllMons();
     trainerCard->caughtMonsCount = GetCaughtMonsCount();
 
     trainerCard->trainerId = (gSaveBlock2Ptr->playerTrainerId[1] << 8) | gSaveBlock2Ptr->playerTrainerId[0];
@@ -1063,10 +1063,7 @@ static void PrintMoneyOnCard(void)
 
 static u16 GetCaughtMonsCount(void)
 {
-    if (IsNationalPokedexEnabled())
-        return GetNationalPokedexCount(FLAG_GET_CAUGHT);
-    else
-        return GetHoennPokedexCount(FLAG_GET_CAUGHT);
+    return GetNationalPokedexCount(FLAG_GET_CAUGHT);
 }
 
 static void PrintPokedexOnCard(void)

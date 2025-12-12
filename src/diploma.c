@@ -17,7 +17,6 @@
 #include "constants/rgb.h"
 
 extern const u8 gText_DexNational[];
-extern const u8 gText_DexHoenn[];
 extern const u8 gText_PokedexDiploma[];
 
 static void MainCB2(void);
@@ -127,16 +126,8 @@ static void Task_DiplomaFadeOut(u8 taskId)
 
 static void DisplayDiplomaText(void)
 {
-    if (HasAllMons())
-    {
-        SetGpuReg(REG_OFFSET_BG1HOFS, DISPLAY_WIDTH + 16);
-        StringCopy(gStringVar1, gText_DexNational);
-    }
-    else
-    {
-        SetGpuReg(REG_OFFSET_BG1HOFS, 0);
-        StringCopy(gStringVar1, gText_DexHoenn);
-    }
+    SetGpuReg(REG_OFFSET_BG1HOFS, DISPLAY_WIDTH + 16);
+    StringCopy(gStringVar1, gText_DexNational);
     StringExpandPlaceholders(gStringVar4, gText_PokedexDiploma);
     PrintDiplomaText(gStringVar4, 0, 1);
     PutWindowTilemap(0);
