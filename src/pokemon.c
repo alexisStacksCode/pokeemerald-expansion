@@ -7370,6 +7370,14 @@ enum PokemonCry GetCryIdBySpecies(u16 species)
     return gSpeciesInfo[species].cryId;
 }
 
+enum PokemonCry GetFaintCryIdBySpecies(u16 species)
+{
+    species = SanitizeSpeciesId(species);
+    if (P_CRIES_ENABLED == FALSE || gSpeciesInfo[species].faintCryId >= CRY_COUNT || gTestRunnerHeadless)
+        return CRY_NONE;
+    return gSpeciesInfo[species].faintCryId;
+}
+
 u16 GetSpeciesPreEvolution(u16 species)
 {
     int i, j;
