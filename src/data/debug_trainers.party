@@ -18,51 +18,114 @@ Pic: Brendan
 Gender: Male
 Music: Male
 
-Buffie (Wobbuffet)
-Brave Nature
-Level: 100
+Goodra
+Modest Nature
+Level: 95
 IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
-EVs: 252 Atk / 252 Def / 6 SpA
+EVs: 252 SpA / 252 Def / 6 HP
+- Draco Meteor
+- Sludge Wave
+- Shock Wave
+- Muddy Water
+
+Seismitoad
+Adamant Nature
+Level: 95
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 Atk / 252 HP / 6 Spe
+- Liquidation
 - Earthquake
+- Ice Punch
+- Drain Punch
+
+Kingambit
+Adamant Nature
+Level: 95
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 Atk / 252 SpD / 6 Def
+- Kowtow Cleave
+- Iron Head
+- Guillotine
+- Protect
+
+Daphne Blake
+Timid Nature
+Level: 95
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 Spe / 252 SpA / 6 HP
 - Flamethrower
-- Celebrate
-- Celebrate
+- Psychic
+- Dazzling Gleam
+- Will-O-Wisp
 
 === DEBUG_TRAINER_AI ===
 Name: Debugger
-AI: Basic Trainer
-Class: Rival
+AI: Smart Trainer
+Class: Aqua Admin
 Battle Type: Singles
-Pic: Steven
+Pic: Aqua Admin M
 Gender: Male
 Music: Male
+Mugshot: Green
 
-Metang
-Brave Nature
-Level: 42
+Daphne Blake
+Timid Nature
+Level: 100
 IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
-EVs: 252 Atk / 252 Def / 6 SpA
-- Light Screen
-- Psychic
+EVs: 252 Spe / 252 SpA / 6 HP
+- Fire Blast
+- Future Sight
+- Dazzling Gleam
+- Will-O-Wisp
+
+Daphne Blake
+Modest Nature
+Shiny: Yes
+Level: 100
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 SpA / 252 HP / 6 Def
+- Psyshock
+- Charge Beam
 - Reflect
-- Metal Claw
+- Light Screen
 
-Skarmory
-Impish Nature
-Level: 43
+Garchomp
+Jolly Nature
+Level: 100
 IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
-EVs: 252 HP / 6 SpA / 252 SpD
-- Toxic
-- Aerial Ace
-- Protect
-- Steel Wing
+EVs: 252 Spe / 252 Atk / 6 SpD
+- Dragon Rush
+- Earthquake
+- Iron Head
+- Brick Break
 
-Aggron
-Adamant Nature
-Level: 44
+Lucario
+Timid Nature
+Level: 100
 IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
-EVs: 252 Atk / 252 SpA / 6 SpD
-- Thunder
-- Protect
-- Solar Beam
-- Dragon Claw
+EVs: 252 Spe / 252 SpA / 6 SpD
+- Aura Sphere
+- Steel Beam
+- Dragon Pulse
+- Life Dew
+
+Spiritomb
+Calm Nature
+Level: 100
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 Def / 252 SpD / 6 SpA
+- Shadow Ball
+- Dark Pulse
+- Burning Jealousy
+- Trick Room
+
+Metal Devil
+Sassy Nature
+Level: 100
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 252 Def / 252 SpD / 6 HP
+Ball: Master Ball
+- Behemoth Bash
+- Precipice Blades
+- Electro Shot
+- Lava Plume
