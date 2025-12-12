@@ -100,21 +100,6 @@ EWRAM_DATA u16 gFollowerSteps = 0;
 #include "data/tutor_moves.h"
 #endif // P_TUTOR_MOVES_ARRAY
 
-// Used in an unreferenced function in RS.
-// Unreferenced here and in FRLG.
-struct CombinedMove
-{
-    u16 move1;
-    u16 move2;
-    u16 newMove;
-};
-
-static const struct CombinedMove sCombinedMoves[2] =
-{
-    {MOVE_EMBER, MOVE_GUST, MOVE_HEAT_WAVE},
-    {0xFFFF, 0xFFFF, 0xFFFF}
-};
-
 const struct SpindaSpot gSpindaSpotGraphics[] =
 {
     {.x = 16, .y =  7, .image = INCBIN_U16("graphics/pokemon/spinda/spots/spot_0.1bpp")},
