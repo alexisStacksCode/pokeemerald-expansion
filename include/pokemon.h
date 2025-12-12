@@ -441,6 +441,7 @@ struct SpeciesInfo /*0xC4*/
     u8 categoryName[13];
     u8 speciesName[POKEMON_NAME_LENGTH + 1];
     enum PokemonCry cryId:16;
+    enum PokemonCry faintCryId:16;
     enum NationalDexOrder natDexNum:16;
     u16 height; //in decimeters
     u16 weight; //in hectograms
@@ -890,6 +891,7 @@ u8 CalculatePartyCount(struct Pokemon *party);
 u16 SanitizeSpeciesId(u16 species);
 bool32 IsSpeciesEnabled(u16 species);
 enum PokemonCry GetCryIdBySpecies(u16 species);
+enum PokemonCry GetFaintCryIdBySpecies(u16 species);
 u16 GetSpeciesPreEvolution(u16 species);
 void HealPokemon(struct Pokemon *mon);
 void HealBoxPokemon(struct BoxPokemon *boxMon);

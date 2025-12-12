@@ -376,6 +376,8 @@ void PlayCry_Script(u16 species, u8 mode)
 
 void PlayCryInternal(u16 species, s8 pan, s8 volume, u8 priority, u8 mode)
 {
+    enum PokemonCry cryId = GetCryIdBySpecies(species);
+    enum PokemonCry faintCryId = GetFaintCryIdBySpecies(species);
     bool32 reverse;
     u32 release;
     u32 length;
@@ -389,6 +391,12 @@ void PlayCryInternal(u16 species, s8 pan, s8 volume, u8 priority, u8 mode)
     release = 0;
     pitch = 15360;
     chorus = 0;
+
+    if (cryId != CRY_NONE)
+    {
+        cryId--;
+    }
+    faintCryId = mode == CRY_MODE_FAINT && faintCryId != CRY_NONE ? faintCryId - 1 : CRY_NONE;
 
     switch (mode)
     {
@@ -420,8 +428,11 @@ void PlayCryInternal(u16 species, s8 pan, s8 volume, u8 priority, u8 mode)
         volume = 90;
         break;
     case CRY_MODE_FAINT:
-        release = 200;
-        pitch = 14440;
+        if (faintCryId == CRY_NONE)
+        {
+            release = 200;
+            pitch = 14440;
+        }
         break;
     case CRY_MODE_ECHO_END:
         release = 220;
@@ -474,11 +485,23 @@ void PlayCryInternal(u16 species, s8 pan, s8 volume, u8 priority, u8 mode)
     SetPokemonCryChorus(chorus);
     SetPokemonCryPriority(priority);
 
-    enum PokemonCry cryId = GetCryIdBySpecies(species);
-    if (cryId != CRY_NONE)
+    if (mode != CRY_MODE_FAINT)
     {
-        cryId--;
-        gMPlay_PokemonCry = SetPokemonCryTone(reverse ? &gCryTable_Reverse[cryId] : &gCryTable[cryId]);
+        if (cryId != CRY_NONE)
+        {
+            gMPlay_PokemonCry = SetPokemonCryTone(reverse ? &gCryTable_Reverse[cryId] : &gCryTable[cryId]);
+        }
+    }
+    else
+    {
+        if (faintCryId != CRY_NONE)
+        {
+            gMPlay_PokemonCry = SetPokemonCryTone(&gCryTable[faintCryId]);
+        }
+        else if (cryId != CRY_NONE)
+        {
+            gMPlay_PokemonCry = SetPokemonCryTone(&gCryTable[cryId]);
+        }
     }
 }
 
