@@ -16,30 +16,27 @@
 #define P_GEN_8_POKEMON                  TRUE // Generation 8 Pokémon (SwSh, BDSP, LA)
 #define P_GEN_9_POKEMON                  TRUE // Generation 9 Pokémon (SV)
 
-// Setting this to TRUE will add the new evolutions to the Regional Dex.
-#define P_NEW_EVOS_IN_REGIONAL_DEX       FALSE
-
 // Battle gimmick specific Forms.
-#define P_MEGA_EVOLUTIONS                FALSE
-#define P_PRIMAL_REVERSIONS              FALSE // Groudon and Kyogre only.
-#define P_ULTRA_BURST_FORMS              FALSE // Ultra Necrozma only.
-#define P_GIGANTAMAX_FORMS               FALSE
-#define P_TERA_FORMS                     FALSE
+#define P_MEGA_EVOLUTIONS                TRUE
+#define P_PRIMAL_REVERSIONS              TRUE // Groudon and Kyogre only.
+#define P_ULTRA_BURST_FORMS              TRUE // Ultra Necrozma only.
+#define P_GIGANTAMAX_FORMS               TRUE
+#define P_TERA_FORMS                     TRUE
 
 #define P_GEN_9_MEGA_EVOLUTIONS          P_MEGA_EVOLUTIONS // Mega Evolutions introduced in Z-A and its DLC
 
 // Fusion forms
-#define P_FUSION_FORMS                   FALSE
+#define P_FUSION_FORMS                   TRUE
 
 // Regional Forms. Includes Regional Form evolutions, like Sirfetch'd.
-#define P_REGIONAL_FORMS                 FALSE
+#define P_REGIONAL_FORMS                 TRUE
 #define P_ALOLAN_FORMS                   P_REGIONAL_FORMS
 #define P_GALARIAN_FORMS                 P_REGIONAL_FORMS
 #define P_HISUIAN_FORMS                  P_REGIONAL_FORMS
 #define P_PALDEAN_FORMS                  P_REGIONAL_FORMS
 
 // Big groups of forms that aren't always desired when choosing families.
-#define P_PIKACHU_EXTRA_FORMS            FALSE
+#define P_PIKACHU_EXTRA_FORMS            TRUE
 #define P_COSPLAY_PIKACHU_FORMS          P_PIKACHU_EXTRA_FORMS
 #define P_CAP_PIKACHU_FORMS              P_PIKACHU_EXTRA_FORMS
 
