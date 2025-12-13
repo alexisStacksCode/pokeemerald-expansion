@@ -2726,7 +2726,7 @@ static void SpriteCb_AbilityPopUp(struct Sprite *sprite)
         u32 xCoord = coords[battlerPosition][0];
 
         if (sIsMain && ++sTimer == 4)
-            PlaySE(SE_BALL_TRAY_ENTER);
+            PlaySE(SE_M_BATON_PASS);
 
         if (!sIsMain)
             xCoord += ABILITY_POP_UP_POS_X_DIFF;
