@@ -26796,3 +26796,10 @@ const u16 gMonPalette_DaphneBlake[] = INCBIN_U16("graphics/pokemon/daphne_blake/
 const u16 gMonShinyPalette_DaphneBlake[] = INCBIN_U16("graphics/pokemon/daphne_blake/shiny.gbapal");
 const u8 gMonIcon_DaphneBlake[] = INCBIN_U8("graphics/pokemon/daphne_blake/icon.4bpp");
 //const u8 gMonFootprint_DaphneBlake[] = INCBIN_U8("graphics/pokemon/daphne_blake/footprint.1bpp");
+
+// const u32 gMonFrontPic_VelmaDinkly[] = INCBIN_U32("graphics/pokemon/velma_dinkly/front.4bpp.lz");
+// const u32 gMonBackPic_VelmaDinkly[] = INCBIN_U32("graphics/pokemon/velma_dinkly/back.4bpp.lz");
+// const u16 gMonPalette_VelmaDinkly[] = INCBIN_U16("graphics/pokemon/velma_dinkly/normal.gbapal");
+// const u16 gMonShinyPalette_VelmaDinkly[] = INCBIN_U16("graphics/pokemon/velma_dinkly/shiny.gbapal");
+//const u8 gMonIcon_VelmaDinkly[] = INCBIN_U8("graphics/pokemon/velma_dinkly/icon.4bpp");
+//const u8 gMonFootprint_VelmaDinkly[] = INCBIN_U8("graphics/pokemon/velma_dinkly/footprint.1bpp");

@@ -74,9 +74,7 @@ struct TrainerMon
     enum Type teraType:5;
     bool8 gigantamaxFactor:1;
     u8 shouldUseDynamax:1;
-    u8 padding1:1;
     u8 dynamaxLevel:4;
-    u8 padding2:4;
     u32 tags;
 };
 
@@ -128,7 +126,6 @@ struct TypeInfo
     u16 useSecondTypeIconPalette:1;
     u16 isSpecialCaseType:1;
     u16 isHiddenPowerType:1; // Changing this for any type will change the distribution of all Hidden Power types from vanilla.
-    u16 padding:11;
     const u16 *const paletteTMHM;
     //u16 enhanceItem;
     //u16 berry;
@@ -152,9 +149,6 @@ struct FollowerMessagePool
     const u8 *script;
     u16 length;
 };
-
-extern const u16 gMinigameDigits_Pal[];
-extern const u32 gMinigameDigits_Gfx[];
 
 extern const struct SpriteFrameImage gBattlerPicTable_PlayerLeft[];
 extern const struct SpriteFrameImage gBattlerPicTable_OpponentLeft[];

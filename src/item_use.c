@@ -2,10 +2,7 @@
 #include "item_use.h"
 #include "battle.h"
 #include "battle_anim.h"
-#include "battle_pyramid.h"
-#include "battle_pyramid_bag.h"
 #include "berry.h"
-#include "berry_powder.h"
 #include "bike.h"
 #include "coins.h"
 #include "data.h"
@@ -120,14 +117,9 @@ static const struct YesNoFuncTable sUseTMHMYesNoFuncTable =
     .noFunc = CloseItemMessage,
 };
 
-#define tEnigmaBerryType data[4]
 static void SetUpItemUseCallback(u8 taskId)
 {
-    u8 type;
-    if (gSpecialVar_ItemId == ITEM_ENIGMA_BERRY_E_READER)
-        type = gTasks[taskId].tEnigmaBerryType - 1;
-    else
-        type = GetItemType(gSpecialVar_ItemId) - 1;
+    u8 type = GetItemType(gSpecialVar_ItemId) - 1;
 
     if (gTasks[taskId].tUsingRegisteredKeyItem && type == (ITEM_USE_PARTY_MENU - 1))
     {
@@ -768,21 +760,6 @@ void ItemUseOutOfBattle_CoinCase(u8 taskId)
     }
 }
 
-void ItemUseOutOfBattle_PowderJar(u8 taskId)
-{
-    ConvertIntToDecimalStringN(gStringVar1, GetBerryPowder(), STR_CONV_MODE_LEFT_ALIGN, 5);
-    StringExpandPlaceholders(gStringVar4, sText_PowderQty);
-
-    if (!gTasks[taskId].tUsingRegisteredKeyItem)
-    {
-        DisplayItemMessage(taskId, FONT_NORMAL, gStringVar4, CloseItemMessage);
-    }
-    else
-    {
-        DisplayItemMessageOnField(taskId, gStringVar4, Task_CloseCantUseKeyItemMessage);
-    }
-}
-
 void ItemUseOutOfBattle_Berry(u8 taskId)
 {
     if (IsPlayerFacingEmptyBerryTreePatch() == TRUE)
@@ -1383,50 +1360,6 @@ void ItemUseInBattle_BagMenu(u8 taskId)
             gTasks[taskId].func = Task_FadeAndCloseBagMenu;
         else
             gTasks[taskId].func = CloseBattlePyramidBag;
-    }
-}
-
-void ItemUseOutOfBattle_EnigmaBerry(u8 taskId)
-{
-    switch (GetItemEffectType(gSpecialVar_ItemId))
-    {
-    case ITEM_EFFECT_HEAL_HP:
-    case ITEM_EFFECT_CURE_POISON:
-    case ITEM_EFFECT_CURE_SLEEP:
-    case ITEM_EFFECT_CURE_BURN:
-    case ITEM_EFFECT_CURE_FREEZE_FROSTBITE:
-    case ITEM_EFFECT_CURE_PARALYSIS:
-    case ITEM_EFFECT_CURE_ALL_STATUS:
-    case ITEM_EFFECT_ATK_EV:
-    case ITEM_EFFECT_HP_EV:
-    case ITEM_EFFECT_SPATK_EV:
-    case ITEM_EFFECT_SPDEF_EV:
-    case ITEM_EFFECT_SPEED_EV:
-    case ITEM_EFFECT_DEF_EV:
-        gTasks[taskId].tEnigmaBerryType = ITEM_USE_PARTY_MENU;
-        ItemUseOutOfBattle_Medicine(taskId);
-        break;
-    case ITEM_EFFECT_SACRED_ASH:
-        gTasks[taskId].tEnigmaBerryType = ITEM_USE_PARTY_MENU;
-        ItemUseOutOfBattle_SacredAsh(taskId);
-        break;
-    case ITEM_EFFECT_RAISE_LEVEL:
-        gTasks[taskId].tEnigmaBerryType = ITEM_USE_PARTY_MENU;
-        ItemUseOutOfBattle_RareCandy(taskId);
-        break;
-    case ITEM_EFFECT_PP_UP:
-    case ITEM_EFFECT_PP_MAX:
-        gTasks[taskId].tEnigmaBerryType = ITEM_USE_PARTY_MENU;
-        ItemUseOutOfBattle_PPUp(taskId);
-        break;
-    case ITEM_EFFECT_HEAL_PP:
-        gTasks[taskId].tEnigmaBerryType = ITEM_USE_PARTY_MENU;
-        ItemUseOutOfBattle_PPRecovery(taskId);
-        break;
-    default:
-        gTasks[taskId].tEnigmaBerryType = ITEM_USE_BAG_MENU;
-        ItemUseOutOfBattle_CannotUse(taskId);
-        break;
     }
 }
 

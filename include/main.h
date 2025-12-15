@@ -37,12 +37,10 @@ struct Main
 
     /*0x439*/ u8 oamLoadDisabled:1;
     /*0x439*/ u8 inBattle:1;
-    /*0x439*/ u8 anyLinkBattlerHasFrontierPass:1;
 };
 
 #define GAME_CODE_LENGTH 4
-extern const u8 gGameVersion;
-extern const u8 gGameLanguage;
+
 extern const u8 RomHeaderGameCode[GAME_CODE_LENGTH];
 extern const u8 RomHeaderSoftwareVersion;
 
@@ -52,7 +50,6 @@ extern struct Main gMain;
 extern u16 gKeyRepeatContinueDelay;
 extern bool8 gSoftResetDisabled;
 extern IntrFunc gIntrTable[];
-extern u8 gLinkVSyncDisabled;
 extern s8 gPcmDmaCounter;
 
 void AgbMain(void);
@@ -64,8 +61,6 @@ void SetHBlankCallback(IntrCallback callback);
 void SetVCountCallback(IntrCallback callback);
 void SetSerialCallback(IntrCallback callback);
 void InitFlashTimer(void);
-void SetTrainerHillVBlankCounter(u32 *counter);
-void ClearTrainerHillVBlankCounter(void);
 void DoSoftReset(void);
 void ClearPokemonCrySongs(void);
 void RestoreSerialTimer3IntrHandlers(void);

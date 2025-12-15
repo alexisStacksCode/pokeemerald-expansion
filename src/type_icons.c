@@ -5,7 +5,7 @@
 #include "battle_gimmick.h"
 #include "decompress.h"
 #include "graphics.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "sprite.h"
 #include "type_icons.h"
 
@@ -244,7 +244,7 @@ void LoadTypeIcons(u32 battler)
     u32 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
 
     if (B_SHOW_TYPES == SHOW_TYPES_NEVER 
-        || (B_SHOW_TYPES == SHOW_TYPES_SEEN && !GetSetPokedexFlag(SpeciesToNationalPokedexNum(species), FLAG_GET_SEEN)))
+        || (B_SHOW_TYPES == SHOW_TYPES_SEEN && !GetSetPokedexFlag(SpeciesToDexNum(species), FLAG_GET_SEEN)))
         return;
 
     LoadTypeSpritesAndPalettes();
@@ -322,7 +322,7 @@ static bool32 ShouldHideUncaughtType(u32 species)
     if (B_SHOW_TYPES != SHOW_TYPES_CAUGHT)
         return FALSE;
 
-    if (GetSetPokedexFlag(SpeciesToNationalPokedexNum(species), FLAG_GET_CAUGHT))
+    if (GetSetPokedexFlag(SpeciesToDexNum(species), FLAG_GET_CAUGHT))
         return FALSE;
 
     return TRUE;
@@ -333,7 +333,7 @@ static bool32 ShouldHideUnseenType(u32 species)
     if (B_SHOW_TYPES != SHOW_TYPES_SEEN)
         return FALSE;
 
-    if (GetSetPokedexFlag(SpeciesToNationalPokedexNum(species), FLAG_GET_SEEN))
+    if (GetSetPokedexFlag(SpeciesToDexNum(species), FLAG_GET_SEEN))
         return FALSE;
 
     return TRUE;
@@ -566,4 +566,3 @@ static s32 GetTypeIconBounceMovement(s32 originalY, u32 position)
     struct Sprite *healthbox = &gSprites[gHealthboxSpriteIds[GetBattlerAtPosition(position)]];
     return originalY + healthbox->y2;
 }
-

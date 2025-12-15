@@ -16,7 +16,7 @@
 #include "menu.h"
 #include "overworld.h"
 #include "palette.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "pokemon.h"
 #include "pokemon_summary_screen.h"
 #include "scanline_effect.h"
@@ -66,17 +66,11 @@ static void StopBgAnimation(void);
 static void Task_AnimateBg(u8 taskId);
 static void RestoreBgAfterAnim(void);
 
-static const u16 sUnusedPal1[] = INCBIN_U16("graphics/evolution_scene/unused_1.gbapal");
 static const u32 sBgAnim_Gfx[] = INCBIN_U32("graphics/evolution_scene/bg.4bpp.smol");
 static const u32 sBgAnim_Inner_Tilemap[] = INCBIN_U32("graphics/evolution_scene/bg_inner.bin.smolTM");
 static const u32 sBgAnim_Outer_Tilemap[] = INCBIN_U32("graphics/evolution_scene/bg_outer.bin.smolTM");
 static const u16 sBgAnim_Intro_Pal[] = INCBIN_U16("graphics/evolution_scene/bg_anim_intro.gbapal");
-static const u16 sUnusedPal2[] = INCBIN_U16("graphics/evolution_scene/unused_2.gbapal");
-static const u16 sUnusedPal3[]  = INCBIN_U16("graphics/evolution_scene/unused_3.gbapal");
-static const u16 sUnusedPal4[] = INCBIN_U16("graphics/evolution_scene/unused_4.gbapal");
 static const u16 sBgAnim_Pal[] = INCBIN_U16("graphics/evolution_scene/bg_anim.gbapal");
-
-static const u8 sText_ShedinjaJapaneseName[] = _("ヌケニン");
 
 // The below table is used by Task_UpdateBgPalette to control the speed at which the bg color updates.
 // The first two values are indexes into sBgAnim_PalIndexes (indirectly, via sBgAnimPal), and are
@@ -443,11 +437,6 @@ static void CB2_TradeEvolutionSceneLoadGraphics(void)
         }
         break;
     case 6:
-        if (gWirelessCommType)
-        {
-            LoadWirelessStatusIndicatorSpriteGfx();
-            CreateWirelessStatusIndicatorSprite(0, 0);
-        }
         BlendPalettes(PALETTES_ALL, 0x10, RGB_BLACK);
         gMain.state++;
         break;
@@ -542,7 +531,7 @@ static void CB2_TradeEvolutionSceneUpdate(void)
     RunTasks();
 }
 
-static void CreateShedinja(u32 preEvoSpecies, u32 postEvoSpecies, struct Pokemon *mon)
+static void CreateMonWithShedinjaMethod(u32 preEvoSpecies, u32 postEvoSpecies, struct Pokemon *mon)
 {
     u32 data = 0;
     u16 ball = ITEM_POKE_BALL;
@@ -559,7 +548,6 @@ static void CreateShedinja(u32 preEvoSpecies, u32 postEvoSpecies, struct Pokemon
          && DoesMonMeetAdditionalConditions(mon, evolutions[i].params, NULL, PARTY_SIZE, NULL, CHECK_EVO))
         {
             s32 j;
-            struct Pokemon *shedinja = &gPlayerParty[gPlayerPartyCount];
 
             CopyMon(&gPlayerParty[gPlayerPartyCount], mon, sizeof(struct Pokemon));
             SetMonData(&gPlayerParty[gPlayerPartyCount], MON_DATA_SPECIES, &evolutions[i].targetSpecies);
@@ -584,14 +572,8 @@ static void CreateShedinja(u32 preEvoSpecies, u32 postEvoSpecies, struct Pokemon
             CalculateMonStats(&gPlayerParty[gPlayerPartyCount]);
             CalculatePlayerPartyCount();
 
-            GetSetPokedexFlag(SpeciesToNationalPokedexNum(evolutions[i].targetSpecies), FLAG_SET_SEEN);
-            GetSetPokedexFlag(SpeciesToNationalPokedexNum(evolutions[i].targetSpecies), FLAG_SET_CAUGHT);
-
-            if (GetMonData(shedinja, MON_DATA_SPECIES) == SPECIES_SHEDINJA
-                && GetMonData(shedinja, MON_DATA_LANGUAGE) == LANGUAGE_JAPANESE
-                && GetMonData(mon, MON_DATA_SPECIES) == SPECIES_NINJASK)
-                    SetMonData(shedinja, MON_DATA_NICKNAME, sText_ShedinjaJapaneseName);
-
+            GetSetPokedexFlag(SpeciesToDexNum(evolutions[i].targetSpecies), FLAG_SET_SEEN);
+            GetSetPokedexFlag(SpeciesToDexNum(evolutions[i].targetSpecies), FLAG_SET_CAUGHT);
         }
     }
 }
@@ -780,8 +762,8 @@ static void Task_EvolutionScene(u8 taskId)
             SetMonData(mon, MON_DATA_EVOLUTION_TRACKER, &zero);
             CalculateMonStats(mon);
             EvolutionRenameMon(mon, gTasks[taskId].tPreEvoSpecies, gTasks[taskId].tPostEvoSpecies);
-            GetSetPokedexFlag(SpeciesToNationalPokedexNum(gTasks[taskId].tPostEvoSpecies), FLAG_SET_SEEN);
-            GetSetPokedexFlag(SpeciesToNationalPokedexNum(gTasks[taskId].tPostEvoSpecies), FLAG_SET_CAUGHT);
+            GetSetPokedexFlag(SpeciesToDexNum(gTasks[taskId].tPostEvoSpecies), FLAG_SET_SEEN);
+            GetSetPokedexFlag(SpeciesToDexNum(gTasks[taskId].tPostEvoSpecies), FLAG_SET_CAUGHT);
             IncrementGameStat(GAME_STAT_EVOLVED_POKEMON);
         }
         break;
@@ -829,7 +811,7 @@ static void Task_EvolutionScene(u8 taskId)
             }
 
             if (!gTasks[taskId].tEvoWasStopped)
-                CreateShedinja(gTasks[taskId].tPreEvoSpecies, gTasks[taskId].tPostEvoSpecies, mon);
+                CreateMonWithShedinjaMethod(gTasks[taskId].tPreEvoSpecies, gTasks[taskId].tPostEvoSpecies, mon);
 
             DestroyTask(taskId);
             FreeMonSpritesGfx();
@@ -1203,8 +1185,8 @@ static void Task_TradeEvolutionScene(u8 taskId)
             SetMonData(mon, MON_DATA_EVOLUTION_TRACKER, &zero);
             CalculateMonStats(mon);
             EvolutionRenameMon(mon, gTasks[taskId].tPreEvoSpecies, gTasks[taskId].tPostEvoSpecies);
-            GetSetPokedexFlag(SpeciesToNationalPokedexNum(gTasks[taskId].tPostEvoSpecies), FLAG_SET_SEEN);
-            GetSetPokedexFlag(SpeciesToNationalPokedexNum(gTasks[taskId].tPostEvoSpecies), FLAG_SET_CAUGHT);
+            GetSetPokedexFlag(SpeciesToDexNum(gTasks[taskId].tPostEvoSpecies), FLAG_SET_SEEN);
+            GetSetPokedexFlag(SpeciesToDexNum(gTasks[taskId].tPostEvoSpecies), FLAG_SET_CAUGHT);
             IncrementGameStat(GAME_STAT_EVOLVED_POKEMON);
         }
         break;
@@ -1349,9 +1331,6 @@ static void Task_TradeEvolutionScene(u8 taskId)
         case T_MVSTATE_SHOW_MOVE_SELECT:
             if (!gPaletteFade.active)
             {
-                if (gWirelessCommType)
-                    DestroyWirelessStatusIndicatorSprite();
-
                 Free(GetBgTilemapBuffer(3));
                 Free(GetBgTilemapBuffer(1));
                 Free(GetBgTilemapBuffer(0));

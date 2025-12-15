@@ -16,7 +16,6 @@ struct __attribute__((packed, aligned(2))) BattleMoveEffect
     u16 twoTurnEffect:1;
     u16 semiInvulnerableEffect:1;
     u16 usesProtectCounter:1;
-    u16 padding:9;
 };
 
 #define EFFECTS_ARR(...) (const struct AdditionalEffect[]) {__VA_ARGS__}
@@ -29,7 +28,6 @@ struct AdditionalEffect
     u8 onlyIfTargetRaisedStats:1;
     u8 onChargeTurnOnly:1;
     u8 sheerForceOverride:1; // Handles edge cases for Sheer Force - if TRUE, boosts when it shouldn't, or doesn't boost when it should
-    u8 padding:4;
     union PACKED {
         enum WrappedStringID wrapped;
     } multistring;
@@ -129,9 +127,6 @@ struct MoveInfo
     bool32 skyBattleBanned:1;
     bool32 sketchBanned:1;
     bool32 dampBanned:1;
-    //Other
-    bool32 validApprenticeMove:1;
-    u32 padding:5;
     // end of word
 
     union {
@@ -476,11 +471,6 @@ static inline bool32 IsMoveSketchBanned(u32 moveId)
 static inline bool32 IsMoveDampBanned(u32 moveId)
 {
     return gMovesInfo[SanitizeMoveId(moveId)].dampBanned;
-}
-
-static inline bool32 IsValidApprenticeMove(u32 moveId)
-{
-    return gMovesInfo[SanitizeMoveId(moveId)].validApprenticeMove;
 }
 
 static inline u32 GetMoveTwoTurnAttackStringId(u32 moveId)

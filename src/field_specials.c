@@ -28,11 +28,10 @@
 #include "match_call.h"
 #include "menu.h"
 #include "metatile_behavior.h"
-#include "mystery_gift.h"
 #include "overworld.h"
 #include "party_menu.h"
 #include "pokeblock.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "pokemon.h"
 #include "pokemon_storage_system.h"
 #include "random.h"
@@ -51,9 +50,6 @@
 #include "tv.h"
 #include "wallclock.h"
 #include "window.h"
-#include "constants/battle_frontier.h"
-#include "constants/battle_pyramid.h"
-#include "constants/battle_tower.h"
 #include "constants/decorations.h"
 #include "constants/event_objects.h"
 #include "constants/event_object_movement.h"
@@ -61,12 +57,10 @@
 #include "constants/field_specials.h"
 #include "constants/items.h"
 #include "constants/heal_locations.h"
-#include "constants/mystery_gift.h"
 #include "constants/slot_machine.h"
 #include "constants/songs.h"
 #include "constants/moves.h"
 #include "constants/party_menu.h"
-#include "constants/battle_frontier.h"
 #include "constants/weather.h"
 #include "constants/metatile_labels.h"
 #include "constants/rgb.h"
@@ -93,12 +87,9 @@ static EWRAM_DATA u16 sLilycoveDeptStore_NeverRead = 0;
 static EWRAM_DATA u16 sLilycoveDeptStore_DefaultFloorChoice = 0;
 static EWRAM_DATA struct ListMenuItem *sScrollableMultichoice_ListMenuItem = NULL;
 
-static EWRAM_DATA u16 sFrontierExchangeCorner_NeverRead = 0;
 static EWRAM_DATA u8 sScrollableMultichoice_ItemSpriteId = 0;
 static EWRAM_DATA u8 sBattlePointsWindowId = 0;
-static EWRAM_DATA u8 sFrontierExchangeCorner_ItemIconWindowId = 0;
 static EWRAM_DATA u8 sPCBoxToSendMon = 0;
-static EWRAM_DATA u32 sBattleTowerMultiBattleTypeFlags = 0;
 
 COMMON_DATA struct ListMenuTemplate gScrollableMultichoice_ListMenuTemplate = {0};
 EWRAM_DATA u16 gScrollableMultichoice_ScrollOffset = 0;
@@ -123,33 +114,22 @@ static void Task_MoveElevator(u8);
 static void MoveElevatorWindowLights(u16, bool8);
 static void Task_MoveElevatorWindowLights(u8);
 static void Task_ShowScrollableMultichoice(u8);
-static void FillFrontierExchangeCornerWindowAndItemIcon(enum ScrollMulti, u16);
-static void ShowBattleFrontierTutorWindow(enum ScrollMulti, u16);
 static void InitScrollableMultichoice(void);
 static void ScrollableMultichoice_ProcessInput(u8);
 static void ScrollableMultichoice_UpdateScrollArrows(u8);
 static void ScrollableMultichoice_MoveCursor(s32, bool8, struct ListMenu *);
-static void HideFrontierExchangeCornerItemIcon(enum ScrollMulti, u16);
-static void ShowBattleFrontierTutorMoveDescription(enum ScrollMulti, u16);
 static void CloseScrollableMultichoice(u8);
 static void ScrollableMultichoice_RemoveScrollArrows(u8);
 static void Task_ScrollableMultichoice_WaitReturnToList(u8);
 static void Task_ScrollableMultichoice_ReturnToList(u8);
-static void ShowFrontierExchangeCornerItemIcon(u16);
 static void Task_DeoxysRockInteraction(u8);
 static void ChangeDeoxysRockLevel(u8);
 static void WaitForDeoxysRockMovement(u8);
-static void Task_LinkRetireStatusWithBattleTowerPartner(u8);
 static void Task_LoopWingFlapSE(u8);
 static void Task_CloseBattlePikeCurtain(u8);
 static u8 DidPlayerGetFirstFans(void);
 static void SetInitialFansOfPlayer(void);
 static u16 PlayerGainRandomTrainerFan(void);
-#if FREE_LINK_BATTLE_RECORDS == FALSE
-static void BufferFanClubTrainerName_(struct LinkBattleRecords *, u8, u8);
-#else
-static void BufferFanClubTrainerName_(u8 whichLinkTrainer, u8 whichNPCTrainer);
-#endif //FREE_LINK_BATTLE_RECORDS
 
 static const u8 sText_BigGuy[] = _("Big guy");
 static const u8 sText_BigGirl[] = _("Big girl");
@@ -409,31 +389,6 @@ bool32 ShouldDoScottFortreeCall(void)
         case MAP_TYPE_ROUTE:
         case MAP_TYPE_OCEAN_ROUTE:
             if (++(*GetVarPointer(VAR_SCOTT_FORTREE_CALL_STEP_COUNTER)) < 10)
-                return FALSE;
-            break;
-        default:
-            return FALSE;
-        }
-    }
-    else
-    {
-        return FALSE;
-    }
-
-    return TRUE;
-}
-
-bool32 ShouldDoScottBattleFrontierCall(void)
-{
-    if (FlagGet(FLAG_SCOTT_CALL_BATTLE_FRONTIER))
-    {
-        switch (gMapHeader.mapType)
-        {
-        case MAP_TYPE_TOWN:
-        case MAP_TYPE_CITY:
-        case MAP_TYPE_ROUTE:
-        case MAP_TYPE_OCEAN_ROUTE:
-            if (++(*GetVarPointer(VAR_SCOTT_BF_CALL_STEP_COUNTER)) < 10)
                 return FALSE;
             break;
         default:
@@ -1313,16 +1268,6 @@ void GetSecretBaseNearbyMapName(void)
     GetMapName(gStringVar1, VarGet(VAR_SECRET_BASE_MAP), 0);
 }
 
-u16 GetBattleTowerSinglesStreak(void)
-{
-    return GetGameStat(GAME_STAT_BATTLE_TOWER_SINGLES_STREAK);
-}
-
-void BufferEReaderTrainerName(void)
-{
-    GetEreaderTrainerName(gStringVar1);
-}
-
 u16 GetSlotMachineId(void)
 {
     static const u8 sSlotMachineRandomSeeds[SLOT_MACHINE_COUNT] = {12, 2, 4, 5, 1, 8, 7, 11, 3, 10, 9, 6};
@@ -1583,12 +1528,6 @@ u16 ScriptGetPartyMonSpecies(void)
     return GetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_SPECIES_OR_EGG, NULL);
 }
 
-// Removed for Emerald
-void TryInitBattleTowerAwardManObjectEvent(void)
-{
-    //TryInitLocalObjectEvent(6);
-}
-
 u16 GetDaysUntilPacifidlogTMAvailable(void)
 {
     u16 tmReceivedDay = VarGet(VAR_PACIFIDLOG_TM_RECEIVED_DAY);
@@ -1653,25 +1592,6 @@ void BufferLottoTicketNumber(void)
     }
 }
 
-u16 GetMysteryGiftCardStat(void)
-{
-    switch (gSpecialVar_Result)
-    {
-    case GET_NUM_STAMPS:
-        return MysteryGift_GetCardStat(CARD_STAT_NUM_STAMPS);
-    case GET_MAX_STAMPS:
-        return MysteryGift_GetCardStat(CARD_STAT_MAX_STAMPS);
-    case GET_CARD_BATTLES_WON:
-        return MysteryGift_GetCardStat(CARD_STAT_BATTLES_WON);
-    case GET_CARD_BATTLES_LOST: // Never occurs
-        return MysteryGift_GetCardStat(CARD_STAT_BATTLES_LOST);
-    case GET_CARD_NUM_TRADES: // Never occurs
-        return MysteryGift_GetCardStat(CARD_STAT_NUM_TRADES);
-    default:
-        return 0;
-    }
-}
-
 bool8 BufferTMHMMoveName(void)
 {
     if (gItemsInfo[gSpecialVar_0x8004].pocket == POCKET_TM_HM)
@@ -1694,15 +1614,6 @@ bool8 IsBadEggInParty(void)
             return TRUE;
     }
 
-    return FALSE;
-}
-
-bool8 InMultiPartnerRoom(void)
-{
-    if (gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(MAP_BATTLE_FRONTIER_BATTLE_TOWER_MULTI_PARTNER_ROOM)
-        && gSaveBlock1Ptr->location.mapNum == MAP_NUM(MAP_BATTLE_FRONTIER_BATTLE_TOWER_MULTI_PARTNER_ROOM) &&
-        VarGet(VAR_FRONTIER_BATTLE_MODE) == FRONTIER_MODE_MULTIS)
-        return TRUE;
     return FALSE;
 }
 
@@ -2087,192 +1998,6 @@ bool32 PlayerNotAtTrainerHillEntrance(void)
     return TRUE;
 }
 
-void UpdateFrontierManiac(u16 daysSince)
-{
-    u16 *var = GetVarPointer(VAR_FRONTIER_MANIAC_FACILITY);
-    *var += daysSince;
-    *var %= FRONTIER_MANIAC_FACILITY_COUNT;
-}
-
-void ShowFrontierManiacMessage(void)
-{
-    static const u8 *const sFrontierManiacMessages[][FRONTIER_MANIAC_MESSAGE_COUNT] =
-    {
-        [FRONTIER_MANIAC_TOWER_SINGLES] =
-        {
-            BattleFrontier_Lounge2_Text_SalonMaidenIsThere,
-            BattleFrontier_Lounge2_Text_SalonMaidenSilverMons,
-            BattleFrontier_Lounge2_Text_SalonMaidenGoldMons
-        },
-        [FRONTIER_MANIAC_TOWER_DOUBLES] =
-        {
-            BattleFrontier_Lounge2_Text_DoubleBattleAdvice1,
-            BattleFrontier_Lounge2_Text_DoubleBattleAdvice2,
-            BattleFrontier_Lounge2_Text_DoubleBattleAdvice3
-        },
-        [FRONTIER_MANIAC_TOWER_MULTIS] =
-        {
-            BattleFrontier_Lounge2_Text_MultiBattleAdvice,
-            BattleFrontier_Lounge2_Text_MultiBattleAdvice,
-            BattleFrontier_Lounge2_Text_MultiBattleAdvice
-        },
-        [FRONTIER_MANIAC_TOWER_LINK] =
-        {
-            BattleFrontier_Lounge2_Text_LinkMultiBattleAdvice,
-            BattleFrontier_Lounge2_Text_LinkMultiBattleAdvice,
-            BattleFrontier_Lounge2_Text_LinkMultiBattleAdvice
-        },
-        [FRONTIER_MANIAC_DOME] =
-        {
-            BattleFrontier_Lounge2_Text_DomeAceIsThere,
-            BattleFrontier_Lounge2_Text_DomeAceSilverMons,
-            BattleFrontier_Lounge2_Text_DomeAceGoldMons
-        },
-        [FRONTIER_MANIAC_FACTORY] =
-        {
-            BattleFrontier_Lounge2_Text_FactoryHeadIsThere,
-            BattleFrontier_Lounge2_Text_FactoryHeadSilverMons,
-            BattleFrontier_Lounge2_Text_FactoryHeadGoldMons
-        },
-        [FRONTIER_MANIAC_PALACE] =
-        {
-            BattleFrontier_Lounge2_Text_PalaceMavenIsThere,
-            BattleFrontier_Lounge2_Text_PalaceMavenSilverMons,
-            BattleFrontier_Lounge2_Text_PalaceMavenGoldMons
-        },
-        [FRONTIER_MANIAC_ARENA] =
-        {
-            BattleFrontier_Lounge2_Text_ArenaTycoonIsThere,
-            BattleFrontier_Lounge2_Text_ArenaTycoonSilverMons,
-            BattleFrontier_Lounge2_Text_ArenaTycoonGoldMons
-        },
-        [FRONTIER_MANIAC_PIKE] =
-        {
-            BattleFrontier_Lounge2_Text_PikeQueenIsThere,
-            BattleFrontier_Lounge2_Text_PikeQueenSilverMons,
-            BattleFrontier_Lounge2_Text_PikeQueenGoldMons
-        },
-        [FRONTIER_MANIAC_PYRAMID] =
-        {
-            BattleFrontier_Lounge2_Text_PyramidKingIsThere,
-            BattleFrontier_Lounge2_Text_PyramidKingSilverMons,
-            BattleFrontier_Lounge2_Text_PyramidKingGoldMons
-        },
-    };
-
-    static const u8 sFrontierManiacStreakThresholds[][FRONTIER_MANIAC_MESSAGE_COUNT - 1] =
-    {
-        [FRONTIER_MANIAC_TOWER_SINGLES] = { 21, 56 },
-        [FRONTIER_MANIAC_TOWER_DOUBLES] = { 21, 35 },
-        [FRONTIER_MANIAC_TOWER_MULTIS]  = { 255, 255 },
-        [FRONTIER_MANIAC_TOWER_LINK]    = { 255, 255 },
-        [FRONTIER_MANIAC_DOME]          = { 2, 4 },
-        [FRONTIER_MANIAC_FACTORY]       = { 7, 21 },
-        [FRONTIER_MANIAC_PALACE]        = { 7, 21 },
-        [FRONTIER_MANIAC_ARENA]         = { 14, 28 },
-        [FRONTIER_MANIAC_PIKE]          = { 13, 112 }, //BUG: 112 (0x70) is probably a mistake; the Pike Queen is battled twice well before that
-        [FRONTIER_MANIAC_PYRAMID]       = { 7, 56 }
-    };
-
-    u8 i;
-    u16 winStreak = 0;
-    u16 facility = VarGet(VAR_FRONTIER_MANIAC_FACILITY);
-
-    switch (facility)
-    {
-    case FRONTIER_MANIAC_TOWER_SINGLES:
-    case FRONTIER_MANIAC_TOWER_DOUBLES:
-    case FRONTIER_MANIAC_TOWER_MULTIS:
-    case FRONTIER_MANIAC_TOWER_LINK:
-        if (gSaveBlock2Ptr->frontier.towerWinStreaks[facility][FRONTIER_LVL_50]
-            >= gSaveBlock2Ptr->frontier.towerWinStreaks[facility][FRONTIER_LVL_OPEN])
-            winStreak = gSaveBlock2Ptr->frontier.towerWinStreaks[facility][FRONTIER_LVL_50];
-        else
-            winStreak = gSaveBlock2Ptr->frontier.towerWinStreaks[facility][FRONTIER_LVL_OPEN];
-        break;
-    case FRONTIER_MANIAC_DOME:
-        if (gSaveBlock2Ptr->frontier.domeWinStreaks[FRONTIER_MODE_SINGLES][FRONTIER_LVL_50]
-            >= gSaveBlock2Ptr->frontier.domeWinStreaks[FRONTIER_MODE_SINGLES][FRONTIER_LVL_OPEN])
-            winStreak = gSaveBlock2Ptr->frontier.domeWinStreaks[FRONTIER_MODE_SINGLES][FRONTIER_LVL_50];
-        else
-            winStreak = gSaveBlock2Ptr->frontier.domeWinStreaks[FRONTIER_MODE_SINGLES][FRONTIER_LVL_OPEN];
-        break;
-    case FRONTIER_MANIAC_FACTORY:
-        if (gSaveBlock2Ptr->frontier.factoryWinStreaks[FRONTIER_MODE_SINGLES][FRONTIER_LVL_50]
-            >= gSaveBlock2Ptr->frontier.factoryWinStreaks[FRONTIER_MODE_SINGLES][FRONTIER_LVL_OPEN])
-            winStreak = gSaveBlock2Ptr->frontier.factoryWinStreaks[FRONTIER_MODE_SINGLES][FRONTIER_LVL_50];
-        else
-            winStreak = gSaveBlock2Ptr->frontier.factoryWinStreaks[FRONTIER_MODE_SINGLES][FRONTIER_LVL_OPEN];
-        break;
-    case FRONTIER_MANIAC_PALACE:
-        if (gSaveBlock2Ptr->frontier.palaceWinStreaks[FRONTIER_MODE_SINGLES][FRONTIER_LVL_50]
-            >= gSaveBlock2Ptr->frontier.palaceWinStreaks[FRONTIER_MODE_SINGLES][FRONTIER_LVL_OPEN])
-            winStreak = gSaveBlock2Ptr->frontier.palaceWinStreaks[FRONTIER_MODE_SINGLES][FRONTIER_LVL_50];
-        else
-            winStreak = gSaveBlock2Ptr->frontier.palaceWinStreaks[FRONTIER_MODE_SINGLES][FRONTIER_LVL_OPEN];
-        break;
-    case FRONTIER_MANIAC_ARENA:
-        if (gSaveBlock2Ptr->frontier.arenaWinStreaks[FRONTIER_LVL_50]
-            >= gSaveBlock2Ptr->frontier.arenaWinStreaks[FRONTIER_LVL_OPEN])
-            winStreak = gSaveBlock2Ptr->frontier.arenaWinStreaks[FRONTIER_LVL_50];
-        else
-            winStreak = gSaveBlock2Ptr->frontier.arenaWinStreaks[FRONTIER_LVL_OPEN];
-        break;
-    case FRONTIER_MANIAC_PIKE:
-        if (gSaveBlock2Ptr->frontier.pikeWinStreaks[FRONTIER_LVL_50]
-            >= gSaveBlock2Ptr->frontier.pikeWinStreaks[FRONTIER_LVL_OPEN])
-            winStreak = gSaveBlock2Ptr->frontier.pikeWinStreaks[FRONTIER_LVL_50];
-        else
-            winStreak = gSaveBlock2Ptr->frontier.pikeWinStreaks[FRONTIER_LVL_OPEN];
-        break;
-    case FRONTIER_MANIAC_PYRAMID:
-        if (gSaveBlock2Ptr->frontier.pyramidWinStreaks[FRONTIER_LVL_50]
-            >= gSaveBlock2Ptr->frontier.pyramidWinStreaks[FRONTIER_LVL_OPEN])
-            winStreak = gSaveBlock2Ptr->frontier.pyramidWinStreaks[FRONTIER_LVL_50];
-        else
-            winStreak = gSaveBlock2Ptr->frontier.pyramidWinStreaks[FRONTIER_LVL_OPEN];
-        break;
-    default:
-        return;
-    }
-
-    for (i = 0; i < FRONTIER_MANIAC_MESSAGE_COUNT - 1 && sFrontierManiacStreakThresholds[facility][i] < winStreak; i++);
-
-    ShowFieldMessage(sFrontierManiacMessages[facility][i]);
-}
-
-// gSpecialVar_0x8005 and 0x8006 here are used by MoveElevator
-void BufferBattleTowerElevatorFloors(void)
-{
-    static const u16 sBattleTowerStreakThresholds[] = {
-        7, 14, 21, 28, 35, 49, 63, 77, 91, 0
-    };
-
-    u8 i;
-    u16 battleMode = VarGet(VAR_FRONTIER_BATTLE_MODE);
-    u8 lvlMode = gSaveBlock2Ptr->frontier.lvlMode;
-
-    if (battleMode == FRONTIER_MODE_MULTIS && !FlagGet(FLAG_CHOSEN_MULTI_BATTLE_NPC_PARTNER))
-    {
-        gSpecialVar_0x8005 = 5;
-        gSpecialVar_0x8006 = 4;
-        return;
-    }
-
-    for (i = 0; i < ARRAY_COUNT(sBattleTowerStreakThresholds) - 1; i++)
-    {
-        if (sBattleTowerStreakThresholds[i] > gSaveBlock2Ptr->frontier.towerWinStreaks[battleMode][lvlMode])
-        {
-            gSpecialVar_0x8005 = 4;
-            gSpecialVar_0x8006 = i + 5;
-            return;
-        }
-    }
-
-    gSpecialVar_0x8005 = 4;
-    gSpecialVar_0x8006 = 12;
-}
-
 // Scrollable Multichoice task data defines
 #define tMaxItemsOnScreen    data[0]
 #define tNumItems            data[1]
@@ -2558,16 +2283,6 @@ static const u8 *const sScrollableMultichoiceOptions[][MAX_SCROLL_MULTI_LENGTH] 
         COMPOUND_STRING("ICE PUNCH{CLEAR_TO 0x4E}48BP"),
         COMPOUND_STRING("THUNDERPUNCH{CLEAR_TO 0x4E}48BP"),
         COMPOUND_STRING("FIRE PUNCH{CLEAR_TO 0x4E}48BP"),
-        gText_Exit
-    },
-    [SCROLL_MULTI_SS_TIDAL_DESTINATION] =
-    {
-        gText_SlateportCity,
-        gText_BattleFrontier,
-        gText_SouthernIsland,
-        gText_NavelRock,
-        gText_BirthIsland,
-        gText_FarawayIsland,
         gText_Exit
     },
     [SCROLL_MULTI_BATTLE_TENT_RULES] =
@@ -3586,153 +3301,6 @@ bool32 ShouldDistributeEonTicket(void)
     return TRUE;
 }
 
-#define tState data[0]
-
-void BattleTowerReconnectLink(void)
-{
-    // Save battle type, restored at end
-    // of Task_LinkRetireStatusWithBattleTowerPartner
-    sBattleTowerMultiBattleTypeFlags = gBattleTypeFlags;
-    gBattleTypeFlags = 0;
-
-    if (!gReceivedRemoteLinkPlayers)
-        CreateTask(Task_ReconnectWithLinkPlayers, 5);
-}
-
-void LinkRetireStatusWithBattleTowerPartner(void)
-{
-    CreateTask(Task_LinkRetireStatusWithBattleTowerPartner, 5);
-}
-
-// Communicate with a Battle Tower link partner to tell them
-// whether or not the player chose to continue or retire,
-// and determine what the partner chose to do
-// gSpecialVar_0x8004: Player's choice
-// gSpecialVar_0x8005: Partner's choice (read from gBlockRecvBuffer[1][0])
-static void Task_LinkRetireStatusWithBattleTowerPartner(u8 taskId)
-{
-    switch (gTasks[taskId].tState)
-    {
-    case 0:
-        if (!FuncIsActiveTask(Task_ReconnectWithLinkPlayers))
-            gTasks[taskId].tState++;
-        break;
-    case 1:
-        if (IsLinkTaskFinished() == TRUE)
-        {
-            if (GetMultiplayerId() == 0)
-            {
-                // Player is link leader, skip sending data
-                gTasks[taskId].tState++;
-            }
-            else
-            {
-                // Send value of gSpecialVar_0x8004 to leader
-                // Will either be BATTLE_TOWER_LINK_CONTINUE or BATTLE_TOWER_LINK_RETIRE
-                SendBlock(BitmaskAllOtherLinkPlayers(), &gSpecialVar_0x8004, sizeof(gSpecialVar_0x8004));
-                gTasks[taskId].tState++;
-            }
-        }
-        break;
-    case 2:
-        if (GetBlockReceivedStatus() & 2)
-        {
-            if (GetMultiplayerId() == 0)
-            {
-                // Player is leader, read partner's choice
-                // and determine if play should continue
-                gSpecialVar_0x8005 = gBlockRecvBuffer[1][0];
-                ResetBlockReceivedFlag(1);
-
-                if (gSpecialVar_0x8004 == BATTLE_TOWER_LINK_RETIRE
-                 && gSpecialVar_0x8005 == BATTLE_TOWER_LINK_RETIRE)
-                    gSpecialVar_Result = BATTLE_TOWER_LINKSTAT_BOTH_RETIRE;
-                else if (gSpecialVar_0x8004 == BATTLE_TOWER_LINK_CONTINUE
-                      && gSpecialVar_0x8005 == BATTLE_TOWER_LINK_RETIRE)
-                    gSpecialVar_Result = BATTLE_TOWER_LINKSTAT_MEMBER_RETIRE;
-                else if (gSpecialVar_0x8004 == BATTLE_TOWER_LINK_RETIRE
-                      && gSpecialVar_0x8005 == BATTLE_TOWER_LINK_CONTINUE)
-                    gSpecialVar_Result = BATTLE_TOWER_LINKSTAT_LEADER_RETIRE;
-                else
-                    gSpecialVar_Result = BATTLE_TOWER_LINKSTAT_CONTINUE;
-            }
-            gTasks[taskId].tState++;
-        }
-        break;
-    case 3:
-        if (IsLinkTaskFinished() == TRUE)
-        {
-            if (GetMultiplayerId() != 0)
-            {
-                // Player is not link leader, wait for leader's response
-                gTasks[taskId].tState++;
-            }
-            else
-            {
-                // Send whether or not play should continue
-                SendBlock(BitmaskAllOtherLinkPlayers(), &gSpecialVar_Result, sizeof(gSpecialVar_Result));
-                gTasks[taskId].tState++;
-            }
-        }
-        break;
-    case 4:
-        if (GetBlockReceivedStatus() & 1)
-        {
-            if (GetMultiplayerId() != 0)
-            {
-                // Player is not link leader, read leader's response
-                gSpecialVar_Result = gBlockRecvBuffer[0][0];
-                ResetBlockReceivedFlag(0);
-                gTasks[taskId].tState++;
-            }
-            else
-            {
-                gTasks[taskId].tState++;
-            }
-        }
-        break;
-    case 5:
-        // Print message if partner chose to retire (and player didn't)
-        if (GetMultiplayerId() == 0)
-        {
-            if (gSpecialVar_Result == BATTLE_TOWER_LINKSTAT_MEMBER_RETIRE)
-                ShowFieldAutoScrollMessage(gText_YourPartnerHasRetired);
-        }
-        else
-        {
-            if (gSpecialVar_Result == BATTLE_TOWER_LINKSTAT_LEADER_RETIRE)
-                ShowFieldAutoScrollMessage(gText_YourPartnerHasRetired);
-        }
-        gTasks[taskId].tState++;
-        break;
-    case 6:
-        if (!IsTextPrinterActive(0))
-            gTasks[taskId].tState++;
-        break;
-    case 7:
-        if (IsLinkTaskFinished() == TRUE)
-        {
-            SetLinkStandbyCallback();
-            gTasks[taskId].tState++;
-        }
-        break;
-    case 8:
-        if (IsLinkTaskFinished() == TRUE)
-            gTasks[taskId].tState++;
-        break;
-    case 9:
-        if (gWirelessCommType == 0)
-            SetCloseLinkCallback();
-
-        gBattleTypeFlags = sBattleTowerMultiBattleTypeFlags;
-        ScriptContext_Enable();
-        DestroyTask(taskId);
-        break;
-    }
-}
-
-#undef tState
-
 void Script_DoRayquazaScene(void)
 {
     if (!gSpecialVar_0x8004)
@@ -3855,11 +3423,6 @@ bool8 InPokemonCenter(void)
         MAP_SOOTOPOLIS_CITY_POKEMON_CENTER_1F,
         MAP_EVER_GRANDE_CITY_POKEMON_CENTER_1F,
         MAP_EVER_GRANDE_CITY_POKEMON_LEAGUE_1F,
-        MAP_BATTLE_FRONTIER_POKEMON_CENTER_1F,
-        MAP_BATTLE_COLOSSEUM_2P,
-        MAP_TRADE_CENTER,
-        MAP_RECORD_CORNER,
-        MAP_BATTLE_COLOSSEUM_4P,
         MAP_UNDEFINED
     };
 
@@ -3921,15 +3484,6 @@ void ResetFanClub(void)
 {
     gSaveBlock1Ptr->vars[VAR_FANCLUB_FAN_COUNTER - VARS_START] = 0;
     gSaveBlock1Ptr->vars[VAR_FANCLUB_LOSE_FAN_TIMER - VARS_START] = 0;
-}
-
-void TryLoseFansFromPlayTimeAfterLinkBattle(void)
-{
-    if (DidPlayerGetFirstFans())
-    {
-        TryLoseFansFromPlayTime();
-        gSaveBlock1Ptr->vars[VAR_FANCLUB_LOSE_FAN_TIMER - VARS_START] = gSaveBlock2Ptr->playTimeHours;
-    }
 }
 
 void UpdateTrainerFanClubGameClear(void)
@@ -4151,52 +3705,7 @@ void BufferFanClubTrainerName(void)
     case FANCLUB_MEMBER8:
         break;
     }
-#if FREE_LINK_BATTLE_RECORDS == FALSE
-    BufferFanClubTrainerName_(&gSaveBlock1Ptr->linkBattleRecords, whichLinkTrainer, whichNPCTrainer);
-#else
-    BufferFanClubTrainerName_(whichLinkTrainer, whichNPCTrainer);
-#endif //FREE_LINK_BATTLE_RECORDS
 }
-
-#if FREE_LINK_BATTLE_RECORDS == FALSE
-static void BufferFanClubTrainerName_(struct LinkBattleRecords *linkRecords, u8 whichLinkTrainer, u8 whichNPCTrainer)
-{
-    struct LinkBattleRecord *record = &linkRecords->entries[whichLinkTrainer];
-    if (record->name[0] == EOS)
-    {
-        switch (whichNPCTrainer)
-        {
-        case 0:
-            StringCopy(gStringVar1, gText_Wallace);
-            break;
-        case 1:
-            StringCopy(gStringVar1, gText_Steven);
-            break;
-        case 2:
-            StringCopy(gStringVar1, gText_Brawly);
-            break;
-        case 3:
-            StringCopy(gStringVar1, gText_Winona);
-            break;
-        case 4:
-            StringCopy(gStringVar1, gText_Phoebe);
-            break;
-        case 5:
-            StringCopy(gStringVar1, gText_Glacia);
-            break;
-        default:
-            StringCopy(gStringVar1, gText_Wallace);
-            break;
-        }
-    }
-    else
-    {
-        StringCopyN(gStringVar1, record->name, PLAYER_NAME_LENGTH);
-        gStringVar1[PLAYER_NAME_LENGTH] = EOS;
-        ConvertInternationalString(gStringVar1, linkRecords->languages[whichLinkTrainer]);
-    }
-}
-#else
 static void BufferFanClubTrainerName_(u8 whichLinkTrainer, u8 whichNPCTrainer)
 {
     switch (whichNPCTrainer)
@@ -4222,19 +3731,6 @@ static void BufferFanClubTrainerName_(u8 whichLinkTrainer, u8 whichNPCTrainer)
         default:
             StringCopy(gStringVar1, gText_Wallace);
             break;
-    }
-}
-#endif //FREE_LINK_BATTLE_RECORDS
-
-void UpdateTrainerFansAfterLinkBattle(void)
-{
-    if (VarGet(VAR_LILYCOVE_FAN_CLUB_STATE) == 2)
-    {
-        TryLoseFansFromPlayTimeAfterLinkBattle();
-        if (gBattleOutcome == B_OUTCOME_WON)
-            PlayerGainRandomTrainerFan();
-        else
-            PlayerLoseRandomTrainerFan();
     }
 }
 

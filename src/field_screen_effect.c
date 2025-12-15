@@ -1,5 +1,4 @@
 #include "global.h"
-#include "cable_club.h"
 #include "event_data.h"
 #include "fieldmap.h"
 #include "field_camera.h"
@@ -16,8 +15,6 @@
 #include "gpu_regs.h"
 #include "heal_location.h"
 #include "io_reg.h"
-#include "link.h"
-#include "link_rfu.h"
 #include "load_save.h"
 #include "main.h"
 #include "menu.h"
@@ -39,7 +36,6 @@
 #include "constants/heal_locations.h"
 #include "constants/songs.h"
 #include "constants/rgb.h"
-#include "trainer_hill.h"
 #include "fldeff.h"
 #include "battle.h"
 
@@ -236,29 +232,6 @@ static void Task_ReturnToFieldWirelessLink(u8 taskId)
     }
 }
 
-void Task_ReturnToFieldRecordMixing(u8 taskId)
-{
-    struct Task *task = &gTasks[taskId];
-
-    switch (task->tState)
-    {
-    case 0:
-        SetLinkStandbyCallback();
-        task->tState++;
-        break;
-    case 1:
-        if (IsLinkTaskFinished())
-            task->tState++;
-        break;
-    case 2:
-        StartSendingKeysToLink();
-        ResetAllMultiplayerState();
-        UnlockPlayerFieldControls();
-        DestroyTask(taskId);
-        break;
-    }
-}
-
 void FieldCB_ReturnToFieldWirelessLink(void)
 {
     LockPlayerFieldControls();
@@ -307,8 +280,7 @@ void FieldCB_WarpExitFadeFromWhite(void)
 
 void FieldCB_WarpExitFadeFromBlack(void)
 {
-    if (!OnTrainerHillEReaderChallengeFloor()) // always false
-        Overworld_PlaySpecialMapMusic();
+    Overworld_PlaySpecialMapMusic();
     FadeInFromBlack();
     SetUpWarpExitTask();
     LockPlayerFieldControls();

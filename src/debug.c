@@ -43,7 +43,7 @@
 #include "overworld.h"
 #include "palette.h"
 #include "party_menu.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "pokemon.h"
 #include "pokemon_icon.h"
 #include "pokemon_storage_system.h"
@@ -96,7 +96,6 @@ enum FlagsVarsDebugMenu
     DEBUG_FLAGVAR_MENU_ITEM_DEXFLAGS_ALL,
     DEBUG_FLAGVAR_MENU_ITEM_DEXFLAGS_RESET,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKEDEX,
-    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_NATDEX,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKENAV,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MATCH_CALL,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES,
@@ -290,7 +289,6 @@ static void DebugAction_FlagsVars_SetValue(u8 taskId);
 static void DebugAction_FlagsVars_PokedexFlags_All(u8 taskId);
 static void DebugAction_FlagsVars_PokedexFlags_Reset(u8 taskId);
 static void DebugAction_FlagsVars_SwitchDex(u8 taskId);
-static void DebugAction_FlagsVars_SwitchNatDex(u8 taskId);
 static void DebugAction_FlagsVars_SwitchPokeNav(u8 taskId);
 static void DebugAction_FlagsVars_SwitchMatchCall(u8 taskId);
 static void DebugAction_FlagsVars_ToggleFlyFlags(u8 taskId);
@@ -648,7 +646,6 @@ static const struct DebugMenuOption sDebugMenu_Actions_Flags[] =
     [DEBUG_FLAGVAR_MENU_ITEM_DEXFLAGS_ALL]         = { COMPOUND_STRING("Pokédex Flags All"),                 DebugAction_FlagsVars_PokedexFlags_All },
     [DEBUG_FLAGVAR_MENU_ITEM_DEXFLAGS_RESET]       = { COMPOUND_STRING("Pokédex Flags Reset"),               DebugAction_FlagsVars_PokedexFlags_Reset },
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKEDEX]       = { COMPOUND_STRING("Toggle {STR_VAR_1}Pokédex"),         DebugAction_ToggleFlag, DebugAction_FlagsVars_SwitchDex },
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_NATDEX]        = { COMPOUND_STRING("Toggle {STR_VAR_1}National Dex"),    DebugAction_ToggleFlag, DebugAction_FlagsVars_SwitchNatDex },
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKENAV]       = { COMPOUND_STRING("Toggle {STR_VAR_1}PokéNav"),         DebugAction_ToggleFlag, DebugAction_FlagsVars_SwitchPokeNav },
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MATCH_CALL]    = { COMPOUND_STRING("Toggle {STR_VAR_1}Match Call"),      DebugAction_ToggleFlag, DebugAction_FlagsVars_SwitchMatchCall },
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES]     = { COMPOUND_STRING("Toggle {STR_VAR_1}Running Shoes"),   DebugAction_ToggleFlag, DebugAction_FlagsVars_RunningShoes },
@@ -1001,9 +998,6 @@ static u8 Debug_CheckToggleFlags(u8 id)
     {
         case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKEDEX:
             result = FlagGet(FLAG_SYS_POKEDEX_GET);
-            break;
-        case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_NATDEX:
-            result = IsNationalPokedexEnabled();
             break;
         case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKENAV:
             result = FlagGet(FLAG_SYS_POKENAV_GET);
@@ -1850,7 +1844,7 @@ static void DebugAction_FlagsVars_SetValue(u8 taskId)
 static void DebugAction_FlagsVars_PokedexFlags_All(u8 taskId)
 {
     u16 i;
-    for (i = 0; i < NATIONAL_DEX_COUNT; i++)
+    for (i = 0; i < DEX_COUNT; i++)
     {
         GetSetPokedexFlag(i + 1, FLAG_SET_CAUGHT);
         GetSetPokedexFlag(i + 1, FLAG_SET_SEEN);
@@ -1864,7 +1858,7 @@ static void DebugAction_FlagsVars_PokedexFlags_Reset(u8 taskId)
     int boxId, boxPosition, partyId;
     u16 species;
 
-    // Reset Pokedex to emtpy
+    // Reset Pokedex to empty
     memset(&gSaveBlock1Ptr->dexCaught, 0, sizeof(gSaveBlock1Ptr->dexCaught));
     memset(&gSaveBlock1Ptr->dexSeen, 0, sizeof(gSaveBlock1Ptr->dexSeen));
 
@@ -1874,8 +1868,8 @@ static void DebugAction_FlagsVars_PokedexFlags_Reset(u8 taskId)
         if (GetMonData(&gPlayerParty[partyId], MON_DATA_SANITY_HAS_SPECIES))
         {
             species = GetMonData(&gPlayerParty[partyId], MON_DATA_SPECIES);
-            GetSetPokedexFlag(SpeciesToNationalPokedexNum(species), FLAG_SET_CAUGHT);
-            GetSetPokedexFlag(SpeciesToNationalPokedexNum(species), FLAG_SET_SEEN);
+            GetSetPokedexFlag(SpeciesToDexNum(species), FLAG_SET_CAUGHT);
+            GetSetPokedexFlag(SpeciesToDexNum(species), FLAG_SET_SEEN);
         }
     }
 
@@ -1887,8 +1881,8 @@ static void DebugAction_FlagsVars_PokedexFlags_Reset(u8 taskId)
             if (GetBoxMonData(&gPokemonStoragePtr->boxes[boxId][boxPosition], MON_DATA_SANITY_HAS_SPECIES))
             {
                 species = GetBoxMonData(&gPokemonStoragePtr->boxes[boxId][boxPosition], MON_DATA_SPECIES);
-                GetSetPokedexFlag(SpeciesToNationalPokedexNum(species), FLAG_SET_CAUGHT);
-                GetSetPokedexFlag(SpeciesToNationalPokedexNum(species), FLAG_SET_SEEN);
+                GetSetPokedexFlag(SpeciesToDexNum(species), FLAG_SET_CAUGHT);
+                GetSetPokedexFlag(SpeciesToDexNum(species), FLAG_SET_SEEN);
             }
         }
     }
@@ -1903,20 +1897,6 @@ static void DebugAction_FlagsVars_SwitchDex(u8 taskId)
     else
         PlaySE(SE_PC_LOGIN);
     FlagToggle(FLAG_SYS_POKEDEX_GET);
-}
-
-static void DebugAction_FlagsVars_SwitchNatDex(u8 taskId)
-{
-    if (IsNationalPokedexEnabled())
-    {
-        DisableNationalPokedex();
-        PlaySE(SE_PC_OFF);
-    }
-    else
-    {
-        EnableNationalPokedex();
-        PlaySE(SE_PC_LOGIN);
-    }
 }
 
 static void DebugAction_FlagsVars_SwitchPokeNav(u8 taskId)
@@ -2837,7 +2817,7 @@ static void DebugAction_Give_Pokemon_Move(u8 taskId)
 
 static void DebugAction_Give_Pokemon_ComplexCreateMon(u8 taskId) //https://github.com/ghoulslash/pokeemerald/tree/custom-givemon
 {
-    enum NationalDexOrder nationalDexNum;
+    enum DexOrder dexNum;
     int sentToPc;
     struct Pokemon mon;
     u8 i;
@@ -2946,13 +2926,13 @@ static void DebugAction_Give_Pokemon_ComplexCreateMon(u8 taskId) //https://githu
     }
 
     //Pokedex entry
-    nationalDexNum = SpeciesToNationalPokedexNum(species);
+    dexNum = SpeciesToDexNum(species);
     switch(sentToPc)
     {
     case MON_GIVEN_TO_PARTY:
     case MON_GIVEN_TO_PC:
-        GetSetPokedexFlag(nationalDexNum, FLAG_SET_SEEN);
-        GetSetPokedexFlag(nationalDexNum, FLAG_SET_CAUGHT);
+        GetSetPokedexFlag(dexNum, FLAG_SET_SEEN);
+        GetSetPokedexFlag(dexNum, FLAG_SET_CAUGHT);
         break;
     case MON_CANT_GIVE:
         break;

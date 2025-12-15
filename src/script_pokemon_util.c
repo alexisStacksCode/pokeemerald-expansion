@@ -15,7 +15,7 @@
 #include "overworld.h"
 #include "palette.h"
 #include "party_menu.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "pokemon.h"
 #include "pokemon_storage_system.h"
 #include "random.h"
@@ -102,15 +102,6 @@ static bool8 CheckPartyMonHasHeldItem(u16 item)
     return FALSE;
 }
 
-bool8 DoesPartyHaveEnigmaBerry(void)
-{
-    bool8 hasItem = CheckPartyMonHasHeldItem(ITEM_ENIGMA_BERRY_E_READER);
-    if (hasItem == TRUE)
-        GetBerryNameByBerryType(ItemIdToBerryType(ITEM_ENIGMA_BERRY_E_READER), gStringVar1);
-
-    return hasItem;
-}
-
 void CreateScriptedWildMon(u16 species, u8 level, u16 item)
 {
     u8 heldItem[2];
@@ -175,7 +166,7 @@ void ScriptSetMonMoveSlot(u8 monIndex, u16 move, u8 slot)
 void ChooseHalfPartyForBattle(void)
 {
     gMain.savedCallback = CB2_ReturnFromChooseHalfParty;
-    VarSet(VAR_FRONTIER_FACILITY, FACILITY_MULTI_OR_EREADER);
+    VarSet(VAR_FRONTIER_FACILITY, FACILITY_MULTI);
     InitChooseHalfPartyForBattle(0);
 }
 
@@ -334,7 +325,7 @@ void SetTeraType(struct ScriptContext *ctx)
  */
 static u32 ScriptGiveMonParameterized(u8 side, u8 slot, u16 species, u8 level, u16 item, enum PokeBall ball, u8 nature, u8 abilityNum, u8 gender, u8 *evs, u8 *ivs, u16 *moves, enum ShinyMode shinyMode, bool8 gmaxFactor, enum Type teraType, u8 dmaxLevel)
 {
-    enum NationalDexOrder nationalDexNum;
+    enum DexOrder nationalDexNum;
     int sentToPc;
     struct Pokemon mon;
     u32 i;
@@ -465,7 +456,7 @@ static u32 ScriptGiveMonParameterized(u8 side, u8 slot, u16 species, u8 level, u
     if (side == 0)
     {
         // set pokédex flags
-        nationalDexNum = SpeciesToNationalPokedexNum(species);
+        nationalDexNum = SpeciesToDexNum(species);
         if (sentToPc != MON_CANT_GIVE)
         {
             GetSetPokedexFlag(nationalDexNum, FLAG_SET_SEEN);

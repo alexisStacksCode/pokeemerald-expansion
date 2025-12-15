@@ -29,37 +29,6 @@
 #include "config/pokemon.h"
 #include "config/summary_screen.h"
 
-// Invalid Versions show as "----------" in Gen 4 and Gen 5's summary screen.
-// In Gens 6 and 7, invalid versions instead show "a distant land" in the summary screen.
-// In Gen 4 only, migrated Pokémon with Diamond, Pearl, or Platinum's ID show as "----------".
-// Gen 5 and up read Diamond, Pearl, or Platinum's ID as "Sinnoh".
-// In Gen 4 and up, migrated Pokémon with HeartGold or SoulSilver's ID show the otherwise unused "Johto" string.
-#define VERSION_SAPPHIRE 1
-#define VERSION_RUBY 2
-#define VERSION_EMERALD 3
-#define VERSION_FIRE_RED 4
-#define VERSION_LEAF_GREEN 5
-#define VERSION_HEART_GOLD 7
-#define VERSION_SOUL_SILVER 8
-#define VERSION_DIAMOND 10
-#define VERSION_PEARL 11
-#define VERSION_PLATINUM 12
-#define VERSION_GAMECUBE 15
-
-#define NUM_VERSIONS 15
-
-#define LANGUAGE_JAPANESE 1
-#define LANGUAGE_ENGLISH  2
-#define LANGUAGE_FRENCH   3
-#define LANGUAGE_ITALIAN  4
-#define LANGUAGE_GERMAN   5
-#define LANGUAGE_KOREAN   6 // 6 goes unused but the theory is it was meant to be Korean
-#define LANGUAGE_SPANISH  7
-#define NUM_LANGUAGES     7
-
-#define GAME_VERSION (VERSION_EMERALD)
-#define GAME_LANGUAGE (LANGUAGE_ENGLISH)
-
 // party sizes
 #define PARTY_SIZE 6
 #define MULTI_PARTY_SIZE (PARTY_SIZE / 2)
@@ -82,14 +51,10 @@
 #define OBJECT_EVENT_TEMPLATES_COUNT 64
 #define DECOR_MAX_SECRET_BASE 16
 #define DECOR_MAX_PLAYERS_HOUSE 12
-#define APPRENTICE_COUNT 4
-#define APPRENTICE_MAX_QUESTIONS 9
 #define MAX_REMATCH_ENTRIES 100 // only REMATCH_TABLE_ENTRIES (78) are used
 #define NUM_CONTEST_WINNERS 13
 #define UNION_ROOM_KB_ROW_COUNT 10
-#define GIFT_RIBBONS_COUNT 11
 #define SAVED_TRENDS_COUNT 5
-#define PYRAMID_BAG_ITEMS_COUNT 10
 #define ROAMER_COUNT 1 // Number of maximum concurrent active roamers
 
 // Bag constants
@@ -98,19 +63,6 @@
 #define BAG_POKEBALLS_COUNT 16
 #define BAG_TMHM_COUNT 64
 #define BAG_BERRIES_COUNT 46
-
-// Number of facilities for Ranking Hall.
-// 7 facilities for single mode + tower double mode + tower multi mode.
-// Excludes link modes. See RANKING_HALL_* in include/constants/battle_frontier.h
-#define HALL_FACILITIES_COUNT 9
-// Received via record mixing, 1 for each player other than yourself
-#define HALL_RECORDS_COUNT 3
-
-// Battle Frontier level modes.
-#define FRONTIER_LVL_50         0
-#define FRONTIER_LVL_OPEN       1
-#define FRONTIER_LVL_MODE_COUNT 2
-#define FRONTIER_LVL_TENT       FRONTIER_LVL_MODE_COUNT // Special usage for indicating Battle Tent
 
 #define TRAINER_ID_LENGTH 4
 #define MAX_MON_MOVES 4
@@ -138,10 +90,6 @@
 #define MOVE_NAME_LENGTH 16
 #define NUM_QUESTIONNAIRE_WORDS 4
 #define QUIZ_QUESTION_LEN 9
-#define WONDER_CARD_TEXT_LENGTH 40
-#define WONDER_NEWS_TEXT_LENGTH 40
-#define WONDER_CARD_BODY_TEXT_LINES 4
-#define WONDER_NEWS_BODY_TEXT_LINES 10
 #define TYPE_NAME_LENGTH 8
 #define ABILITY_NAME_LENGTH 16
 #define TRAINER_NAME_LENGTH 10
@@ -149,54 +97,73 @@
 
 #define MAX_STAMP_CARD_STAMPS 7
 
-#define MALE 0
-#define FEMALE 1
-#define GENDER_COUNT 2
+enum
+{
+    MALE,
+    FEMALE,
+    GENDER_COUNT,
+};
 
-#define NUM_BARD_SONG_WORDS    6
-#define NUM_STORYTELLER_TALES  4
-#define NUM_TRADER_ITEMS       4
-#define GIDDY_MAX_TALES       10
-#define GIDDY_MAX_QUESTIONS    8
+enum
+{
+    OPTIONS_BUTTON_MODE_NORMAL,
+    OPTIONS_BUTTON_MODE_LR,
+    OPTIONS_BUTTON_MODE_L_EQUALS_A,
+};
 
-#define OPTIONS_BUTTON_MODE_NORMAL 0
-#define OPTIONS_BUTTON_MODE_LR 1
-#define OPTIONS_BUTTON_MODE_L_EQUALS_A 2
+enum
+{
+    OPTIONS_TEXT_SPEED_SLOW,
+    OPTIONS_TEXT_SPEED_MID,
+    OPTIONS_TEXT_SPEED_FAST,
+    OPTIONS_TEXT_SPEED_INSTANT,
+};
 
-#define OPTIONS_TEXT_SPEED_SLOW 0
-#define OPTIONS_TEXT_SPEED_MID 1
-#define OPTIONS_TEXT_SPEED_FAST 2
-#define OPTIONS_TEXT_SPEED_INSTANT 3
+enum
+{
+    OPTIONS_SOUND_MONO,
+    OPTIONS_SOUND_STEREO,
+};
 
-#define OPTIONS_SOUND_MONO 0
-#define OPTIONS_SOUND_STEREO 1
+enum
+{
+    OPTIONS_BATTLE_STYLE_SHIFT,
+    OPTIONS_BATTLE_STYLE_SET,
+};
 
-#define OPTIONS_BATTLE_STYLE_SHIFT 0
-#define OPTIONS_BATTLE_STYLE_SET 1
+enum
+{
+    DIR_NONE,
+    DIR_SOUTH,
+    DIR_NORTH,
+    DIR_WEST,
+    DIR_EAST,
+    DIR_SOUTHWEST,
+    DIR_SOUTHEAST,
+    DIR_NORTHWEST,
+    DIR_NORTHEAST,
+};
 
-#define DIR_NONE        0
-#define DIR_SOUTH       1
-#define DIR_NORTH       2
-#define DIR_WEST        3
-#define DIR_EAST        4
-#define DIR_SOUTHWEST   5
-#define DIR_SOUTHEAST   6
-#define DIR_NORTHWEST   7
-#define DIR_NORTHEAST   8
 #define CARDINAL_DIRECTION_COUNT DIR_SOUTHWEST
 
-#define AXIS_X     0
-#define AXIS_Y     1
-#define AXIS_COUNT 2
+enum
+{
+    AXIS_X,
+    AXIS_Y,
+    AXIS_COUNT,
+};
 
-#define CONNECTION_INVALID -1
-#define CONNECTION_NONE     0
-#define CONNECTION_SOUTH    1
-#define CONNECTION_NORTH    2
-#define CONNECTION_WEST     3
-#define CONNECTION_EAST     4
-#define CONNECTION_DIVE     5
-#define CONNECTION_EMERGE   6
+enum
+{
+    CONNECTION_INVALID = -1,
+    CONNECTION_NONE,
+    CONNECTION_SOUTH,
+    CONNECTION_NORTH,
+    CONNECTION_WEST,
+    CONNECTION_EAST,
+    CONNECTION_DIVE,
+    CONNECTION_EMERGE,
+};
 
 #if TESTING
 #include "config/test.h"

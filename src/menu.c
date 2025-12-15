@@ -14,7 +14,7 @@
 #include "menu.h"
 #include "menu_helpers.h"
 #include "palette.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "pokemon_icon.h"
 #include "region_map.h"
 #include "sound.h"
@@ -2253,7 +2253,7 @@ void BufferSaveMenuText(u8 textId, u8 *dest, u8 color)
             StringCopy(string, gSaveBlock2Ptr->playerName);
             break;
         case SAVE_MENU_CAUGHT:
-            string = ConvertIntToDecimalStringN(string, GetNationalPokedexCount(FLAG_GET_CAUGHT), STR_CONV_MODE_LEFT_ALIGN, 4);
+            string = ConvertIntToDecimalStringN(string, GetDexCount(FLAG_GET_CAUGHT), STR_CONV_MODE_LEFT_ALIGN, 4);
             *string = EOS;
             break;
         case SAVE_MENU_PLAY_TIME:

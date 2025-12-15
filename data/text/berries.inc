@@ -1,8 +1,3 @@
-PetalburgCity_Gym_Text_GiveEnigmaBerry:
-	.string "DAD: Hi, {PLAYER}!\p"
-	.string "I just received a very rare BERRY.\n"
-	.string "I'd like you to have it.$"
-
 Route104_Text_PlantBerriesInSoilTakeThis:
 	.string "If you see BERRIES growing in loamy\n"
 	.string "soil, feel free to take them.\p"
@@ -33,15 +28,6 @@ Route111_Text_GoingToTryToMakeDifferentColorBerries:
 Route111_Text_WhatColorBerriesToLookForToday:
 	.string "I wonder what color BERRIES I'll look\n"
 	.string "for today?$"
-
-Route114_Text_LoveUsingBerryCrushShareBerry:
-	.string "I love using the BERRY CRUSH machine,\n"
-	.string "so I'm collecting BERRIES.\p"
-	.string "I'll share one with you, if you'd like.$"
-
-Route114_Text_TryBerryCrushWithFriends:
-	.string "You should try the BERRY CRUSH\n"
-	.string "machine with your friends.$"
 
 Route114_Text_FunToThinkAboutBerries:
 	.string "Which BERRY should be planted?\n"

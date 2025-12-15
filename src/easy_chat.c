@@ -1,6 +1,5 @@
 #include "global.h"
 #include "malloc.h"
-#include "bard_music.h"
 #include "bg.h"
 #include "data.h"
 #include "decompress.h"
@@ -15,12 +14,11 @@
 #include "graphics.h"
 #include "international_string_util.h"
 #include "main.h"
-#include "mystery_gift.h"
 #include "menu.h"
 #include "move.h"
 #include "overworld.h"
 #include "palette.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "random.h"
 #include "sound.h"
 #include "string_util.h"
@@ -113,7 +111,6 @@ static void SetKeyboardCursorToLastColumn(void);
 static u8 GetLastAlphabetColumn(u8);
 static void ReduceToValidWordSelectColumn(void);
 static bool8 IsSelectedWordIndexInvalid(void);
-static int DidPlayerInputMysteryGiftPhrase(void);
 static u16 DidPlayerInputABerryMasterWifePhrase(void);
 static bool8 InitEasyChatScreenControl_(void);
 static void LoadEasyChatPalettes(void);
@@ -212,7 +209,6 @@ static void SetRectangleCursorPos_GroupMode(s8, s8);
 static void SetRectangleCursorPos_AlphabetMode(s8, s8);
 static void SpriteCB_WordSelectCursor(struct Sprite *);
 static void SetWordSelectCursorPos(u8, u8);
-static bool8 EasyChatIsNationalPokedexEnabled(void);
 static u16 GetRandomUnlockedEasyChatPokemon(void);
 static void SetUnlockedEasyChatGroups(void);
 static void SetUnlockedWordsByAlphabet(void);
@@ -500,18 +496,6 @@ static const struct EasyChatScreenTemplate sEasyChatScreenTemplates[] = {
         .confirmText2 = gText_IsAsShownOkay,
     },
     {
-        .type = EASY_CHAT_TYPE_BARD_SONG,
-        .numColumns = 2,
-        .numRows = 3,
-        .frameId = FRAMEID_GENERAL_2x3,
-        .fourFooterOptions = FALSE,
-        .titleText = gText_TheBardsSong,
-        .instructionsText1 = gText_ChangeJustOneWordOrPhrase,
-        .instructionsText2 = gText_AndImproveTheBardsSong,
-        .confirmText1 = gText_TheBardsSong2,
-        .confirmText2 = gText_IsAsShownOkay,
-    },
-    {
         .type = EASY_CHAT_TYPE_FAN_CLUB,
         .numColumns = 1,
         .numRows = 1,
@@ -582,30 +566,6 @@ static const struct EasyChatScreenTemplate sEasyChatScreenTemplates[] = {
         .instructionsText2 = gText_SetTheQuizAnswer,
         .confirmText1 = gText_IsThisQuizOK,
         .confirmText2 = NULL,
-    },
-    {
-        .type = EASY_CHAT_TYPE_BARD_SONG,
-        .numColumns = 2,
-        .numRows = 3,
-        .frameId = FRAMEID_GENERAL_2x3,
-        .fourFooterOptions = FALSE,
-        .titleText = gText_TheBardsSong,
-        .instructionsText1 = gText_ChangeJustOneWordOrPhrase,
-        .instructionsText2 = gText_AndImproveTheBardsSong,
-        .confirmText1 = gText_TheBardsSong2,
-        .confirmText2 = gText_IsAsShownOkay,
-    },
-    {
-        .type = EASY_CHAT_TYPE_APPRENTICE,
-        .numColumns = 2,
-        .numRows = 3,
-        .frameId = FRAMEID_GENERAL_2x3,
-        .fourFooterOptions = FALSE,
-        .titleText = gText_ApprenticesPhrase,
-        .instructionsText1 = gText_FindWordsWhichFit,
-        .instructionsText2 = gText_TheTrainersImage,
-        .confirmText1 = gText_ApprenticePhrase,
-        .confirmText2 = gText_IsAsShownOkay,
     },
     {
         .type = EASY_CHAT_TYPE_GOOD_SAYING,
@@ -689,13 +649,6 @@ static const u8 sAlphabetGroupIdMap[NUM_ALPHABET_ROWS][NUM_ALPHABET_COLUMNS] = {
     { 7,  8,  9, 10, 11, 12,  0},
     {13, 14, 15, 16, 17, 18, 19},
     {20, 21, 22, 23, 24, 25, 26},
-};
-
-static const u16 sMysteryGiftPhrase[NUM_QUESTIONNAIRE_WORDS] = {
-    EC_WORD_LINK,
-    EC_WORD_TOGETHER,
-    EC_WORD_WITH,
-    EC_WORD_ALL,
 };
 
 static const u16 sBerryMasterWifePhrases[][2] = {
@@ -1458,7 +1411,6 @@ void ShowEasyChatScreen(void)
 {
     int i;
     u16 *words;
-    struct MauvilleManBard *bard;
     u8 displayedPersonType = EASY_CHAT_PERSON_DISPLAY_NONE;
     switch (gSpecialVar_0x8004)
     {
@@ -1476,13 +1428,6 @@ void ShowEasyChatScreen(void)
         break;
     case EASY_CHAT_TYPE_MAIL:
         words = gSaveBlock1Ptr->mail[gSpecialVar_0x8005].words;
-        break;
-    case EASY_CHAT_TYPE_BARD_SONG:
-        bard = &gSaveBlock1Ptr->oldMan.bard;
-        for (i = 0; i < NUM_BARD_SONG_WORDS; i ++)
-            bard->newSongLyrics[i] = bard->songLyrics[i];
-
-        words = bard->newSongLyrics;
         break;
     case EASY_CHAT_TYPE_INTERVIEW:
         words = gSaveBlock1Ptr->tvShows[gSpecialVar_0x8005].bravoTrainer.words;
@@ -1534,11 +1479,7 @@ void ShowEasyChatScreen(void)
     case EASY_CHAT_TYPE_QUIZ_SET_ANSWER:
         words = &gSaveBlock1Ptr->lilycoveLady.quiz.correctAnswer;
         break;
-    case EASY_CHAT_TYPE_APPRENTICE:
-        words = gSaveBlock2Ptr->apprentices[0].speechWon;
-        break;
     case EASY_CHAT_TYPE_QUESTIONNAIRE:
-        words = GetQuestionnaireWordsPtr();
         break;
     default:
         return;
@@ -2070,8 +2011,7 @@ static u16 HandleEasyChatInput_ConfirmLyricsYesNo(void)
 
 static u16 StartConfirmExitPrompt(void)
 {
-    if (sEasyChatScreen->type == EASY_CHAT_TYPE_APPRENTICE
-     || sEasyChatScreen->type == EASY_CHAT_TYPE_CONTEST_INTERVIEW)
+    if (sEasyChatScreen->type == EASY_CHAT_TYPE_CONTEST_INTERVIEW)
     {
         sEasyChatScreen->inputStateBackup = sEasyChatScreen->inputState;
         sEasyChatScreen->inputState = INPUTSTATE_WAIT_FOR_MSG;
@@ -2088,19 +2028,8 @@ static u16 StartConfirmExitPrompt(void)
 static int DoDeleteAllButton(void)
 {
     sEasyChatScreen->inputStateBackup = sEasyChatScreen->inputState;
-    if (sEasyChatScreen->type != EASY_CHAT_TYPE_BARD_SONG)
-    {
-        // Show Delete yes/no
-        sEasyChatScreen->inputState = INPUTSTATE_DELETE_ALL_YES_NO;
-        return ECFUNC_PROMPT_DELETE_ALL;
-    }
-    else
-    {
-        // Cannot delete lyrics when setting Bard's song
-        sEasyChatScreen->inputStateBackup = sEasyChatScreen->inputState;
-        sEasyChatScreen->inputState = INPUTSTATE_WAIT_FOR_MSG;
-        return ECFUNC_MSG_CANT_DELETE_LYRICS;
-    }
+    sEasyChatScreen->inputState = INPUTSTATE_DELETE_ALL_YES_NO;
+    return ECFUNC_PROMPT_DELETE_ALL;
 }
 
 static u16 TryConfirmWords(void)
@@ -2152,8 +2081,7 @@ static u16 TryConfirmWords(void)
         sEasyChatScreen->inputState = INPUTSTATE_CONFIRM_WORDS_YES_NO;
         return ECFUNC_PROMPT_CONFIRM;
     }
-    else if (sEasyChatScreen->type == EASY_CHAT_TYPE_APPRENTICE
-          || sEasyChatScreen->type == EASY_CHAT_TYPE_CONTEST_INTERVIEW)
+    else if (sEasyChatScreen->type == EASY_CHAT_TYPE_CONTEST_INTERVIEW)
     {
         if (IsCurrentPhraseEmpty())
         {
@@ -2252,16 +2180,8 @@ static int StartSwitchKeyboardMode(void)
 
 static int DeleteSelectedWord(void)
 {
-    if (sEasyChatScreen->type == EASY_CHAT_TYPE_BARD_SONG)
-    {
-        PlaySE(SE_FAILURE);
-        return ECFUNC_NONE;
-    }
-    else
-    {
-        SetSelectedWord(EC_EMPTY_WORD);
-        return ECFUNC_REPRINT_PHRASE;
-    }
+    SetSelectedWord(EC_EMPTY_WORD);
+    return ECFUNC_REPRINT_PHRASE;
 }
 
 static int SelectNewWord(void)
@@ -2276,16 +2196,8 @@ static int SelectNewWord(void)
     else
     {
         SetSelectedWord(easyChatWord);
-        if (sEasyChatScreen->type != EASY_CHAT_TYPE_BARD_SONG)
-        {
-            sEasyChatScreen->inputState = INPUTSTATE_PHRASE;
-            return ECFUNC_CLOSE_WORD_SELECT;
-        }
-        else
-        {
-            sEasyChatScreen->inputState = INPUTSTATE_START_CONFIRM_LYRICS;
-            return ECFUNC_PROMPT_CONFIRM_LYRICS;
-        }
+        sEasyChatScreen->inputState = INPUTSTATE_PHRASE;
+        return ECFUNC_CLOSE_WORD_SELECT;
     }
 }
 
@@ -2971,10 +2883,7 @@ static void SetSpecialEasyChatResult(void)
         FlagSet(FLAG_SYS_CHAT_USED);
         break;
     case EASY_CHAT_TYPE_QUESTIONNAIRE:
-        if (DidPlayerInputMysteryGiftPhrase())
-            gSpecialVar_0x8004 = 2;
-        else
-            gSpecialVar_0x8004 = 0;
+        gSpecialVar_0x8004 = 0;
         break;
     case EASY_CHAT_TYPE_TRENDY_PHRASE:
         BufferCurrentPhraseToStringVar2();
@@ -2984,11 +2893,6 @@ static void SetSpecialEasyChatResult(void)
         gSpecialVar_0x8004 = DidPlayerInputABerryMasterWifePhrase();
         break;
     }
-}
-
-static int DidPlayerInputMysteryGiftPhrase(void)
-{
-    return !IsPhraseDifferentThanPlayerInput(sMysteryGiftPhrase, ARRAY_COUNT(sMysteryGiftPhrase));
 }
 
 static u16 DidPlayerInputABerryMasterWifePhrase(void)
@@ -5115,8 +5019,6 @@ static bool8 IsEasyChatGroupUnlocked(u8 groupId)
     case EC_GROUP_MOVE_1:
     case EC_GROUP_MOVE_2:
         return FlagGet(FLAG_SYS_GAME_CLEAR);
-    case EC_GROUP_POKEMON_NATIONAL:
-        return EasyChatIsNationalPokedexEnabled();
     default:
         return TRUE;
     }
@@ -5125,7 +5027,7 @@ static bool8 IsEasyChatGroupUnlocked(u8 groupId)
 u16 EasyChat_GetNumWordsInGroup(u8 groupId)
 {
     if (groupId == EC_GROUP_POKEMON)
-        return GetNationalPokedexCount(FLAG_GET_SEEN);
+        return GetDexCount(FLAG_GET_SEEN);
 
     if (IsEasyChatGroupUnlocked(groupId))
         return gEasyChatGroups[groupId].numEnabledWords;
@@ -5152,7 +5054,6 @@ static bool8 IsEasyChatWordInvalid(u16 easyChatWord)
     switch (groupId)
     {
     case EC_GROUP_POKEMON:
-    case EC_GROUP_POKEMON_NATIONAL:
     case EC_GROUP_MOVE_1:
     case EC_GROUP_MOVE_2:
         list = gEasyChatGroups[groupId].wordData.valueList;
@@ -5165,35 +5066,6 @@ static bool8 IsEasyChatWordInvalid(u16 easyChatWord)
     }
 
     if (index >= numWords)
-        return TRUE;
-    else
-        return FALSE;
-}
-
-bool8 IsBardWordInvalid(u16 easyChatWord)
-{
-    int numWordsInGroup;
-    u8 groupId = EC_GROUP(easyChatWord);
-    u32 index = EC_INDEX(easyChatWord);
-    if (groupId >= EC_NUM_GROUPS)
-        return TRUE;
-
-    switch (groupId)
-    {
-    case EC_GROUP_POKEMON:
-    case EC_GROUP_POKEMON_NATIONAL:
-        numWordsInGroup = gNumBardWords_Species;
-        break;
-    case EC_GROUP_MOVE_1:
-    case EC_GROUP_MOVE_2:
-        numWordsInGroup = gNumBardWords_Moves;
-        break;
-    default:
-        numWordsInGroup = gEasyChatGroups[groupId].numWords;
-        break;
-    }
-
-    if (numWordsInGroup <= index)
         return TRUE;
     else
         return FALSE;
@@ -5526,11 +5398,6 @@ static u16 UNUSED GetRandomUnlockedTrendySaying(void)
     return EC_EMPTY_WORD;
 }
 
-static bool8 EasyChatIsNationalPokedexEnabled(void)
-{
-    return IsNationalPokedexEnabled();
-}
-
 static u16 GetRandomUnlockedEasyChatPokemon(void)
 {
     u16 i;
@@ -5545,7 +5412,7 @@ static u16 GetRandomUnlockedEasyChatPokemon(void)
     numWords = gEasyChatGroups[EC_GROUP_POKEMON].numWords;
     for (i = 0; i < numWords; i++)
     {
-        enum NationalDexOrder dexNum = SpeciesToNationalPokedexNum(*species);
+        enum DexOrder dexNum = SpeciesToDexNum(*species);
         if (GetSetPokedexFlag(dexNum, FLAG_GET_SEEN))
         {
             if (index)
@@ -5616,7 +5483,7 @@ static void SetUnlockedEasyChatGroups(void)
     int i;
 
     sWordData->numUnlockedGroups = 0;
-    if (GetNationalPokedexCount(FLAG_GET_SEEN))
+    if (GetDexCount(FLAG_GET_SEEN))
         sWordData->unlockedGroupIds[sWordData->numUnlockedGroups++] = EC_GROUP_POKEMON;
 
     // These groups are unlocked automatically
@@ -5632,9 +5499,6 @@ static void SetUnlockedEasyChatGroups(void)
 
     if (FlagGet(FLAG_UNLOCKED_TRENDY_SAYINGS))
         sWordData->unlockedGroupIds[sWordData->numUnlockedGroups++] = EC_GROUP_TRENDY_SAYING;
-
-    if (IsNationalPokedexEnabled())
-        sWordData->unlockedGroupIds[sWordData->numUnlockedGroups++] = EC_GROUP_POKEMON_NATIONAL;
 }
 
 static u8 GetNumUnlockedEasyChatGroups(void)
@@ -5809,10 +5673,10 @@ static bool8 IsEasyChatIndexAndGroupUnlocked(u16 wordIndex, u8 groupId)
     switch (groupId)
     {
     case EC_GROUP_POKEMON:
-        return GetSetPokedexFlag(SpeciesToNationalPokedexNum(wordIndex), FLAG_GET_SEEN);
+        return GetSetPokedexFlag(SpeciesToDexNum(wordIndex), FLAG_GET_SEEN);
     case EC_GROUP_POKEMON_NATIONAL:
         if (IsRestrictedWordSpecies(wordIndex))
-            GetSetPokedexFlag(SpeciesToNationalPokedexNum(wordIndex), FLAG_GET_SEEN);
+            GetSetPokedexFlag(SpeciesToDexNum(wordIndex), FLAG_GET_SEEN);
         return TRUE;
     case EC_GROUP_MOVE_1:
     case EC_GROUP_MOVE_2:

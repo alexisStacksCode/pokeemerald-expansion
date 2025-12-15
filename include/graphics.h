@@ -185,25 +185,6 @@ extern const u16 gWallClockFemale_Pal[];
 extern const u32 gWallClockStart_Tilemap[];
 extern const u32 gWallClockView_Tilemap[];
 
-extern const u32 gBerryFixGbaConnect_Gfx[];
-extern const u32 gBerryFixGbaConnect_Tilemap[];
-extern const u16 gBerryFixGbaConnect_Pal[];
-extern const u32 gBerryFixGameboyLogo_Gfx[];
-extern const u32 gBerryFixGameboyLogo_Tilemap[];
-extern const u16 gBerryFixGameboyLogo_Pal[];
-extern const u32 gBerryFixGbaTransfer_Gfx[];
-extern const u32 gBerryFixGbaTransfer_Tilemap[];
-extern const u16 gBerryFixGbaTransfer_Pal[];
-extern const u32 gBerryFixGbaTransferHighlight_Gfx[];
-extern const u32 gBerryFixGbaTransferHighlight_Tilemap[];
-extern const u16 gBerryFixGbaTransferHighlight_Pal[];
-extern const u32 gBerryFixGbaTransferError_Gfx[];
-extern const u32 gBerryFixGbaTransferError_Tilemap[];
-extern const u16 gBerryFixGbaTransferError_Pal[];
-extern const u32 gBerryFixWindow_Gfx[];
-extern const u32 gBerryFixWindow_Tilemap[];
-extern const u16 gBerryFixWindow_Pal[];
-
 extern const u32 gBattleTextboxTiles[];
 extern const u32 gBattleTextboxTilemap[];
 extern const u16 gBattleTextboxPalette[];
@@ -3333,11 +3314,6 @@ extern const u16 gPokenavConditionCancel_Pal[];
 extern const u8 gUsePokeblockUpDown_Gfx[];
 extern const u16 gUsePokeblockUpDown_Pal[];
 extern const u16 gUsePokeblockCondition_Pal[];
-
-// Berry Crush
-extern const u32 gBerryCrush_Crusher_Gfx[];
-extern const u16 gBerryCrush_Crusher_Pal[];
-extern const u32 gBerryCrush_TextWindows_Tilemap[];
 
 // PokéNav
 extern const u32 gPokenavMessageBox_Gfx[];

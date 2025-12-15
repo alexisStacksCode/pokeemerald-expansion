@@ -5,7 +5,8 @@
 #include "main.h"
 #include "menu_helpers.h"
 
-enum {
+enum
+{
     ITEMMENULOCATION_FIELD,
     ITEMMENULOCATION_BATTLE,
     ITEMMENULOCATION_PARTY,
@@ -15,7 +16,6 @@ enum {
     ITEMMENULOCATION_ITEMPC,
     ITEMMENULOCATION_FAVOR_LADY,
     ITEMMENULOCATION_QUIZ_LADY,
-    ITEMMENULOCATION_APPRENTICE,
     ITEMMENULOCATION_WALLY,
     ITEMMENULOCATION_PCBOX,
     ITEMMENULOCATION_BERRY_TREE_MULCH,
@@ -23,7 +23,8 @@ enum {
 };
 
 // Window IDs for the item menu
-enum {
+enum
+{
     ITEMWIN_1x1,
     ITEMWIN_1x2,
     ITEMWIN_2x2,
@@ -99,7 +100,6 @@ extern u16 gSpecialVar_ItemId;
 void CB2_GoToItemDepositMenu(void);
 void FavorLadyOpenBagMenu(void);
 void QuizLadyOpenBagMenu(void);
-void ApprenticeOpenBagMenu(void);
 void CB2_BagMenuFromBattle(void);
 void UpdatePocketListPosition(u8 pocketId);
 void CB2_ReturnToBagMenuPocket(void);

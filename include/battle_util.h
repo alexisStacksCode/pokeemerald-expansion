@@ -166,9 +166,7 @@ struct DamageContext
     u32 isSelfInflicted:1;
     u32 weather:16;
     u32 fixedBasePower:8;
-    u32 padding2:8;
     u32 chosenMove:16; // May be different to 'move', e.g. for Z moves.
-    u32 padding3:16;
     uq4_12_t typeEffectivenessModifier;
     enum Ability abilityAtk;
     enum Ability abilityDef;
@@ -181,7 +179,6 @@ struct BattleContext
     u32 battlerAtk:3;
     u32 battlerDef:3;
     u32 currentMove:16;
-    u32 padding:10;
     enum Ability abilities[MAX_BATTLERS_COUNT];
     enum HoldEffect holdEffects[MAX_BATTLERS_COUNT];
 };

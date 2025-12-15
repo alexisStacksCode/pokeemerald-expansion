@@ -4,36 +4,28 @@
 #include "battle_controllers.h"
 #include "battle_message.h"
 #include "battle_setup.h"
-#include "battle_tower.h"
 #include "battle_z_move.h"
 #include "data.h"
 #include "event_data.h"
-#include "frontier_util.h"
 #include "graphics.h"
 #include "international_string_util.h"
 #include "item.h"
-#include "link.h"
 #include "menu.h"
 #include "palette.h"
-#include "recorded_battle.h"
 #include "string_util.h"
 #include "strings.h"
 #include "test_runner.h"
 #include "text.h"
-#include "trainer_hill.h"
 #include "trainer_slide.h"
 #include "window.h"
 #include "line_break.h"
 #include "constants/abilities.h"
-#include "constants/battle_dome.h"
 #include "constants/battle_string_ids.h"
-#include "constants/frontier_util.h"
 #include "constants/items.h"
 #include "constants/moves.h"
 #include "constants/opponents.h"
 #include "constants/species.h"
 #include "constants/trainers.h"
-#include "constants/trainer_hill.h"
 #include "constants/weather.h"
 
 struct BattleWindowText
@@ -2121,7 +2113,7 @@ void BufferStringBattle(enum StringID stringID, u32 battler)
                 stringPtr = sText_LegendaryPkmnAppeared;
             else if (IsDoubleBattle() && IsValidForBattle(GetBattlerMon(GetBattlerAtPosition(B_POSITION_OPPONENT_RIGHT))))
                 stringPtr = sText_TwoWildPkmnAppeared;
-            else if (gBattleTypeFlags & BATTLE_TYPE_WALLY_TUTORIAL)
+            else if (gBattleTypeFlags & BATTLE_TYPE_TUTORIAL)
                 stringPtr = sText_WildPkmnAppearedPause;
             else
                 stringPtr = sText_WildPkmnAppeared;
@@ -2265,10 +2257,6 @@ void BufferStringBattle(enum StringID stringID, u32 battler)
                     else if (gBattleTypeFlags & BATTLE_TYPE_MULTI)
                     {
                         stringPtr = sText_LinkTrainerMultiSentOutPkmn;
-                    }
-                    else if (TRAINER_BATTLE_PARAM.opponentA == TRAINER_UNION_ROOM)
-                    {
-                        stringPtr = sText_Trainer1SentOutPkmn2;
                     }
                     else
                     {
@@ -2494,37 +2482,6 @@ static const u8 *BattleStringGetOpponentNameByTrainerId(u16 trainerId, u8 *text,
         ConvertInternationalString(text, gBattleResources->secretBase->language);
         toCpy = text;
     }
-    else if (trainerId == TRAINER_UNION_ROOM)
-    {
-        toCpy = gLinkPlayers[multiplayerId ^ BIT_SIDE].name;
-    }
-    else if (trainerId == TRAINER_LINK_OPPONENT)
-    {
-        if (gBattleTypeFlags & BATTLE_TYPE_MULTI)
-            toCpy = gLinkPlayers[GetBattlerMultiplayerId(battler)].name;
-        else
-            toCpy = gLinkPlayers[GetBattlerMultiplayerId(battler) & BIT_SIDE].name;
-    }
-    else if (trainerId == TRAINER_FRONTIER_BRAIN)
-    {
-        CopyFrontierBrainTrainerName(text);
-        toCpy = text;
-    }
-    else if (gBattleTypeFlags & BATTLE_TYPE_FRONTIER)
-    {
-        GetFrontierTrainerName(text, trainerId);
-        toCpy = text;
-    }
-    else if (gBattleTypeFlags & BATTLE_TYPE_TRAINER_HILL)
-    {
-        GetTrainerHillTrainerName(text, trainerId);
-        toCpy = text;
-    }
-    else if (gBattleTypeFlags & BATTLE_TYPE_EREADER_TRAINER)
-    {
-        GetEreaderTrainerName(text);
-        toCpy = text;
-    }
     else
     {
         toCpy = GetTrainerNameFromId(trainerId);
@@ -2600,24 +2557,7 @@ static const u8 *BattleStringGetTrainerName(u8 *text, u8 multiplayerId, u8 battl
 
 static const u8 *BattleStringGetOpponentClassByTrainerId(u16 trainerId)
 {
-    const u8 *toCpy;
-
-    if (gBattleTypeFlags & BATTLE_TYPE_SECRET_BASE)
-        toCpy = gTrainerClasses[GetSecretBaseTrainerClass()].name;
-    else if (trainerId == TRAINER_UNION_ROOM)
-        toCpy = gTrainerClasses[GetUnionRoomTrainerClass()].name;
-    else if (trainerId == TRAINER_FRONTIER_BRAIN)
-        toCpy = gTrainerClasses[GetFrontierBrainTrainerClass()].name;
-    else if (gBattleTypeFlags & BATTLE_TYPE_FRONTIER)
-        toCpy = gTrainerClasses[GetFrontierOpponentClass(trainerId)].name;
-    else if (gBattleTypeFlags & BATTLE_TYPE_TRAINER_HILL)
-        toCpy = gTrainerClasses[GetTrainerHillOpponentClass(trainerId)].name;
-    else if (gBattleTypeFlags & BATTLE_TYPE_EREADER_TRAINER)
-        toCpy = gTrainerClasses[GetEreaderTrainerClassId()].name;
-    else
-        toCpy = gTrainerClasses[GetTrainerClassFromId(trainerId)].name;
-
-    return toCpy;
+    return gTrainerClasses[GetTrainerClassFromId(trainerId)].name;
 }
 
 // Ensure the defined length for an item name can contain the full defined length of a berry name.
@@ -2778,49 +2718,8 @@ u32 BattleStringExpandPlaceholders(const u8 *src, u8 *dst, u32 dstSize)
                     toCpy = GetMoveName(gBattleMsgDataPtr->originallyUsedMove);
                 break;
             case B_TXT_LAST_ITEM: // last used item
-                if (gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK))
-                {
-                    if (gLastUsedItem == ITEM_ENIGMA_BERRY_E_READER)
-                    {
-                        if (!(gBattleTypeFlags & BATTLE_TYPE_MULTI))
-                        {
-                            if ((gBattleScripting.multiplayerId != 0 && (gPotentialItemEffectBattler & BIT_SIDE))
-                                || (gBattleScripting.multiplayerId == 0 && !(gPotentialItemEffectBattler & BIT_SIDE)))
-                            {
-                                StringCopy(text, gEnigmaBerries[gPotentialItemEffectBattler].name);
-                                StringAppend(text, sText_BerrySuffix);
-                                toCpy = text;
-                            }
-                            else
-                            {
-                                toCpy = sText_EnigmaBerry;
-                            }
-                        }
-                        else
-                        {
-                            if (gLinkPlayers[gBattleScripting.multiplayerId].id == gPotentialItemEffectBattler)
-                            {
-                                StringCopy(text, gEnigmaBerries[gPotentialItemEffectBattler].name);
-                                StringAppend(text, sText_BerrySuffix);
-                                toCpy = text;
-                            }
-                            else
-                            {
-                                toCpy = sText_EnigmaBerry;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        CopyItemName(gLastUsedItem, text);
-                        toCpy = text;
-                    }
-                }
-                else
-                {
-                    CopyItemName(gLastUsedItem, text);
-                    toCpy = text;
-                }
+                CopyItemName(gLastUsedItem, text);
+                toCpy = text;
                 break;
             case B_TXT_LAST_ABILITY: // last used ability
                 toCpy = gAbilitiesInfo[gLastUsedAbility].name;
@@ -2864,51 +2763,13 @@ u32 BattleStringExpandPlaceholders(const u8 *src, u8 *dst, u32 dstSize)
                     textStart[nameLength] = EOS;
                 }
                 break;
-            case B_TXT_LINK_PLAYER_NAME: // link player name
-                toCpy = gLinkPlayers[multiplayerId].name;
-                break;
-            case B_TXT_LINK_PARTNER_NAME: // link partner name
-                toCpy = gLinkPlayers[GetBattlerMultiplayerId(BATTLE_PARTNER(gLinkPlayers[multiplayerId].id))].name;
-                break;
-            case B_TXT_LINK_OPPONENT1_NAME: // link opponent 1 name
-                toCpy = gLinkPlayers[GetBattlerMultiplayerId(BATTLE_OPPOSITE(gLinkPlayers[multiplayerId].id))].name;
-                break;
-            case B_TXT_LINK_OPPONENT2_NAME: // link opponent 2 name
-                toCpy = gLinkPlayers[GetBattlerMultiplayerId(BATTLE_PARTNER(BATTLE_OPPOSITE(gLinkPlayers[multiplayerId].id)))].name;
-                break;
-            case B_TXT_LINK_SCR_TRAINER_NAME: // link scripting active name
-                toCpy = gLinkPlayers[GetBattlerMultiplayerId(gBattleScripting.battler)].name;
-                break;
-            case B_TXT_PLAYER_NAME: // player name
+            case B_TXT_PLAYER_NAME:
                 toCpy = BattleStringGetPlayerName(text, GetBattlerAtPosition(B_POSITION_PLAYER_LEFT));
                 break;
-            case B_TXT_TRAINER1_LOSE_TEXT: // trainerA lose text
-                if (gBattleTypeFlags & BATTLE_TYPE_FRONTIER)
-                {
-                    CopyFrontierTrainerText(FRONTIER_PLAYER_WON_TEXT, TRAINER_BATTLE_PARAM.opponentA);
-                    toCpy = gStringVar4;
-                }
-                else if (gBattleTypeFlags & BATTLE_TYPE_TRAINER_HILL)
-                {
-                    CopyTrainerHillTrainerText(TRAINER_HILL_TEXT_PLAYER_WON, TRAINER_BATTLE_PARAM.opponentA);
-                    toCpy = gStringVar4;
-                }
-                else
-                {
-                    toCpy = GetTrainerALoseText();
-                }
+            case B_TXT_TRAINER1_LOSE_TEXT:
+                toCpy = GetTrainerALoseText();
                 break;
-            case B_TXT_TRAINER1_WIN_TEXT: // trainerA win text
-                if (gBattleTypeFlags & BATTLE_TYPE_FRONTIER)
-                {
-                    CopyFrontierTrainerText(FRONTIER_PLAYER_LOST_TEXT, TRAINER_BATTLE_PARAM.opponentA);
-                    toCpy = gStringVar4;
-                }
-                else if (gBattleTypeFlags & BATTLE_TYPE_TRAINER_HILL)
-                {
-                    CopyTrainerHillTrainerText(TRAINER_HILL_TEXT_PLAYER_LOST, TRAINER_BATTLE_PARAM.opponentA);
-                    toCpy = gStringVar4;
-                }
+            case B_TXT_TRAINER1_WIN_TEXT: // TODO: implement GetTrainerBWinText()
                 break;
             case B_TXT_26: // ?
                 if (!IsOnPlayerSide(gBattleScripting.battler))
@@ -3002,32 +2863,9 @@ u32 BattleStringExpandPlaceholders(const u8 *src, u8 *dst, u32 dstSize)
                 }
                 break;
             case B_TXT_TRAINER2_LOSE_TEXT:
-                if (gBattleTypeFlags & BATTLE_TYPE_FRONTIER)
-                {
-                    CopyFrontierTrainerText(FRONTIER_PLAYER_WON_TEXT, TRAINER_BATTLE_PARAM.opponentB);
-                    toCpy = gStringVar4;
-                }
-                else if (gBattleTypeFlags & BATTLE_TYPE_TRAINER_HILL)
-                {
-                    CopyTrainerHillTrainerText(TRAINER_HILL_TEXT_PLAYER_WON, TRAINER_BATTLE_PARAM.opponentB);
-                    toCpy = gStringVar4;
-                }
-                else
-                {
-                    toCpy = GetTrainerBLoseText();
-                }
+                toCpy = GetTrainerBLoseText();
                 break;
-            case B_TXT_TRAINER2_WIN_TEXT:
-                if (gBattleTypeFlags & BATTLE_TYPE_FRONTIER)
-                {
-                    CopyFrontierTrainerText(FRONTIER_PLAYER_LOST_TEXT, TRAINER_BATTLE_PARAM.opponentB);
-                    toCpy = gStringVar4;
-                }
-                else if (gBattleTypeFlags & BATTLE_TYPE_TRAINER_HILL)
-                {
-                    CopyTrainerHillTrainerText(TRAINER_HILL_TEXT_PLAYER_LOST, TRAINER_BATTLE_PARAM.opponentB);
-                    toCpy = gStringVar4;
-                }
+            case B_TXT_TRAINER2_WIN_TEXT: // TODO: implement GetTrainerBWinText()
                 break;
             case B_TXT_PARTNER_CLASS:
                 toCpy = gTrainerClasses[GetFrontierOpponentClass(gPartnerTrainerId)].name;
@@ -3342,29 +3180,7 @@ void ExpandBattleTextBuffPlaceholders(const u8 *src, u8 *dst)
             break;
         case B_BUFF_ITEM: // item name
             hword = T1_READ_16(&src[srcID + 1]);
-            if (gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK))
-            {
-                if (hword == ITEM_ENIGMA_BERRY_E_READER)
-                {
-                    if (gLinkPlayers[gBattleScripting.multiplayerId].id == gPotentialItemEffectBattler)
-                    {
-                        StringCopy(dst, gEnigmaBerries[gPotentialItemEffectBattler].name);
-                        StringAppend(dst, sText_BerrySuffix);
-                    }
-                    else
-                    {
-                        StringAppend(dst, sText_EnigmaBerry);
-                    }
-                }
-                else
-                {
-                    CopyItemName(hword, dst);
-                }
-            }
-            else
-            {
-                CopyItemName(hword, dst);
-            }
+            CopyItemName(hword, dst);
             srcID += 3;
             break;
         }

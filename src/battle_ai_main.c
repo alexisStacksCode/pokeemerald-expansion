@@ -17,7 +17,6 @@
 #include "math_util.h"
 #include "pokemon.h"
 #include "random.h"
-#include "recorded_battle.h"
 #include "util.h"
 #include "script.h"
 #include "constants/abilities.h"
@@ -142,12 +141,7 @@ void BattleAI_SetupItems(void)
         data[i] = 0;
 
     // Items are allowed to use in ONLY trainer battles.
-    if ((gBattleTypeFlags & BATTLE_TYPE_TRAINER)
-        && !(gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_SAFARI | BATTLE_TYPE_BATTLE_TOWER
-                               | BATTLE_TYPE_EREADER_TRAINER | BATTLE_TYPE_SECRET_BASE | BATTLE_TYPE_FRONTIER
-                               | BATTLE_TYPE_INGAME_PARTNER | BATTLE_TYPE_RECORDED_LINK)
-            )
-       )
+    if ((gBattleTypeFlags & BATTLE_TYPE_TRAINER) && !(gBattleTypeFlags & (BATTLE_TYPE_SAFARI | BATTLE_TYPE_INGAME_PARTNER)))
     {
         for (i = 0; i < MAX_TRAINER_ITEMS; i++)
         {
@@ -184,28 +178,23 @@ static u64 GetWildAiFlags(void)
 
 static u64 GetAiFlags(u16 trainerId, u32 battler)
 {
-    u64 flags = 0;
-
     if (!(gBattleTypeFlags & BATTLE_TYPE_HAS_AI) && !IsWildMonSmart())
         return 0;
+
+    u64 flags = 0;
+
     if (trainerId == 0xFFFF)
     {
         flags = GetWildAiFlags();
     }
     else
     {
-        if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
-            flags = GetAiScriptsInRecordedBattle(battler);
-        else if (gBattleTypeFlags & BATTLE_TYPE_SAFARI)
+        if (gBattleTypeFlags & BATTLE_TYPE_SAFARI)
             flags = AI_FLAG_SAFARI;
         else if (gBattleTypeFlags & BATTLE_TYPE_ROAMER)
             flags = AI_FLAG_ROAMING;
         else if (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE)
             flags = AI_FLAG_FIRST_BATTLE;
-        else if (gBattleTypeFlags & BATTLE_TYPE_FACTORY)
-            flags = GetAiScriptsInBattleFactory();
-        else if (gBattleTypeFlags & (BATTLE_TYPE_FRONTIER | BATTLE_TYPE_EREADER_TRAINER | BATTLE_TYPE_TRAINER_HILL | BATTLE_TYPE_SECRET_BASE))
-            flags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT;
         else
             flags = GetTrainerAIFlagsFromId(trainerId);
     }

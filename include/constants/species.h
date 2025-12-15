@@ -1,12 +1,15 @@
 #ifndef GUARD_CONSTANTS_SPECIES_H
 #define GUARD_CONSTANTS_SPECIES_H
 
+// TODO: use enums for species definitions
+
 // NOTE: The defines here are named in order to match Pokémon Showdown's naming conventions. This is done to avoid issues with trainerproc parsing species names. If a Pokémon does not have an entry on Showdown, use your best judgement.
 // Additionally, we have tried to reduce down to as few defines as possible, because programs like porymap do not always properly handle having multiple defines.
 // Discussion: https://github.com/rh-hideout/pokeemerald-expansion/pull/5075#issuecomment-2384088602
 // Showdown: https://github.com/smogon/Pokemon-Showdown/blob/master/data/pokedex.ts
 
 #define SPECIES_NONE                                    0
+#pragma region Gen 1
 #define SPECIES_BULBASAUR                               1
 #define SPECIES_IVYSAUR                                 2
 #define SPECIES_VENUSAUR                                3
@@ -158,6 +161,8 @@
 #define SPECIES_DRAGONITE                               149
 #define SPECIES_MEWTWO                                  150
 #define SPECIES_MEW                                     151
+#pragma endregion
+#pragma region Gen 2
 #define SPECIES_CHIKORITA                               152
 #define SPECIES_BAYLEEF                                 153
 #define SPECIES_MEGANIUM                                154
@@ -258,6 +263,8 @@
 #define SPECIES_LUGIA                                   249
 #define SPECIES_HO_OH                                   250
 #define SPECIES_CELEBI                                  251
+#pragma endregion
+#pragma region Gen 3
 #define SPECIES_TREECKO                                 252
 #define SPECIES_GROVYLE                                 253
 #define SPECIES_SCEPTILE                                254
@@ -395,6 +402,8 @@
 #define SPECIES_JIRACHI                                 385
 #define SPECIES_DEOXYS                                  SPECIES_DEOXYS_NORMAL
 #define SPECIES_DEOXYS_NORMAL                           386
+#pragma endregion
+#pragma region Gen 4
 #define SPECIES_TURTWIG                                 387
 #define SPECIES_GROTLE                                  388
 #define SPECIES_TORTERRA                                389
@@ -511,6 +520,8 @@
 #define SPECIES_SHAYMIN_LAND                            492
 #define SPECIES_ARCEUS                                  SPECIES_ARCEUS_NORMAL
 #define SPECIES_ARCEUS_NORMAL                           493
+#pragma endregion
+#pragma region Gen 5
 #define SPECIES_VICTINI                                 494
 #define SPECIES_SNIVY                                   495
 #define SPECIES_SERVINE                                 496
@@ -676,6 +687,8 @@
 #define SPECIES_MELOETTA                                SPECIES_MELOETTA_ARIA
 #define SPECIES_MELOETTA_ARIA                           648
 #define SPECIES_GENESECT                                649
+#pragma endregion
+#pragma region Gen 6
 #define SPECIES_CHESPIN                                 650
 #define SPECIES_QUILLADIN                               651
 #define SPECIES_CHESNAUGHT                              652
@@ -762,6 +775,8 @@
 #define SPECIES_HOOPA                                   SPECIES_HOOPA_CONFINED
 #define SPECIES_HOOPA_CONFINED                          720
 #define SPECIES_VOLCANION                               721
+#pragma endregion
+#pragma region Gen 7
 #define SPECIES_ROWLET                                  722
 #define SPECIES_DARTRIX                                 723
 #define SPECIES_DECIDUEYE                               724
@@ -858,6 +873,8 @@
 #define SPECIES_ZERAORA                                 807
 #define SPECIES_MELTAN                                  808
 #define SPECIES_MELMETAL                                809
+#pragma endregion
+#pragma region Gen 8
 #define SPECIES_GROOKEY                                 810
 #define SPECIES_THWACKEY                                811
 #define SPECIES_RILLABOOM                               812
@@ -968,6 +985,8 @@
 #define SPECIES_OVERQWIL                                904
 #define SPECIES_ENAMORUS                                SPECIES_ENAMORUS_INCARNATE
 #define SPECIES_ENAMORUS_INCARNATE                      905
+#pragma endregion
+#pragma region Mega Evolutions P1
 #define SPECIES_VENUSAUR_MEGA                           906
 #define SPECIES_CHARIZARD_MEGA_X                        907
 #define SPECIES_CHARIZARD_MEGA_Y                        908
@@ -1018,6 +1037,8 @@
 #define SPECIES_RAYQUAZA_MEGA                           953
 #define SPECIES_KYOGRE_PRIMAL                           954
 #define SPECIES_GROUDON_PRIMAL                          955
+#pragma endregion
+#pragma region Alolan Forms
 #define SPECIES_RATTATA_ALOLA                           956
 #define SPECIES_RATICATE_ALOLA                          957
 #define SPECIES_RAICHU_ALOLA                            958
@@ -1036,6 +1057,8 @@
 #define SPECIES_MUK_ALOLA                               971
 #define SPECIES_EXEGGUTOR_ALOLA                         972
 #define SPECIES_MAROWAK_ALOLA                           973
+#pragma endregion
+#pragma region Galarian Forms
 #define SPECIES_MEOWTH_GALAR                            974
 #define SPECIES_PONYTA_GALAR                            975
 #define SPECIES_RAPIDASH_GALAR                          976
@@ -1056,8 +1079,8 @@
 #define SPECIES_DARMANITAN_GALAR                        SPECIES_DARMANITAN_GALAR_STANDARD
 #define SPECIES_YAMASK_GALAR                            991
 #define SPECIES_STUNFISK_GALAR                          992
-
-//Hisuian Forms
+#pragma endregion
+#pragma region Hisuian Forms
 #define SPECIES_GROWLITHE_HISUI                         993
 #define SPECIES_ARCANINE_HISUI                          994
 #define SPECIES_VOLTORB_HISUI                           995
@@ -1074,8 +1097,8 @@
 #define SPECIES_GOODRA_HISUI                            1006
 #define SPECIES_AVALUGG_HISUI                           1007
 #define SPECIES_DECIDUEYE_HISUI                         1008
-
-// Misc Forms
+#pragma endregion
+#pragma region Pikachu Forms
 #define SPECIES_PIKACHU_COSPLAY                         1009
 #define SPECIES_PIKACHU_ROCK_STAR                       1010
 #define SPECIES_PIKACHU_BELLE                           1011
@@ -1090,6 +1113,8 @@
 #define SPECIES_PIKACHU_ALOLA                           1020
 #define SPECIES_PIKACHU_PARTNER                         1021
 #define SPECIES_PIKACHU_WORLD                           1022
+#pragma endregion
+#pragma region 
 #define SPECIES_PICHU_SPIKY_EARED                       1023
 #define SPECIES_UNOWN_B                                 1024
 #define SPECIES_UNOWN_C                                 1025
@@ -1379,9 +1404,8 @@
 #define SPECIES_ALCREMIE_RIBBON_RUBY_SWIRL              1286
 #define SPECIES_ALCREMIE_RIBBON_CARAMEL_SWIRL           1287
 #define SPECIES_ALCREMIE_RIBBON_RAINBOW_SWIRL           1288
-
-#define GEN9_START                                      SPECIES_ALCREMIE_RIBBON_RAINBOW_SWIRL
-
+#pragma endregion
+#pragma region Gen 9
 #define SPECIES_SPRIGATITO                              1289
 #define SPECIES_FLORAGATO                               1290
 #define SPECIES_MEOWSCARADA                             1291
@@ -1502,11 +1526,13 @@
 #define SPECIES_IRON_VALIANT                            1399
 #define SPECIES_KORAIDON                                1400
 #define SPECIES_MIRAIDON                                1401
-// Paldean Forms
+#pragma endregion
+#pragma region Paldean Forms
 #define SPECIES_TAUROS_PALDEA_COMBAT                    1402
 #define SPECIES_TAUROS_PALDEA_BLAZE                     1403
 #define SPECIES_TAUROS_PALDEA_AQUA                      1404
 #define SPECIES_WOOPER_PALDEA                           1405
+#pragma endregion
 // Scarlet and Violet 1.2.0
 #define SPECIES_WALKING_WAKE                            1406
 #define SPECIES_IRON_LEAVES                             1407
@@ -1665,10 +1691,9 @@
 #define SPECIES_DRAMPA_MEGA                             1548
 #define SPECIES_FALINKS_MEGA                            1549
 // Custom
-#define SPECIES_CLOUD_STRIFE                            1550
-#define SPECIES_DAPHNE_BLAKE                            1551
-#define SPECIES_DUKE_NUKEM                              1552
-#define SPECIES_METAL_DEVIL                             1553
+#define SPECIES_DAPHNE_BLAKE                            1550
+#define SPECIES_VELMA_DINKLY                           1551
+#define SPECIES_METAL_DEVIL                             1552
 
 #define SPECIES_EGG                                     (SPECIES_METAL_DEVIL + 1)
 

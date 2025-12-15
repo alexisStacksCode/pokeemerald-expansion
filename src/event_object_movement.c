@@ -1,7 +1,6 @@
 #include "global.h"
 #include "malloc.h"
 #include "battle_anim.h"
-#include "battle_pyramid.h"
 #include "battle_util.h"
 #include "berry.h"
 #include "data.h"
@@ -22,7 +21,6 @@
 #include "follower_helper.h"
 #include "gpu_regs.h"
 #include "graphics.h"
-#include "mauville_old_man.h"
 #include "metatile_behavior.h"
 #include "overworld.h"
 #include "palette.h"
@@ -37,7 +35,6 @@
 #include "sprite.h"
 #include "task.h"
 #include "trainer_see.h"
-#include "trainer_hill.h"
 #include "util.h"
 #include "wild_encounter.h"
 #include "constants/event_object_movement.h"
@@ -46,7 +43,6 @@
 #include "constants/event_objects.h"
 #include "constants/field_effects.h"
 #include "constants/items.h"
-#include "constants/mauville_old_man.h"
 #include "constants/metatile_behaviors.h"
 #include "constants/rgb.h"
 #include "constants/region_map_sections.h"
@@ -54,7 +50,6 @@
 #include "constants/species.h"
 #include "constants/metatile_behaviors.h"
 #include "constants/trainer_types.h"
-#include "constants/union_room.h"
 #include "constants/weather.h"
 
 #define SPECIAL_LOCALIDS_START (min(LOCALID_CAMERA, \
@@ -2484,61 +2479,6 @@ void GetFollowerAction(struct ScriptContext *ctx) // Essentially a big switch fo
         emotion_weight[FOLLOWER_EMOTION_SAD] = 30;
         condEmotes[condCount++] = (struct SpecialEmote) {.emotion = FOLLOWER_EMOTION_SAD, .index = 6};
     }
-    // Gym type advantage/disadvantage
-    if (GetCurrentMapMusic() == MUS_GYM || GetCurrentMapMusic() == MUS_RG_GYM)
-    {
-        switch (gMapHeader.regionMapSectionId)
-        {
-        case MAPSEC_RUSTBORO_CITY:
-        case MAPSEC_PEWTER_CITY:
-            multi = TYPE_ROCK;
-            break;
-        case MAPSEC_DEWFORD_TOWN:
-            multi = TYPE_FIGHTING;
-            break;
-        case MAPSEC_MAUVILLE_CITY:
-        case MAPSEC_VERMILION_CITY:
-            multi = TYPE_ELECTRIC;
-            break;
-        case MAPSEC_LAVARIDGE_TOWN:
-        case MAPSEC_CINNABAR_ISLAND:
-            multi = TYPE_FIRE;
-            break;
-        case MAPSEC_PETALBURG_CITY:
-            multi = TYPE_NORMAL;
-            break;
-        case MAPSEC_FORTREE_CITY:
-            multi = TYPE_FLYING;
-            break;
-        case MAPSEC_MOSSDEEP_CITY:
-        case MAPSEC_SAFFRON_CITY:
-            multi = TYPE_PSYCHIC;
-            break;
-        case MAPSEC_SOOTOPOLIS_CITY:
-        case MAPSEC_CERULEAN_CITY:
-            multi = TYPE_WATER;
-            break;
-        case MAPSEC_CELADON_CITY:
-            multi = TYPE_GRASS;
-            break;
-        case MAPSEC_FUCHSIA_CITY:
-            multi = TYPE_POISON;
-            break;
-        case MAPSEC_VIRIDIAN_CITY:
-            multi = TYPE_GROUND;
-            break;
-        default:
-            multi = NUMBER_OF_MON_TYPES;
-        }
-        if (multi < NUMBER_OF_MON_TYPES)
-        {
-            multi = GetOverworldTypeEffectiveness(mon, multi);
-            if (multi <= UQ_4_12(0.5))
-                condEmotes[condCount++] = (struct SpecialEmote) {.emotion = FOLLOWER_EMOTION_HAPPY, .index = 32};
-            else if (multi >= UQ_4_12(2.0))
-                condEmotes[condCount++] = (struct SpecialEmote) {.emotion = FOLLOWER_EMOTION_SAD, .index = 7};
-        }
-    }
 
     emotion = RandomWeightedIndex(emotion_weight, FOLLOWER_EMOTION_LENGTH);
     if ((mon->status & STATUS1_PSN_ANY) && GetMonAbility(mon) != ABILITY_POISON_HEAL)
@@ -3063,9 +3003,6 @@ const struct ObjectEventGraphicsInfo *GetObjectEventGraphicsInfo(u16 graphicsId)
 {
     if (graphicsId >= OBJ_EVENT_GFX_VARS && graphicsId <= OBJ_EVENT_GFX_VAR_F)
         graphicsId = VarGetObjectEventGraphicsId(graphicsId - OBJ_EVENT_GFX_VARS);
-
-    if (graphicsId == OBJ_EVENT_GFX_BARD)
-        return gMauvilleOldManGraphicsInfoPointers[GetCurrentMauvilleOldMan()];
 
     if (graphicsId & OBJ_EVENT_MON)
         return SpeciesToGraphicsInfo(graphicsId & OBJ_EVENT_MON_SPECIES_MASK, graphicsId & OBJ_EVENT_MON_SHINY, graphicsId & OBJ_EVENT_MON_FEMALE);

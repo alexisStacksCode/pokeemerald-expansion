@@ -8,7 +8,7 @@
 #include "main.h"
 #include "menu.h"
 #include "palette.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "pokemon.h"
 #include "scanline_effect.h"
 #include "sound.h"
@@ -112,9 +112,9 @@ static const u8 sStarterLabelCoords[STARTER_MON_COUNT][2] =
 
 static const u16 sStarterMon[STARTER_MON_COUNT] =
 {
-    SPECIES_CLOUD_STRIFE,
     SPECIES_DAPHNE_BLAKE,
-    SPECIES_DUKE_NUKEM,
+    SPECIES_VELMA_DINKLY,
+    SPECIES_SKELEDIRGE,
 };
 
 static const struct BgTemplate sBgTemplates[3] =

@@ -9,14 +9,10 @@
 #include "battle_message.h"
 #include "battle_interface.h"
 #include "battle_setup.h"
-#include "battle_tower.h"
-#include "battle_tv.h"
 #include "battle_z_move.h"
 #include "bg.h"
 #include "data.h"
-#include "frontier_util.h"
 #include "item.h"
-#include "link.h"
 #include "main.h"
 #include "m4a.h"
 #include "palette.h"
@@ -37,7 +33,6 @@
 #include "constants/party_menu.h"
 #include "constants/songs.h"
 #include "constants/trainers.h"
-#include "trainer_hill.h"
 #include "test_runner.h"
 #include "test/battle.h"
 #include "test/test_runner_battle.h"
@@ -50,7 +45,6 @@ static void OpponentHandleChooseItem(u32 battler);
 static void OpponentHandleChoosePokemon(u32 battler);
 static void OpponentHandleIntroTrainerBallThrow(u32 battler);
 static void OpponentHandleDrawPartyStatusSummary(u32 battler);
-static void OpponentHandleEndLinkBattle(u32 battler);
 static void OpponentBufferRunCommand(u32 battler);
 
 static void (*const sOpponentBufferCommands[CONTROLLER_CMDS_COUNT])(u32 battler) =
@@ -106,7 +100,6 @@ static void (*const sOpponentBufferCommands[CONTROLLER_CMDS_COUNT])(u32 battler)
     [CONTROLLER_BATTLEANIMATION]          = BtlController_HandleBattleAnimation,
     [CONTROLLER_LINKSTANDBYMSG]           = BtlController_Empty,
     [CONTROLLER_RESETACTIONMOVESELECTION] = BtlController_Empty,
-    [CONTROLLER_ENDLINKBATTLE]            = OpponentHandleEndLinkBattle,
     [CONTROLLER_DEBUGMENU]                = BtlController_Empty,
     [CONTROLLER_TERMINATOR_NOP]           = BtlController_TerminatorNop
 };
@@ -346,10 +339,6 @@ static u32 OpponentGetTrainerPicId(u32 battlerId)
         {
             trainerPicId = GetFrontierTrainerFrontSpriteId(TRAINER_BATTLE_PARAM.opponentA);
         }
-    }
-    else if (gBattleTypeFlags & BATTLE_TYPE_EREADER_TRAINER)
-    {
-        trainerPicId = GetEreaderTrainerFrontSpriteId();
     }
     else if (gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS)
     {
@@ -596,15 +585,4 @@ static void OpponentHandleIntroTrainerBallThrow(u32 battler)
 static void OpponentHandleDrawPartyStatusSummary(u32 battler)
 {
     BtlController_HandleDrawPartyStatusSummary(battler, B_SIDE_OPPONENT, TRUE);
-}
-
-static void OpponentHandleEndLinkBattle(u32 battler)
-{
-    if (gBattleTypeFlags & BATTLE_TYPE_LINK && !(gBattleTypeFlags & BATTLE_TYPE_IS_MASTER))
-    {
-        gMain.inBattle = FALSE;
-        gMain.callback1 = gPreBattleCallback1;
-        SetMainCallback2(gMain.savedCallback);
-    }
-    BtlController_Complete(battler);
 }

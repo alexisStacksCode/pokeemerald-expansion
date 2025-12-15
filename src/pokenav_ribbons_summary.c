@@ -49,9 +49,7 @@ struct Pokenav_RibbonsSummaryList
     u16 selectedPos;
     u16 normalRibbonLastRowStart;
     u16 numNormalRibbons;
-    u16 numGiftRibbons;
     u32 ribbonIds[FIRST_GIFT_RIBBON];
-    u32 giftRibbonIds[NUM_GIFT_RIBBONS];
     u32 unused2;
     u32 (*callback)(struct Pokenav_RibbonsSummaryList *);
 };
@@ -119,28 +117,19 @@ static u32 LoopedTask_ExitRibbonsSummaryMenu(s32);
 struct
 {
     u8 numBits; // The number of bits needed to represent numRibbons
-    u8 numRibbons; // Never read. The contest ribbons have 4 (1 for each rank), the rest are just 1 ribbon
     u8 ribbonId;
-    bool8 isGiftRibbon;
 } static  const sRibbonData[] =
 {
-    {1, 1, CHAMPION_RIBBON,      FALSE},
-    {3, 4, COOL_RIBBON_NORMAL,   FALSE},
-    {3, 4, BEAUTY_RIBBON_NORMAL, FALSE},
-    {3, 4, CUTE_RIBBON_NORMAL,   FALSE},
-    {3, 4, SMART_RIBBON_NORMAL,  FALSE},
-    {3, 4, TOUGH_RIBBON_NORMAL,  FALSE},
-    {1, 1, WINNING_RIBBON,       FALSE},
-    {1, 1, VICTORY_RIBBON,       FALSE},
-    {1, 1, ARTIST_RIBBON,        FALSE},
-    {1, 1, EFFORT_RIBBON,        FALSE},
-    {1, 1, MARINE_RIBBON,        TRUE},
-    {1, 1, LAND_RIBBON,          TRUE},
-    {1, 1, SKY_RIBBON,           TRUE},
-    {1, 1, COUNTRY_RIBBON,       TRUE},
-    {1, 1, NATIONAL_RIBBON,      TRUE},
-    {1, 1, EARTH_RIBBON,         TRUE},
-    {1, 1, WORLD_RIBBON,         TRUE}
+    {1, CHAMPION_RIBBON},
+    {3, COOL_RIBBON_NORMAL},
+    {3, BEAUTY_RIBBON_NORMAL},
+    {3, CUTE_RIBBON_NORMAL},
+    {3, SMART_RIBBON_NORMAL},
+    {3, TOUGH_RIBBON_NORMAL},
+    {1, WINNING_RIBBON},
+    {1, VICTORY_RIBBON},
+    {1, ARTIST_RIBBON},
+    {1, EFFORT_RIBBON},
 };
 
 #include "data/text/ribbon_descriptions.h"
@@ -303,24 +292,12 @@ static bool32 TrySelectRibbonUp(struct Pokenav_RibbonsSummaryList *list)
 
 static bool32 TrySelectRibbonDown(struct Pokenav_RibbonsSummaryList *list)
 {
-    if (list->selectedPos >= FIRST_GIFT_RIBBON)
-        return FALSE;
     if (list->selectedPos < list->normalRibbonLastRowStart)
     {
         // Not in last row of normal ribbons, advance to next row
         list->selectedPos += RIBBONS_PER_ROW;
         if (list->selectedPos >= list->numNormalRibbons)
             list->selectedPos = list->numNormalRibbons - 1;
-        return TRUE;
-    }
-    if (list->numGiftRibbons != 0)
-    {
-        // In/beyond last of row of normal ribbons and gift ribbons present, move down to gift ribbon row
-        int ribbonPos = list->selectedPos - list->normalRibbonLastRowStart;
-        if (ribbonPos >= list->numGiftRibbons)
-            ribbonPos = list->numGiftRibbons - 1;
-
-        list->selectedPos = ribbonPos + GIFT_RIBBON_START_POS;
         return TRUE;
     }
     return FALSE;
@@ -1121,13 +1098,6 @@ struct
     [VICTORY_RIBBON]       = { RIBBONGFX_VICTORY,        TO_PAL_OFFSET(PALTAG_RIBBON_ICONS_1)},
     [ARTIST_RIBBON]        = { RIBBONGFX_ARTIST,         TO_PAL_OFFSET(PALTAG_RIBBON_ICONS_2)},
     [EFFORT_RIBBON]        = { RIBBONGFX_EFFORT,         TO_PAL_OFFSET(PALTAG_RIBBON_ICONS_3)},
-    [MARINE_RIBBON]        = { RIBBONGFX_GIFT_1,         TO_PAL_OFFSET(PALTAG_RIBBON_ICONS_2)},
-    [LAND_RIBBON]          = { RIBBONGFX_GIFT_1,         TO_PAL_OFFSET(PALTAG_RIBBON_ICONS_4)},
-    [SKY_RIBBON]           = { RIBBONGFX_GIFT_1,         TO_PAL_OFFSET(PALTAG_RIBBON_ICONS_5)},
-    [COUNTRY_RIBBON]       = { RIBBONGFX_GIFT_2,         TO_PAL_OFFSET(PALTAG_RIBBON_ICONS_4)},
-    [NATIONAL_RIBBON]      = { RIBBONGFX_GIFT_2,         TO_PAL_OFFSET(PALTAG_RIBBON_ICONS_5)},
-    [EARTH_RIBBON]         = { RIBBONGFX_GIFT_3,         TO_PAL_OFFSET(PALTAG_RIBBON_ICONS_1)},
-    [WORLD_RIBBON]         = { RIBBONGFX_GIFT_3,         TO_PAL_OFFSET(PALTAG_RIBBON_ICONS_2)},
 };
 
 #undef TO_PAL_OFFSET

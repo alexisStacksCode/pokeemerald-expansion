@@ -1,10 +1,8 @@
 #include "global.h"
 #include "overworld.h"
-#include "battle_pyramid.h"
 #include "battle_setup.h"
 #include "berry.h"
 #include "bg.h"
-#include "cable_club.h"
 #include "clock.h"
 #include "dexnav.h"
 #include "event_data.h"
@@ -30,8 +28,6 @@
 #include "io_reg.h"
 #include "item.h"
 #include "item_icon.h"
-#include "link.h"
-#include "link_rfu.h"
 #include "load_save.h"
 #include "main.h"
 #include "malloc.h"
@@ -62,20 +58,17 @@
 #include "task.h"
 #include "tileset_anims.h"
 #include "time_events.h"
-#include "trainer_hill.h"
 #include "trainer_pokemon_sprites.h"
 #include "tv.h"
 #include "scanline_effect.h"
 #include "wild_encounter.h"
 #include "vs_seeker.h"
-#include "frontier_util.h"
 #include "constants/abilities.h"
 #include "constants/event_object_movement.h"
 #include "constants/event_objects.h"
 #include "constants/layouts.h"
 #include "constants/region_map_sections.h"
 #include "constants/songs.h"
-#include "constants/trainer_hill.h"
 #include "constants/weather.h"
 
 STATIC_ASSERT((B_FLAG_FOLLOWERS_DISABLED == 0 || OW_FOLLOWERS_ENABLED), FollowersFlagAssignedWithoutEnablingThem);
@@ -157,7 +150,6 @@ static void RunTerminateLinkScript(void);
 static u32 GetLinkSendQueueLength(void);
 static void ZeroLinkPlayerObjectEvent(struct LinkPlayerObjectEvent *);
 static const u8 *TryInteractWithPlayer(struct CableClubPlayer *);
-static u16 GetDirectionForEventScript(const u8 *);
 static void InitLinkPlayerQueueScript(void);
 static void InitLinkRoomStartMenuScript(void);
 static void RunInteractLocalPlayerScript(const u8 *);
@@ -327,8 +319,7 @@ static const struct ScanlineEffectParams sFlashEffectParams =
 {
     &REG_WIN0H,
     ((DMA_ENABLE | DMA_START_HBLANK | DMA_REPEAT | DMA_DEST_RELOAD) << 16) | 1,
-    1,
-    0,
+    1
 };
 
 static u8 MovementEventModeCB_Normal(struct LinkPlayerObjectEvent *, struct ObjectEvent *, u8);
@@ -2068,86 +2059,6 @@ static void InitCurrentFlashLevelScanlineEffect(void)
     }
 }
 
-static bool32 LoadMapInStepsLink(u8 *state)
-{
-    switch (*state)
-    {
-    case 0:
-        InitOverworldBgs();
-        ScriptContext_Init();
-        UnlockPlayerFieldControls();
-        ResetMirageTowerAndSaveBlockPtrs();
-        ResetScreenForMapLoad();
-        (*state)++;
-        break;
-    case 1:
-        gExitStairsMovementDisabled = FALSE;
-        LoadMapFromWarp(TRUE);
-        (*state)++;
-        break;
-    case 2:
-        ResumeMap(TRUE);
-        (*state)++;
-        break;
-    case 3:
-        OffsetCameraFocusByLinkPlayerId();
-        InitObjectEventsLink();
-        SpawnLinkPlayers();
-        SetCameraToTrackGuestPlayer();
-        (*state)++;
-        break;
-    case 4:
-        InitCurrentFlashLevelScanlineEffect();
-        InitOverworldGraphicsRegisters();
-        InitTextBoxGfxAndPrinters();
-        (*state)++;
-        break;
-    case 5:
-        ResetFieldCamera();
-        (*state)++;
-        break;
-    case 6:
-        CopyPrimaryTilesetToVram(gMapHeader.mapLayout);
-        (*state)++;
-        break;
-    case 7:
-        CopySecondaryTilesetToVram(gMapHeader.mapLayout);
-        (*state)++;
-        break;
-    case 8:
-        if (FreeTempTileDataBuffersIfPossible() != TRUE)
-        {
-            LoadMapTilesetPalettes(gMapHeader.mapLayout);
-            (*state)++;
-        }
-        break;
-    case 9:
-        DrawWholeMapView();
-        (*state)++;
-        break;
-    case 10:
-        InitTilesetAnimations();
-        (*state)++;
-        break;
-    case 11:
-        if (gWirelessCommType != 0)
-        {
-            LoadWirelessStatusIndicatorSpriteGfx();
-            CreateWirelessStatusIndicatorSprite(0, 0);
-        }
-        (*state)++;
-        break;
-    case 12:
-        if (RunFieldCallback())
-            (*state)++;
-        break;
-    case 13:
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
 static bool32 LoadMapInStepsLocal(u8 *state, bool32 a2)
 {
     switch (*state)
@@ -2238,7 +2149,6 @@ static bool32 ReturnToFieldLocal(u8 *state)
         break;
     case 1:
         InitViewGraphics();
-        TryLoadTrainerHillEReaderPalette();
         FollowerNPC_BindToSurfBlobOnReloadScreen();
         ResumeORASDowseFieldEffect();
         (*state)++;
@@ -2248,83 +2158,6 @@ static bool32 ReturnToFieldLocal(u8 *state)
             (*state)++;
         break;
     case 3:
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
-static bool32 ReturnToFieldLink(u8 *state)
-{
-    switch (*state)
-    {
-    case 0:
-        FieldClearVBlankHBlankCallbacks();
-        ResetMirageTowerAndSaveBlockPtrs();
-        ResetScreenForMapLoad();
-        (*state)++;
-        break;
-    case 1:
-        ResumeMap(TRUE);
-        (*state)++;
-        break;
-    case 2:
-        CreateLinkPlayerSprites();
-        InitObjectEventsReturnToField();
-        SetCameraToTrackGuestPlayer_2();
-        (*state)++;
-        break;
-    case 3:
-        InitCurrentFlashLevelScanlineEffect();
-        InitOverworldGraphicsRegisters();
-        InitTextBoxGfxAndPrinters();
-        (*state)++;
-        break;
-    case 4:
-        ResetFieldCamera();
-        (*state)++;
-        break;
-    case 5:
-        CopyPrimaryTilesetToVram(gMapHeader.mapLayout);
-        (*state)++;
-        break;
-    case 6:
-        CopySecondaryTilesetToVram(gMapHeader.mapLayout);
-        (*state)++;
-        break;
-    case 7:
-        if (FreeTempTileDataBuffersIfPossible() != TRUE)
-        {
-            LoadMapTilesetPalettes(gMapHeader.mapLayout);
-            (*state)++;
-        }
-        break;
-    case 8:
-        DrawWholeMapView();
-        (*state)++;
-        break;
-    case 9:
-        InitTilesetAnimations();
-        (*state)++;
-        break;
-    case 11:
-        if (gWirelessCommType != 0)
-        {
-            LoadWirelessStatusIndicatorSpriteGfx();
-            CreateWirelessStatusIndicatorSprite(0, 0);
-        }
-        (*state)++;
-        break;
-    case 12:
-        if (RunFieldCallback())
-            (*state)++;
-        break;
-    case 10:
-        (*state)++;
-        break;
-    case 13:
-        SetFieldVBlankCallback();
-        (*state)++;
         return TRUE;
     }
 
@@ -2476,265 +2309,6 @@ static void OffsetCameraFocusByLinkPlayerId(void)
     // This is a hack of some kind; it's undone in SpawnLinkPlayers, which is called
     // soon after this function.
     SetCameraFocusCoords(x + gLocalLinkPlayerId, y);
-}
-
-static void SpawnLinkPlayers(void)
-{
-    u16 i;
-    u16 x, y;
-
-    GetCameraFocusCoords(&x, &y);
-    x -= gLocalLinkPlayerId;
-
-    for (i = 0; i < gFieldLinkPlayerCount; i++)
-    {
-        SpawnLinkPlayerObjectEvent(i, i + x, y, gLinkPlayers[i].gender);
-        CreateLinkPlayerSprite(i, gLinkPlayers[i].version);
-    }
-
-    ClearAllPlayerKeys();
-}
-
-static void CreateLinkPlayerSprites(void)
-{
-    u16 i;
-    for (i = 0; i < gFieldLinkPlayerCount; i++)
-        CreateLinkPlayerSprite(i, gLinkPlayers[i].version);
-}
-
-
-static void CB1_OverworldLink(void)
-{
-    if (gWirelessCommType == 0 || !IsRfuRecvQueueEmpty() || !IsSendingKeysToLink())
-    {
-        u8 selfId = gLocalLinkPlayerId;
-        UpdateAllLinkPlayers(gLinkPartnersHeldKeys, selfId);
-
-        // Note: Because guestId is between 0 and 4, while the smallest key code is
-        // LINK_KEY_CODE_EMPTY, this is functionally equivalent to `sPlayerKeyInterceptCallback(0)`.
-        // It is expecting the callback to be KeyInterCB_SelfIdle, and that will
-        // completely ignore any input parameters.
-        //
-        // UpdateHeldKeyCode performs a sanity check on its input; if
-        // sPlayerKeyInterceptCallback echoes back the argument, which is selfId, then
-        // it'll use LINK_KEY_CODE_EMPTY instead.
-        //
-        // Note 2: There are some key intercept callbacks that treat the key as a player
-        // ID. It's so hacky.
-        UpdateHeldKeyCode(sPlayerKeyInterceptCallback(selfId));
-        ClearAllPlayerKeys();
-    }
-}
-
-void ResetAllMultiplayerState(void)
-{
-    ResetAllPlayerLinkStates();
-    SetKeyInterceptCallback(KeyInterCB_SelfIdle);
-}
-
-static void ClearAllPlayerKeys(void)
-{
-    ResetPlayerHeldKeys(gLinkPartnersHeldKeys);
-}
-
-static void SetKeyInterceptCallback(u16 (*func)(u32))
-{
-    sRfuKeepAliveTimer = 0;
-    sPlayerKeyInterceptCallback = func;
-}
-
-// Once every ~60 frames, if the link state hasn't changed (timer reset by calls
-// to SetKeyInterceptCallback), it does a bunch of sanity checks on the connection.
-// I'm not sure if sRfuKeepAliveTimer is reset in the process, though; rfu stuff is
-// still undocumented.
-static void CheckRfuKeepAliveTimer(void)
-{
-    if (gWirelessCommType != 0 && ++sRfuKeepAliveTimer > 60)
-        LinkRfu_FatalError();
-}
-
-static void ResetAllPlayerLinkStates(void)
-{
-    s32 i;
-    for (i = 0; i < MAX_LINK_PLAYERS; i++)
-        sPlayerLinkStates[i] = PLAYER_LINK_STATE_IDLE;
-}
-
-// Returns true if all connected players are in state.
-static bool32 AreAllPlayersInLinkState(u16 state)
-{
-    s32 i;
-    s32 count = gFieldLinkPlayerCount;
-
-    for (i = 0; i < count; i++)
-        if (sPlayerLinkStates[i] != state)
-            return FALSE;
-    return TRUE;
-}
-
-static bool32 IsAnyPlayerInLinkState(u16 state)
-{
-    s32 i;
-    s32 count = gFieldLinkPlayerCount;
-
-    for (i = 0; i < count; i++)
-        if (sPlayerLinkStates[i] == state)
-            return TRUE;
-    return FALSE;
-}
-
-static void HandleLinkPlayerKeyInput(u32 playerId, u16 key, struct CableClubPlayer *trainer, u16 *forceFacing)
-{
-    const u8 *script;
-
-    if (sPlayerLinkStates[playerId] == PLAYER_LINK_STATE_IDLE)
-    {
-        script = TryGetTileEventScript(trainer);
-        if (script)
-        {
-            *forceFacing = GetDirectionForEventScript(script);
-            sPlayerLinkStates[playerId] = PLAYER_LINK_STATE_BUSY;
-            if (trainer->isLocalPlayer)
-            {
-                SetKeyInterceptCallback(KeyInterCB_DeferToEventScript);
-                RunInteractLocalPlayerScript(script);
-            }
-            return;
-        }
-        if (IsAnyPlayerInLinkState(PLAYER_LINK_STATE_EXITING_ROOM) == TRUE)
-        {
-            sPlayerLinkStates[playerId] = PLAYER_LINK_STATE_BUSY;
-            if (trainer->isLocalPlayer)
-            {
-                SetKeyInterceptCallback(KeyInterCB_DeferToEventScript);
-                RunTerminateLinkScript();
-            }
-            return;
-        }
-
-        switch (key)
-        {
-        case LINK_KEY_CODE_START_BUTTON:
-            if (CanCableClubPlayerPressStart(trainer))
-            {
-                sPlayerLinkStates[playerId] = PLAYER_LINK_STATE_BUSY;
-                if (trainer->isLocalPlayer)
-                {
-                    SetKeyInterceptCallback(KeyInterCB_DeferToEventScript);
-                    InitLinkRoomStartMenuScript();
-                }
-            }
-            break;
-        case LINK_KEY_CODE_DPAD_DOWN:
-            if (PlayerIsAtSouthExit(trainer) == TRUE)
-            {
-                sPlayerLinkStates[playerId] = PLAYER_LINK_STATE_BUSY;
-                if (trainer->isLocalPlayer)
-                {
-                    SetKeyInterceptCallback(KeyInterCB_DeferToEventScript);
-                    RunConfirmLeaveCableClubScript();
-                }
-            }
-            break;
-        case LINK_KEY_CODE_A_BUTTON:
-            script = TryInteractWithPlayer(trainer);
-            if (script)
-            {
-                sPlayerLinkStates[playerId] = PLAYER_LINK_STATE_BUSY;
-                if (trainer->isLocalPlayer)
-                {
-                    SetKeyInterceptCallback(KeyInterCB_DeferToEventScript);
-                    InitMenuBasedScript(script);
-                }
-            }
-            break;
-        case LINK_KEY_CODE_HANDLE_RECV_QUEUE:
-            if (IsCableClubPlayerUnfrozen(trainer))
-            {
-                sPlayerLinkStates[playerId] = PLAYER_LINK_STATE_BUSY;
-                if (trainer->isLocalPlayer)
-                {
-                    SetKeyInterceptCallback(KeyInterCB_DeferToRecvQueue);
-                    InitLinkPlayerQueueScript();
-                }
-            }
-            break;
-        case LINK_KEY_CODE_HANDLE_SEND_QUEUE:
-            if (IsCableClubPlayerUnfrozen(trainer))
-            {
-                sPlayerLinkStates[playerId] = PLAYER_LINK_STATE_BUSY;
-                if (trainer->isLocalPlayer)
-                {
-                    SetKeyInterceptCallback(KeyInterCB_DeferToSendQueue);
-                    InitLinkPlayerQueueScript();
-                }
-            }
-            break;
-        }
-    }
-
-    switch (key)
-    {
-    case LINK_KEY_CODE_EXIT_ROOM:
-        sPlayerLinkStates[playerId] = PLAYER_LINK_STATE_EXITING_ROOM;
-        break;
-    case LINK_KEY_CODE_READY:
-        sPlayerLinkStates[playerId] = PLAYER_LINK_STATE_READY;
-        break;
-    case LINK_KEY_CODE_IDLE:
-        sPlayerLinkStates[playerId] = PLAYER_LINK_STATE_IDLE;
-        if (trainer->isLocalPlayer)
-            SetKeyInterceptCallback(KeyInterCB_SelfIdle);
-        break;
-    case LINK_KEY_CODE_EXIT_SEAT:
-        if (sPlayerLinkStates[playerId] == PLAYER_LINK_STATE_READY)
-            sPlayerLinkStates[playerId] = PLAYER_LINK_STATE_BUSY;
-        break;
-    }
-}
-
-static void UpdateAllLinkPlayers(u16 *keys, s32 selfId)
-{
-    struct CableClubPlayer trainer;
-    s32 i;
-
-    for (i = 0; i < MAX_LINK_PLAYERS; i++)
-    {
-        u8 key = keys[i];
-        u16 setFacing = FACING_NONE;
-        LoadCableClubPlayer(i, selfId, &trainer);
-        HandleLinkPlayerKeyInput(i, key, &trainer, &setFacing);
-        if (sPlayerLinkStates[i] == PLAYER_LINK_STATE_IDLE)
-            setFacing = GetDirectionForDpadKey(key);
-        SetPlayerFacingDirection(i, setFacing);
-    }
-}
-
-static void UpdateHeldKeyCode(u16 key)
-{
-    if (key >= LINK_KEY_CODE_EMPTY && key < LINK_KEY_CODE_UNK_8)
-        gHeldKeyCodeToSend = key;
-    else
-        gHeldKeyCodeToSend = LINK_KEY_CODE_EMPTY;
-
-    if (gWirelessCommType != 0
-        && GetLinkSendQueueLength() > 1
-        && IsOverworldLinkActive() == TRUE
-        && IsSendingKeysToLink() == TRUE)
-    {
-        switch (key)
-        {
-        case LINK_KEY_CODE_EMPTY:
-        case LINK_KEY_CODE_DPAD_DOWN:
-        case LINK_KEY_CODE_DPAD_UP:
-        case LINK_KEY_CODE_DPAD_LEFT:
-        case LINK_KEY_CODE_DPAD_RIGHT:
-        case LINK_KEY_CODE_START_BUTTON:
-        case LINK_KEY_CODE_A_BUTTON:
-            gHeldKeyCodeToSend = LINK_KEY_CODE_NULL;
-            break;
-        }
-    }
 }
 
 static u16 KeyInterCB_ReadButtons(u32 key)
@@ -3036,38 +2610,6 @@ static const u8 *TryInteractWithPlayer(struct CableClubPlayer *player)
     }
 
     return GetInteractedLinkPlayerScript(&otherPlayerPos, player->metatileBehavior, player->facing);
-}
-
-// This returns which direction to force the player to look when one of
-// these event scripts runs.
-static u16 GetDirectionForEventScript(const u8 *script)
-{
-    if (script == EventScript_BattleColosseum_4P_PlayerSpot0)
-        return FACING_FORCED_RIGHT;
-    else if (script == EventScript_BattleColosseum_4P_PlayerSpot1)
-        return FACING_FORCED_LEFT;
-    else if (script == EventScript_BattleColosseum_4P_PlayerSpot2)
-        return FACING_FORCED_RIGHT;
-    else if (script == EventScript_BattleColosseum_4P_PlayerSpot3)
-        return FACING_FORCED_LEFT;
-    else if (script == EventScript_RecordCenter_Spot0)
-        return FACING_FORCED_RIGHT;
-    else if (script == EventScript_RecordCenter_Spot1)
-        return FACING_FORCED_LEFT;
-    else if (script == EventScript_RecordCenter_Spot2)
-        return FACING_FORCED_RIGHT;
-    else if (script == EventScript_RecordCenter_Spot3)
-        return FACING_FORCED_LEFT;
-    else if (script == EventScript_BattleColosseum_2P_PlayerSpot0)
-        return FACING_FORCED_RIGHT;
-    else if (script == EventScript_BattleColosseum_2P_PlayerSpot1)
-        return FACING_FORCED_LEFT;
-    else if (script == EventScript_TradeCenter_Chair0)
-        return FACING_FORCED_RIGHT;
-    else if (script == EventScript_TradeCenter_Chair1)
-        return FACING_FORCED_LEFT;
-    else
-        return FACING_NONE;
 }
 
 static void InitLinkPlayerQueueScript(void)
@@ -3420,78 +2962,6 @@ static u8 FlipVerticalAndClearForced(u8 newFacing, u8 oldFacing)
         return DIR_EAST;
     }
     return oldFacing;
-}
-
-static u8 LinkPlayerGetCollision(u8 selfObjEventId, u8 direction, s16 x, s16 y)
-{
-    u8 i;
-    for (i = 0; i < OBJECT_EVENTS_COUNT; i++)
-    {
-        if (i != selfObjEventId)
-        {
-            if ((gObjectEvents[i].currentCoords.x == x && gObjectEvents[i].currentCoords.y == y)
-             || (gObjectEvents[i].previousCoords.x == x && gObjectEvents[i].previousCoords.y == y))
-            {
-                return 1;
-            }
-        }
-    }
-    return MapGridGetCollisionAt(x, y);
-}
-
-static void CreateLinkPlayerSprite(u8 linkPlayerId, u8 gameVersion)
-{
-    struct LinkPlayerObjectEvent *linkPlayerObjEvent = &gLinkPlayerObjectEvents[linkPlayerId];
-    u8 objEventId = linkPlayerObjEvent->objEventId;
-    struct ObjectEvent *objEvent = &gObjectEvents[objEventId];
-    struct Sprite *sprite;
-
-    if (linkPlayerObjEvent->active)
-    {
-        switch (gameVersion)
-        {
-        case VERSION_FIRE_RED:
-        case VERSION_LEAF_GREEN:
-            objEvent->spriteId = CreateObjectGraphicsSprite(GetFRLGAvatarGraphicsIdByGender(linkGender(objEvent)), SpriteCB_LinkPlayer, 0, 0, 0);
-            break;
-        case VERSION_RUBY:
-        case VERSION_SAPPHIRE:
-            objEvent->spriteId = CreateObjectGraphicsSprite(GetRSAvatarGraphicsIdByGender(linkGender(objEvent)), SpriteCB_LinkPlayer, 0, 0, 0);
-            break;
-        case VERSION_EMERALD:
-            objEvent->spriteId = CreateObjectGraphicsSprite(GetRivalAvatarGraphicsIdByStateIdAndGender(PLAYER_AVATAR_STATE_NORMAL, linkGender(objEvent)), SpriteCB_LinkPlayer, 0, 0, 0);
-            break;
-        }
-
-        sprite = &gSprites[objEvent->spriteId];
-        sprite->coordOffsetEnabled = TRUE;
-        sprite->data[0] = linkPlayerId;
-        objEvent->triggerGroundEffectsOnMove = FALSE;
-        objEvent->localId = OBJ_EVENT_ID_DYNAMIC_BASE + linkPlayerId;
-        SetUpShadow(objEvent);
-    }
-}
-
-static void SpriteCB_LinkPlayer(struct Sprite *sprite)
-{
-    struct LinkPlayerObjectEvent *linkPlayerObjEvent = &gLinkPlayerObjectEvents[sprite->data[0]];
-    struct ObjectEvent *objEvent = &gObjectEvents[linkPlayerObjEvent->objEventId];
-    sprite->x = objEvent->initialCoords.x;
-    sprite->y = objEvent->initialCoords.y;
-    SetObjectSubpriorityByElevation(objEvent->previousElevation, sprite, 1);
-    sprite->oam.priority = ElevationToPriority(objEvent->previousElevation);
-
-    if (linkPlayerObjEvent->movementMode == MOVEMENT_MODE_FREE)
-        StartSpriteAnim(sprite, GetFaceDirectionAnimNum(linkDirection(objEvent)));
-    else
-        StartSpriteAnimIfDifferent(sprite, GetMoveDirectionAnimNum(linkDirection(objEvent)));
-
-    UpdateObjectEventSpriteInvisibility(sprite, FALSE);
-    if (objEvent->triggerGroundEffectsOnMove)
-    {
-        sprite->invisible = ((sprite->data[7] & 4) >> 2);
-        sprite->data[7]++;
-    }
 }
 
 // ----------------

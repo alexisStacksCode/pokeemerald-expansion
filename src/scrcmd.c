@@ -1,5 +1,4 @@
 #include "global.h"
-#include "frontier_util.h"
 #include "battle_setup.h"
 #include "berry.h"
 #include "clock.h"
@@ -35,10 +34,9 @@
 #include "money.h"
 #include "move.h"
 #include "move_relearner.h"
-#include "mystery_event_script.h"
 #include "palette.h"
 #include "party_menu.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "pokemon_storage_system.h"
 #include "random.h"
 #include "overworld.h"
@@ -65,7 +63,6 @@
 typedef u16 (*SpecialFunc)(void);
 typedef void (*NativeFunc)(struct ScriptContext *ctx);
 
-EWRAM_DATA const u8 *gRamScriptRetAddr = NULL;
 static EWRAM_DATA u32 sAddressOffset = 0; // For relative addressing in vgoto etc., used by saved scripts (e.g. Mystery Event)
 static EWRAM_DATA u16 sPauseCounter = 0;
 static EWRAM_DATA u16 sMovingNpcId = 0;
@@ -343,34 +340,6 @@ bool8 ScrCmd_callstd_if(struct ScriptContext *ctx)
         if (ptr < gStdScripts_End)
             ScriptCall(ctx, *ptr);
     }
-    return FALSE;
-}
-
-bool8 ScrCmd_returnram(struct ScriptContext *ctx)
-{
-    Script_RequestEffects(SCREFF_V1);
-
-    ScriptJump(ctx, gRamScriptRetAddr);
-    return FALSE;
-}
-
-bool8 ScrCmd_endram(struct ScriptContext *ctx)
-{
-    Script_RequestEffects(SCREFF_V1 | SCREFF_SAVE);
-
-    FlagClear(FLAG_SAFE_FOLLOWER_MOVEMENT);
-    ClearRamScript();
-    StopScript(ctx);
-    return TRUE;
-}
-
-bool8 ScrCmd_setmysteryeventstatus(struct ScriptContext *ctx)
-{
-    u8 status = ScriptReadByte(ctx);
-
-    Script_RequestEffects(SCREFF_V1);
-
-    SetMysteryEventScriptStatus(status);
     return FALSE;
 }
 
@@ -2952,20 +2921,6 @@ bool8 ScrCmd_checkmodernfatefulencounter(struct ScriptContext *ctx)
     return FALSE;
 }
 
-bool8 ScrCmd_trywondercardscript(struct ScriptContext *ctx)
-{
-    const u8 *script = GetSavedRamScriptIfValid();
-
-    if (script)
-    {
-        Script_RequestEffects(SCREFF_V1);
-
-        gRamScriptRetAddr = ctx->scriptPtr;
-        ScriptJump(ctx, script);
-    }
-    return FALSE;
-}
-
 // This warp is only used by the Union Room.
 // For the warp used by the Aqua Hideout, see DoTeleportTileWarp
 bool8 ScrCmd_warpspinenter(struct ScriptContext *ctx)
@@ -3102,7 +3057,7 @@ bool8 ScrCmd_checkobjectat(struct ScriptContext *ctx)
 
 bool8 Scrcmd_getsetpokedexflag(struct ScriptContext *ctx)
 {
-    enum NationalDexOrder speciesId = SpeciesToNationalPokedexNum(VarGet(ScriptReadHalfword(ctx)));
+    enum DexOrder speciesId = SpeciesToDexNum(VarGet(ScriptReadHalfword(ctx)));
     u32 desiredFlag = VarGet(ScriptReadHalfword(ctx));
 
     if (desiredFlag == FLAG_SET_CAUGHT || desiredFlag == FLAG_SET_SEEN)

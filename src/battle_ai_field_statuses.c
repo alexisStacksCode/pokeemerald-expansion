@@ -15,7 +15,6 @@
 #include "move.h"
 #include "pokemon.h"
 #include "random.h"
-#include "recorded_battle.h"
 #include "util.h"
 #include "constants/abilities.h"
 #include "constants/battle_ai.h"
@@ -493,5 +492,3 @@ static enum FieldEffectOutcome BenefitsFromTrickRoom(u32 battler)
 
     return FIELD_EFFECT_POSITIVE;
 }
-
-

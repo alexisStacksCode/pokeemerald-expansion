@@ -67,54 +67,48 @@ enum BattleSide
 
 // Battle Type Flags
 #define BATTLE_TYPE_DOUBLE             (1 << 0)
-#define BATTLE_TYPE_LINK               (1 << 1)
-#define BATTLE_TYPE_IS_MASTER          (1 << 2) // In not-link battles, it's always set.
+#define BATTLE_TYPE_1                  (1 << 1)
+#define BATTLE_TYPE_2                  (1 << 2)
 #define BATTLE_TYPE_TRAINER            (1 << 3)
 #define BATTLE_TYPE_FIRST_BATTLE       (1 << 4)
-#define BATTLE_TYPE_LINK_IN_BATTLE     (1 << 5) // Set on battle entry, cleared on exit. Checked rarely
+#define BATTLE_TYPE_5                  (1 << 5)
 #define BATTLE_TYPE_MULTI              (1 << 6)
 #define BATTLE_TYPE_SAFARI             (1 << 7)
-#define BATTLE_TYPE_BATTLE_TOWER       (1 << 8)
-#define BATTLE_TYPE_WALLY_TUTORIAL     (1 << 9) // Used in pokefirered as BATTLE_TYPE_OLD_MAN_TUTORIAL.
+#define BATTLE_TYPE_8                  (1 << 8)
+#define BATTLE_TYPE_TUTORIAL           (1 << 9)
 #define BATTLE_TYPE_ROAMER             (1 << 10)
-#define BATTLE_TYPE_EREADER_TRAINER    (1 << 11)
+#define BATTLE_TYPE_11                 (1 << 11)
 #define BATTLE_TYPE_RAID               (1 << 12)
 #define BATTLE_TYPE_LEGENDARY          (1 << 13)
 #define BATTLE_TYPE_14                 (1 << 14)
-#define BATTLE_TYPE_TWO_OPPONENTS      (1 << 15) // Used in pokefirered as BATTLE_TYPE_GHOST.
-#define BATTLE_TYPE_DOME               (1 << 16) // Used in pokefirered as BATTLE_TYPE_POKEDUDE.
-#define BATTLE_TYPE_PALACE             (1 << 17) // Used in pokefirered as BATTLE_TYPE_WILD_SCRIPTED.
-#define BATTLE_TYPE_ARENA              (1 << 18) // Used in pokefirered as BATTLE_TYPE_LEGENDARY_FRLG.
-#define BATTLE_TYPE_FACTORY            (1 << 19) // Used in pokefirered as BATTLE_TYPE_TRAINER_TOWER.
-#define BATTLE_TYPE_PIKE               (1 << 20)
-#define BATTLE_TYPE_PYRAMID            (1 << 21)
+#define BATTLE_TYPE_TWO_OPPONENTS      (1 << 15)
+#define BATTLE_TYPE_16                 (1 << 16)
+#define BATTLE_TYPE_17                 (1 << 17)
+#define BATTLE_TYPE_18                 (1 << 18)
+#define BATTLE_TYPE_19                 (1 << 19)
+#define BATTLE_TYPE_20                 (1 << 20)
+#define BATTLE_TYPE_21                 (1 << 21)
 #define BATTLE_TYPE_INGAME_PARTNER     (1 << 22)
-#define BATTLE_TYPE_TOWER_LINK_MULTI   (1 << 23)
+#define BATTLE_TYPE_23                 (1 << 23)
 #define BATTLE_TYPE_RECORDED           (1 << 24)
-#define BATTLE_TYPE_RECORDED_LINK      (1 << 25)
-#define BATTLE_TYPE_TRAINER_HILL       (1 << 26)
-#define BATTLE_TYPE_SECRET_BASE        (1 << 27)
+#define BATTLE_TYPE_25                 (1 << 25)
+#define BATTLE_TYPE_26                 (1 << 26)
+#define BATTLE_TYPE_27                 (1 << 27)
 #define BATTLE_TYPE_28                 (1 << 28)
 #define BATTLE_TYPE_29                 (1 << 29)
 #define BATTLE_TYPE_30                 (1 << 30)
-#define BATTLE_TYPE_RECORDED_IS_MASTER (1 << 31)
-#define BATTLE_TYPE_FRONTIER                (BATTLE_TYPE_BATTLE_TOWER | BATTLE_TYPE_DOME | BATTLE_TYPE_PALACE | BATTLE_TYPE_ARENA | BATTLE_TYPE_FACTORY | BATTLE_TYPE_PIKE | BATTLE_TYPE_PYRAMID)
-#define BATTLE_TYPE_FRONTIER_NO_PYRAMID     (BATTLE_TYPE_BATTLE_TOWER | BATTLE_TYPE_DOME | BATTLE_TYPE_PALACE | BATTLE_TYPE_ARENA | BATTLE_TYPE_FACTORY | BATTLE_TYPE_PIKE)
-#define BATTLE_TYPE_RECORDED_INVALID        ((BATTLE_TYPE_LINK | BATTLE_TYPE_SAFARI | BATTLE_TYPE_FIRST_BATTLE                  \
-                                             | BATTLE_TYPE_WALLY_TUTORIAL | BATTLE_TYPE_ROAMER | BATTLE_TYPE_EREADER_TRAINER    \
-                                             | BATTLE_TYPE_LEGENDARY                                                            \
-                                             | BATTLE_TYPE_RECORDED | BATTLE_TYPE_TRAINER_HILL | BATTLE_TYPE_SECRET_BASE))
+#define BATTLE_TYPE_31                 (1 << 31)
+#define BATTLE_TYPE_RECORDED_INVALID   (BATTLE_TYPE_SAFARI | BATTLE_TYPE_FIRST_BATTLE  | BATTLE_TYPE_TUTORIAL | BATTLE_TYPE_ROAMER | BATTLE_TYPE_LEGENDARY | BATTLE_TYPE_RECORDED)
 
 #define WILD_DOUBLE_BATTLE                  ((gBattleTypeFlags & BATTLE_TYPE_DOUBLE && !(gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_TRAINER))))
-#define RECORDED_WILD_BATTLE                ((gBattleTypeFlags & BATTLE_TYPE_RECORDED) && !(gBattleTypeFlags & (BATTLE_TYPE_TRAINER | BATTLE_TYPE_FRONTIER)))
 #define BATTLE_TWO_VS_ONE_OPPONENT          ((gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER && TRAINER_BATTLE_PARAM.opponentB == 0xFFFF))
 #define BATTLE_TYPE_HAS_AI                  (BATTLE_TYPE_TRAINER | BATTLE_TYPE_FIRST_BATTLE | BATTLE_TYPE_SAFARI | BATTLE_TYPE_ROAMER | BATTLE_TYPE_INGAME_PARTNER)
 #define BATTLE_TYPE_MORE_THAN_TWO_BATTLERS  (BATTLE_TYPE_DOUBLE | BATTLE_TYPE_MULTI | BATTLE_TYPE_INGAME_PARTNER | BATTLE_TYPE_TWO_OPPONENTS)
-#define BATTLE_TYPE_PLAYER_HAS_PARTNER      (BATTLE_TYPE_MULTI | BATTLE_TYPE_INGAME_PARTNER | BATTLE_TYPE_TOWER_LINK_MULTI)
+#define BATTLE_TYPE_PLAYER_HAS_PARTNER      (BATTLE_TYPE_MULTI | BATTLE_TYPE_INGAME_PARTNER)
 
 // Multibattle test composite flags
-#define BATTLE_MULTI_TEST                   (BATTLE_TYPE_IS_MASTER | BATTLE_TYPE_TRAINER | BATTLE_TYPE_INGAME_PARTNER | BATTLE_TYPE_MULTI | BATTLE_TYPE_TWO_OPPONENTS)
-#define BATTLE_TWO_VS_ONE_TEST              (BATTLE_TYPE_IS_MASTER | BATTLE_TYPE_TRAINER | BATTLE_TYPE_INGAME_PARTNER | BATTLE_TYPE_MULTI)
+#define BATTLE_MULTI_TEST                   (BATTLE_TYPE_TRAINER | BATTLE_TYPE_INGAME_PARTNER | BATTLE_TYPE_MULTI | BATTLE_TYPE_TWO_OPPONENTS)
+#define BATTLE_TWO_VS_ONE_TEST              (BATTLE_TYPE_TRAINER | BATTLE_TYPE_INGAME_PARTNER | BATTLE_TYPE_MULTI)
 
 // Battle Outcome defines
 #define B_OUTCOME_WON                  1

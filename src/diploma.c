@@ -13,7 +13,7 @@
 #include "text.h"
 #include "overworld.h"
 #include "menu.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "constants/rgb.h"
 
 extern const u8 gText_DexNational[];

@@ -700,7 +700,7 @@ static void Task_Hof_DisplayPlayer(u8 taskId)
     ShowBg(0);
     ShowBg(1);
     ShowBg(3);
-    gTasks[taskId].tPlayerSpriteID = CreateTrainerPicSprite(PlayerGenderToFrontTrainerPicId_Debug(gSaveBlock2Ptr->playerGender, TRUE), TRUE, 120, 72, 6, TAG_NONE);
+    gTasks[taskId].tPlayerSpriteID = CreateTrainerPicSprite(PlayerGenderToFrontTrainerPicId(gSaveBlock2Ptr->playerGender), TRUE, 120, 72, 6, TAG_NONE);
     AddWindow(&sHof_WindowTemplate);
     LoadWindowGfx(1, gSaveBlock2Ptr->optionsWindowFrameType, 0x21D, BG_PLTT_ID(13));
     LoadPalette(GetTextWindowPalette(1), BG_PLTT_ID(14), PLTT_SIZE_4BPP);
@@ -790,7 +790,7 @@ static void StartCredits(void)
 #define tCurrTeamNo     data[0]
 #define tCurrPageNo     data[1]
 #define tCurrMonId      data[2]
-#define tMonNo          data[4]
+#define tMonNum          data[4]
 #define tMonSpriteId(i) data[i + 5]
 
 void CB2_DoHallOfFamePC(void)
@@ -896,12 +896,12 @@ static void Task_HofPC_DrawSpritesPrintText(u8 taskId)
     currMon = &savedTeams->mon[0];
     sHofFadePalettes = 0;
     gTasks[taskId].tCurrMonId = 0;
-    gTasks[taskId].tMonNo = 0;
+    gTasks[taskId].tMonNum = 0;
 
     for (i = 0; i < PARTY_SIZE; i++, currMon++)
     {
         if (currMon->species != 0)
-            gTasks[taskId].tMonNo++;
+            gTasks[taskId].tMonNum++;
     }
 
     currMon = &savedTeams->mon[0];
@@ -913,7 +913,7 @@ static void Task_HofPC_DrawSpritesPrintText(u8 taskId)
             u16 spriteId;
             s16 posX, posY;
 
-            if (gTasks[taskId].tMonNo > PARTY_SIZE / 2)
+            if (gTasks[taskId].tMonNum > PARTY_SIZE / 2)
             {
                 posX = sHallOfFame_MonFullTeamPositions[i][2];
                 posY = sHallOfFame_MonFullTeamPositions[i][3];
@@ -1029,7 +1029,7 @@ static void Task_HofPC_HandleInput(u8 taskId)
         gTasks[taskId].tCurrMonId--;
         gTasks[taskId].func = Task_HofPC_PrintMonInfo;
     }
-    else if (JOY_NEW(DPAD_DOWN) && gTasks[taskId].tCurrMonId < gTasks[taskId].tMonNo - 1) // change mon +1
+    else if (JOY_NEW(DPAD_DOWN) && gTasks[taskId].tCurrMonId < gTasks[taskId].tMonNum - 1) // change mon +1
     {
         gTasks[taskId].tCurrMonId++;
         gTasks[taskId].func = Task_HofPC_PrintMonInfo;
@@ -1097,7 +1097,7 @@ static void Task_HofPC_ExitOnButtonPress(u8 taskId)
 #undef tCurrTeamNo
 #undef tCurrPageNo
 #undef tCurrMonId
-#undef tMonNo
+#undef tMonNum
 #undef tMonSpriteId
 
 static void HallOfFame_PrintWelcomeText(u8 unusedPossiblyWindowId, u8 unused2)
@@ -1122,10 +1122,10 @@ static void HallOfFame_PrintMonInfo(struct HallofFameMon *currMon, u8 unused1, u
     if (currMon->species != SPECIES_EGG)
     {
         stringPtr = StringCopy(text, gText_Number);
-        dexNumber = SpeciesToPokedexNum(currMon->species);
+        dexNumber = SpeciesToDexNum(currMon->species);
         if (dexNumber != 0xFFFF)
         {
-            if (IsNationalPokedexEnabled())
+            if (DEX_COUNT > 999)
             {
                 stringPtr[0] = (dexNumber / 1000) + CHAR_0;
                 stringPtr++;

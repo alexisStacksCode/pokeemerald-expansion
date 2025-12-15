@@ -5,12 +5,10 @@
 #include "battle_interface.h"
 #include "battle_message.h"
 #include "battle_setup.h"
-#include "battle_tv.h"
 #include "bg.h"
 #include "data.h"
 #include "item.h"
 #include "item_menu.h"
-#include "link.h"
 #include "main.h"
 #include "m4a.h"
 #include "palette.h"
@@ -42,7 +40,6 @@ static void WallyHandleChooseItem(u32 battler);
 static void WallyHandleFaintingCry(u32 battler);
 static void WallyHandleIntroTrainerBallThrow(u32 battler);
 static void WallyHandleDrawPartyStatusSummary(u32 battler);
-static void WallyHandleEndLinkBattle(u32 battler);
 
 static void WallyBufferRunCommand(u32 battler);
 static void CompleteOnChosenItem(u32 battler);
@@ -101,7 +98,6 @@ static void (*const sWallyBufferCommands[CONTROLLER_CMDS_COUNT])(u32 battler) =
     [CONTROLLER_BATTLEANIMATION]          = BtlController_HandleBattleAnimation,
     [CONTROLLER_LINKSTANDBYMSG]           = BtlController_Empty,
     [CONTROLLER_RESETACTIONMOVESELECTION] = BtlController_Empty,
-    [CONTROLLER_ENDLINKBATTLE]            = WallyHandleEndLinkBattle,
     [CONTROLLER_DEBUGMENU]                = BtlController_Empty,
     [CONTROLLER_TERMINATOR_NOP]           = BtlController_TerminatorNop
 };
@@ -385,15 +381,4 @@ static void WallyHandleIntroTrainerBallThrow(u32 battler)
 static void WallyHandleDrawPartyStatusSummary(u32 battler)
 {
     BtlController_HandleDrawPartyStatusSummary(battler, B_SIDE_PLAYER, FALSE);
-}
-
-static void WallyHandleEndLinkBattle(u32 battler)
-{
-    gBattleOutcome = gBattleResources->bufferA[battler][1];
-    FadeOutMapMusic(5);
-    BeginFastPaletteFade(3);
-    BtlController_Complete(battler);
-
-    if (!(gBattleTypeFlags & BATTLE_TYPE_IS_MASTER) && gBattleTypeFlags & BATTLE_TYPE_LINK)
-        gBattlerControllerFuncs[battler] = SetBattleEndCallbacks;
 }

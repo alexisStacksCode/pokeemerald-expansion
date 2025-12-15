@@ -554,14 +554,6 @@ LilycoveCity_ContestLobby_EventScript_BerryBlenderSpeedRecords::
 	releaseall
 	end
 
-LilycoveCity_ContestLobby_EventScript_LinkContestResults::
-	lockall
-	frontier_results FACILITY_LINK_CONTEST
-	waitbuttonpress
-	special RemoveRecordsWindow
-	releaseall
-	end
-
 LilycoveCity_ContestLobby_EventScript_BlendMaster::
 	lock
 	faceplayer
@@ -1081,4 +1073,3 @@ LilycoveCity_ContestLobby_Text_MadePokeblocksWithFamily:
 	.string "Big Sister. They turned out great!\p"
 	.string "I bet you can make smoother, better\n"
 	.string "{POKEBLOCK}S if you have more people.$"
-

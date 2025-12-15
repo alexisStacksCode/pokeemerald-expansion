@@ -3,47 +3,34 @@
 #include "random.h"
 #include "pokemon.h"
 #include "roamer.h"
-#include "pokemon_size_record.h"
 #include "script.h"
 #include "lottery_corner.h"
 #include "play_time.h"
-#include "mauville_old_man.h"
 #include "match_call.h"
 #include "lilycove_lady.h"
 #include "load_save.h"
 #include "pokeblock.h"
-#include "dewford_trend.h"
 #include "berry.h"
 #include "rtc.h"
 #include "easy_chat.h"
 #include "event_data.h"
 #include "money.h"
-#include "trainer_hill.h"
 #include "tv.h"
 #include "coins.h"
 #include "text.h"
 #include "overworld.h"
 #include "mail.h"
-#include "battle_records.h"
 #include "item.h"
-#include "pokedex.h"
-#include "apprentice.h"
-#include "frontier_util.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "save.h"
-#include "link_rfu.h"
 #include "main.h"
 #include "contest.h"
 #include "item_menu.h"
 #include "pokemon_storage_system.h"
-#include "pokemon_jump.h"
 #include "decoration_inventory.h"
 #include "secret_base.h"
 #include "player_pc.h"
 #include "field_specials.h"
-#include "berry_powder.h"
-#include "mystery_gift.h"
-#include "union_room_chat.h"
 #include "constants/map_groups.h"
 #include "constants/items.h"
 #include "difficulty.h"
@@ -105,7 +92,6 @@ static void SetDefaultOptions(void)
 
 static void ClearPokedexFlags(void)
 {
-    gUnusedPokedexU8 = 0;
     memset(&gSaveBlock1Ptr->dexCaught, 0, sizeof(gSaveBlock1Ptr->dexCaught));
     memset(&gSaveBlock1Ptr->dexSeen, 0, sizeof(gSaveBlock1Ptr->dexSeen));
 }
@@ -131,7 +117,7 @@ static void ClearFrontierRecord(void)
 
 static void WarpToStart(void)
 {
-    SetWarpDestination(MAP_GROUP(MAP_ROUTE104), MAP_NUM(MAP_ROUTE104), WARP_ID_NONE, -1, -1);
+    SetWarpDestination(MAP_GROUP(MAP_PETALBURG_CITY), MAP_NUM(MAP_PETALBURG_CITY), WARP_ID_NONE, -1, -1);
     WarpIntoMap();
 }
 
@@ -166,7 +152,6 @@ void NewGameInitData(void)
     ClearSav3();
     ClearAllMail();
     gSaveBlock2Ptr->specialSaveWarpFlags = 0;
-    gSaveBlock2Ptr->gcnLinkFlags = 0;
     InitPlayerTrainerId();
     PlayTimeCounter_Reset();
     ClearPokedexFlags();
@@ -180,7 +165,6 @@ void NewGameInitData(void)
     ResetLinkContestBoolean();
     ResetGameStats();
     ClearAllContestWinnerPics();
-    ClearPlayerLinkBattleRecords();
     InitSeedotSizeRecord();
     InitLotadSizeRecord();
     gPlayerPartyCount = 0;
@@ -199,13 +183,10 @@ void NewGameInitData(void)
     ResetLotteryCorner();
     WarpToStart();
     RunScriptImmediately(EventScript_ResetAllMapFlags);
-    ResetMiniGamesRecords();
     InitUnionRoomChatRegisteredTexts();
     InitLilycoveLady();
-    ResetAllApprenticeData();
     ClearRankingHallRecords();
     InitMatchCallCounters();
-    ClearMysteryGift();
     WipeTrainerNameRecords();
     ResetTrainerHillResults();
     ResetContestLinkResults();
@@ -213,14 +194,6 @@ void NewGameInitData(void)
     ResetItemFlags();
     ResetDexNav();
     ClearFollowerNPCData();
-}
-
-static void ResetMiniGamesRecords(void)
-{
-    CpuFill16(0, &gSaveBlock2Ptr->berryCrush, sizeof(struct BerryCrush));
-    SetBerryPowder(&gSaveBlock2Ptr->berryCrush.berryPowderAmount, 0);
-    ResetPokemonJumpRecords();
-    CpuFill16(0, &gSaveBlock2Ptr->berryPick, sizeof(struct BerryPickingResults));
 }
 
 static void ResetItemFlags(void)

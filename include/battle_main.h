@@ -18,7 +18,6 @@ struct MultiPartnerMenuPokemon
     /*0x14*/ u32 status;
     /*0x18*/ u32 personality;
     /*0x1C*/ u8 gender;
-    /*0x1D*/ u8 language;
 };
 
 // defines for the 'DoBounceEffect' function
@@ -70,9 +69,6 @@ void CB2_InitBattle(void);
 void BattleMainCB2(void);
 void CB2_QuitRecordedBattle(void);
 void VBlankCB_Battle(void);
-void SpriteCB_VsLetterDummy(struct Sprite *sprite);
-void SpriteCB_VsLetterInit(struct Sprite *sprite);
-void CB2_InitEndLinkBattle(void);
 u32 GetBattleBgTemplateData(u8 arrayId, u8 caseId);
 u32 GetBattleWindowTemplatePixelWidth(u32 windowsType, u32 tableId);
 void SpriteCB_WildMon(struct Sprite *sprite);

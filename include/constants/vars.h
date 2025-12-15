@@ -50,7 +50,7 @@
 #define VAR_RECYCLE_GOODS                                0x4020
 #define VAR_REPEL_STEP_COUNT                             0x4021
 #define VAR_ICE_STEP_COUNT                               0x4022
-#define VAR_STARTER_MON                                  0x4023 // 0=Treecko, 1=Torchic, 2=Mudkip
+#define VAR_STARTER_MON                                  0x4023 // 0, 1, 2
 #define VAR_MIRAGE_RND_H                                 0x4024
 #define VAR_MIRAGE_RND_L                                 0x4025
 #define VAR_SECRET_BASE_MAP                              0x4026
@@ -60,14 +60,14 @@
 #define VAR_FRIENDSHIP_STEP_COUNTER                      0x402A
 #define VAR_POISON_STEP_COUNTER                          0x402B
 #define VAR_RESET_RTC_ENABLE                             0x402C
-#define VAR_ENIGMA_BERRY_AVAILABLE                       0x402D
-#define VAR_WONDER_NEWS_STEP_COUNTER                     0x402E
 
-#define VAR_FRONTIER_MANIAC_FACILITY                     0x402F
-#define VAR_FRONTIER_GAMBLER_CHALLENGE                   0x4030
-#define VAR_FRONTIER_GAMBLER_SET_CHALLENGE               0x4031
-#define VAR_FRONTIER_GAMBLER_AMOUNT_BET                  0x4032
-#define VAR_FRONTIER_GAMBLER_STATE                       0x4033
+#define VAR_UNUSED_0x402D                                0x402D // Unused Var
+#define VAR_UNUSED_0x402E                                0x402E // Unused Var
+#define VAR_UNUSED_0x402F                                0x402F // Unused Var
+#define VAR_UNUSED_0x4030                                0x4030 // Unused Var
+#define VAR_UNUSED_0x4031                                0x4031 // Unused Var
+#define VAR_UNUSED_0x4032                                0x4032 // Unused Var
+#define VAR_UNUSED_0x4033                                0x4033 // Unused Var
 
 #define VAR_DEOXYS_ROCK_STEP_COUNT                       0x4034
 #define VAR_DEOXYS_ROCK_LEVEL                            0x4035
@@ -209,7 +209,7 @@
 #define VAR_JAGGED_PASS_ASH_WEATHER                      0x40BD
 #define VAR_GLASS_WORKSHOP_STATE                         0x40BE
 #define VAR_METEOR_FALLS_STATE                           0x40BF
-#define VAR_SOOTOPOLIS_MYSTERY_EVENTS_STATE              0x40C0
+#define VAR_SOOTOPOLIS_MYSTERY_EVENTS_STATE              0x40C0 // Unused Var
 #define VAR_TRICK_HOUSE_PRIZE_PICKUP                     0x40C1
 #define VAR_PACIFIDLOG_TM_RECEIVED_DAY                   0x40C2
 #define VAR_VICTORY_ROAD_1F_STATE                        0x40C3

@@ -25,9 +25,7 @@
 // Save Slot 1: 0-13;  Save Slot 2: 14-27
 #define SECTOR_ID_HOF_1              28
 #define SECTOR_ID_HOF_2              29
-#define SECTOR_ID_TRAINER_HILL       30
-#define SECTOR_ID_RECORDED_BATTLE    31
-#define SECTORS_COUNT                32
+#define SECTORS_COUNT                30
 
 #define NUM_HOF_SECTORS 2
 
@@ -53,8 +51,6 @@ enum
 enum
 {
     SAVE_NORMAL,
-    SAVE_LINK, // Link / Battle Frontier
-    SAVE_EREADER, // deprecated in Emerald
     SAVE_HALL_OF_FAME,
     SAVE_OVERWRITE_DIFFERENT_FILE,
     SAVE_HALL_OF_FAME_ERASE_BEFORE // unused

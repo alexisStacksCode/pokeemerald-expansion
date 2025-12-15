@@ -18,45 +18,25 @@ Pic: Brendan
 Gender: Male
 Music: Male
 
-Goodra
-Modest Nature
-Level: 95
-IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
-EVs: 252 SpA / 252 Def / 6 HP
-- Draco Meteor
-- Sludge Wave
-- Shock Wave
-- Muddy Water
-
-Seismitoad
-Adamant Nature
-Level: 95
-IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
-EVs: 252 Atk / 252 HP / 6 Spe
-- Liquidation
-- Earthquake
-- Ice Punch
-- Drain Punch
-
-Kingambit
-Adamant Nature
-Level: 95
-IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
-EVs: 252 Atk / 252 SpD / 6 Def
-- Kowtow Cleave
-- Iron Head
-- Guillotine
-- Protect
-
 Daphne Blake
 Timid Nature
-Level: 95
+Level: 100
 IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
-EVs: 252 Spe / 252 SpA / 6 HP
-- Flamethrower
-- Psychic
+EVs: 6 HP / 252 SpA / 252 Spe
+- Luster Purge
 - Dazzling Gleam
-- Will-O-Wisp
+- Power Gem
+- Mystical Fire
+
+Velma Dinkly
+Jolly Nature
+Level: 100
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+EVs: 6 HP / 252 Atk / 252 Spe
+- Darkest Lariat
+- Triple Kick
+- Spirit Break
+- Mat Block
 
 === DEBUG_TRAINER_AI ===
 Name: Debugger
@@ -69,55 +49,46 @@ Music: Male
 Mugshot: Green
 
 Daphne Blake
-Timid Nature
-Level: 100
+Modest Nature
+Level: 95
 IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
-EVs: 252 Spe / 252 SpA / 6 HP
-- Fire Blast
-- Future Sight
+EVs: 6 HP / 252 SpA / 252 Spe
+- Luster Purge
 - Dazzling Gleam
-- Will-O-Wisp
+- Power Gem
+- Mystical Fire
 
 Daphne Blake
 Modest Nature
 Shiny: Yes
-Level: 100
+Level: 95
 IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
-EVs: 252 SpA / 252 HP / 6 Def
-- Psyshock
-- Charge Beam
-- Reflect
-- Light Screen
+EVs: 6 HP / 252 SpA / 252 Spe
+- Luster Purge
+- Dazzling Gleam
+- Power Gem
+- Mystical Fire
 
-Garchomp
-Jolly Nature
-Level: 100
+Velma Dinkly
+Adamant Nature
+Level: 95
 IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
-EVs: 252 Spe / 252 Atk / 6 SpD
-- Dragon Rush
-- Earthquake
-- Iron Head
-- Brick Break
+EVs: 6 HP / 252 Atk / 252 Spe
+- Darkest Lariat
+- Triple Kick
+- Spirit Break
+- Mat Block
 
-Lucario
-Timid Nature
-Level: 100
+Velma Dinkly
+Adamant Nature
+Shiny: Yes
+Level: 95
 IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
-EVs: 252 Spe / 252 SpA / 6 SpD
-- Aura Sphere
-- Steel Beam
-- Dragon Pulse
-- Life Dew
-
-Spiritomb
-Calm Nature
-Level: 100
-IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
-EVs: 252 Def / 252 SpD / 6 SpA
-- Shadow Ball
-- Dark Pulse
-- Burning Jealousy
-- Trick Room
+EVs: 6 HP / 252 Atk / 252 Spe
+- Darkest Lariat
+- Triple Kick
+- Spirit Break
+- Mat Block
 
 Metal Devil
 Sassy Nature

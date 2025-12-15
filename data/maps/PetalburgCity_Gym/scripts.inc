@@ -344,29 +344,6 @@ PetalburgCity_Gym_EventScript_NormanRematch::
 	msgbox PetalburgCity_Gym_Text_NormanPostRematch, MSGBOX_AUTOCLOSE
 	end
 
-PetalburgCity_Gym_EventScript_ShouldGiveEnigmaBerry::
-	specialvar VAR_RESULT, IsEnigmaBerryValid
-	goto_if_eq VAR_RESULT, FALSE, PetalburgCity_Gym_EventScript_DontGiveEnigmaBerry
-	checkitem ITEM_ENIGMA_BERRY_E_READER
-	goto_if_eq VAR_RESULT, TRUE, PetalburgCity_Gym_EventScript_DontGiveEnigmaBerry
-	checkpcitem ITEM_ENIGMA_BERRY_E_READER
-	goto_if_eq VAR_RESULT, TRUE, PetalburgCity_Gym_EventScript_DontGiveEnigmaBerry
-	goto_if_eq VAR_ENIGMA_BERRY_AVAILABLE, 0, PetalburgCity_Gym_EventScript_DontGiveEnigmaBerry
-	msgbox PetalburgCity_Gym_Text_GiveEnigmaBerry, MSGBOX_DEFAULT
-	setvar VAR_RESULT, TRUE
-	return
-
-PetalburgCity_Gym_EventScript_DontGiveEnigmaBerry::
-	setvar VAR_RESULT, FALSE
-	return
-
-PetalburgCity_Gym_EventScript_GiveEnigmaBerry::
-	giveitem ITEM_ENIGMA_BERRY_E_READER
-	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
-	setvar VAR_ENIGMA_BERRY_AVAILABLE, 0
-	release
-	end
-
 PetalburgCity_Gym_EventScript_NormanBattle::
 	msgbox PetalburgCity_Gym_Text_NormanIntro, MSGBOX_DEFAULT
 	trainerbattle_no_intro TRAINER_NORMAN_1, PetalburgCity_Gym_Text_NormanDefeat
@@ -1588,4 +1565,3 @@ PetalburgCity_Gym_Text_NormanRematchNeedTwoMons:
 	.string "capable of battle?\p"
 	.string "Sorry, but you'll have to come back\n"
 	.string "with at least two POKéMON.$"
-

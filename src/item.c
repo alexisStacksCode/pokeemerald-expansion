@@ -12,8 +12,6 @@
 #include "strings.h"
 #include "load_save.h"
 #include "item_use.h"
-#include "battle_pyramid.h"
-#include "battle_pyramid_bag.h"
 #include "graphics.h"
 #include "constants/battle.h"
 #include "constants/items.h"
@@ -234,16 +232,6 @@ bool32 CheckBagHasItem(u16 itemId, u16 count)
         return CheckPyramidBagHasItem(itemId, count);
 
     return BagPocket_CheckHasItem(&gBagPockets[GetItemPocket(itemId)], itemId, count);
-}
-
-bool32 HasAtLeastOneBerry(void)
-{
-    gSpecialVar_Result = FALSE;
-
-    for (u32 i = FIRST_BERRY_INDEX; i <= LAST_BERRY_INDEX && gSpecialVar_Result == FALSE; i++)
-        gSpecialVar_Result = CheckBagHasItem(i, 1);
-
-    return gSpecialVar_Result;
 }
 
 bool32 HasAtLeastOnePokeBall(void)
@@ -822,14 +810,7 @@ static const u8 *GetItemPluralName(u16 itemId)
 
 const u8 *GetItemEffect(u32 itemId)
 {
-    if (itemId == ITEM_ENIGMA_BERRY_E_READER)
-    #if FREE_ENIGMA_BERRY == FALSE
-        return gSaveBlock1Ptr->enigmaBerry.itemEffect;
-    #else
-        return 0;
-    #endif //FREE_ENIGMA_BERRY
-    else
-        return gItemsInfo[SanitizeItemId(itemId)].effect;
+    return gItemsInfo[SanitizeItemId(itemId)].effect;
 }
 
 enum HoldEffect GetItemHoldEffect(u32 itemId)
@@ -876,32 +857,7 @@ ItemUseFunc GetItemFieldFunc(u16 itemId)
 u8 GetItemBattleUsage(u16 itemId)
 {
     u16 item = SanitizeItemId(itemId);
-    // Handle E-Reader berries.
-    if (item == ITEM_ENIGMA_BERRY_E_READER)
-    {
-        switch (GetItemEffectType(gSpecialVar_ItemId))
-        {
-            case ITEM_EFFECT_X_ITEM:
-                return EFFECT_ITEM_INCREASE_STAT;
-            case ITEM_EFFECT_HEAL_HP:
-                return EFFECT_ITEM_RESTORE_HP;
-            case ITEM_EFFECT_CURE_POISON:
-            case ITEM_EFFECT_CURE_SLEEP:
-            case ITEM_EFFECT_CURE_BURN:
-            case ITEM_EFFECT_CURE_FREEZE_FROSTBITE:
-            case ITEM_EFFECT_CURE_PARALYSIS:
-            case ITEM_EFFECT_CURE_ALL_STATUS:
-            case ITEM_EFFECT_CURE_CONFUSION:
-            case ITEM_EFFECT_CURE_INFATUATION:
-                return EFFECT_ITEM_CURE_STATUS;
-            case ITEM_EFFECT_HEAL_PP:
-                return EFFECT_ITEM_RESTORE_PP;
-            default:
-                return 0;
-        }
-    }
-    else
-        return gItemsInfo[item].battleUsage;
+    return gItemsInfo[item].battleUsage;
 }
 
 u32 GetItemSecondaryId(u32 itemId)

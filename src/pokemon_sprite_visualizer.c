@@ -21,7 +21,7 @@
 #include "overworld.h"
 #include "palette.h"
 #include "palette_util.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "pokemon.h"
 #include "pokemon_sprite_visualizer.h"
 #include "pokemon_icon.h"

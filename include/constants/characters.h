@@ -52,7 +52,7 @@
 #define CHAR_LV                0x34
 #define CHAR_EQUALS            0x35
 #define CHAR_SEMICOLON         0x36
-#define CHAR_BARD_WORD_DELIMIT 0x37 // Empty space to separate words in Bard's song
+#define CHAR_BARD_WORD_DELIMIT 0x37 // Unused
 #define CHAR_V_D_ARROW         0x38
 #define CHAR_NBSP              0x39
 #define CHAR_INV_QUESTION_MARK 0x51
@@ -267,10 +267,6 @@
 #define PLACEHOLDER_ID_GROUDON       0xD
 
 // battle placeholders are located in battle_message.h
-
-// Hiragana from 0x1-0x50, Katakana from 0x51-0xA0.
-// This excludes Japanese punctuation, which end at 0xB0
-#define JAPANESE_CHAR_END 0xA0
 
 // Note that while all dot combinations are represented in
 // the Braille font, they are not all meaningful characters.

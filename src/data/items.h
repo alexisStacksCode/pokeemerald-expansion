@@ -11382,19 +11382,18 @@ const struct Item gItemsInfo[] =
         .iconPalette = gItemIconPalette_MarangaBerry,
     },
 
-    [ITEM_ENIGMA_BERRY_E_READER] =
+    [ITEM_HOPO_BERRY] =
     {
-        .name = ITEM_NAME("Enigma Berry"),
-        .pluralName = ITEM_PLURAL_NAME("Enigma Berries"),
+        .name = ITEM_NAME("Hopo Berry"),
+        .pluralName = ITEM_PLURAL_NAME("Hopo Berries"),
         .price = (I_BERRY_PRICE >= GEN_8) ? 80 : 20,
         .description = COMPOUND_STRING(
             "{POKEBLOCK} ingredient.\n"
             "Plant in loamy soil\n"
             "to grow a mystery."),
         .pocket = POCKET_BERRIES,
-        .type = ITEM_USE_BAG_MENU, // Type handled by ItemUseOutOfBattle_EnigmaBerry
-        .fieldUseFunc = ItemUseOutOfBattle_EnigmaBerry,
-        .battleUsage = EFFECT_ITEM_ENIGMA_BERRY_EREADER,
+        .type = ITEM_USE_BAG_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
         .flingPower = 10,
         .iconPic = gItemIcon_EnigmaBerry,
         .iconPalette = gItemIconPalette_EnigmaBerry,

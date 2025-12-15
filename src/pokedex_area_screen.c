@@ -10,7 +10,7 @@
 #include "menu.h"
 #include "overworld.h"
 #include "palette.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "pokedex_area_screen.h"
 #include "region_map.h"
 #include "roamer.h"
@@ -787,8 +787,7 @@ static void Task_ShowPokedexAreaScreen(u8 taskId)
                 ShowAreaUnknownLabel();
             DoScheduledBgTilemapCopiesToVram();
         }
-        if (POKEDEX_PLUS_HGSS)
-            LoadHGSSScreenSelectBarSubmenu();
+        LoadHGSSScreenSelectBarSubmenu();
         ShowBg(2);
         ShowBg(3); // TryShowPokedexAreaMap will have done this already
         SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON);
@@ -879,7 +878,7 @@ static void Task_HandlePokedexAreaScreenInput(u8 taskId)
         }
         else if (JOY_NEW(DPAD_RIGHT) || (JOY_NEW(R_BUTTON) && gSaveBlock2Ptr->optionsButtonMode == OPTIONS_BUTTON_MODE_LR))
         {
-            if (!GetSetPokedexFlag(SpeciesToNationalPokedexNum(sPokedexAreaScreen->species), FLAG_GET_CAUGHT))
+            if (!GetSetPokedexFlag(SpeciesToDexNum(sPokedexAreaScreen->species), FLAG_GET_CAUGHT))
             {
                 PlaySE(SE_FAILURE);
                 return;

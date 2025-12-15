@@ -219,7 +219,6 @@ u8 ScanlineEffect_InitWave(u8 startLine, u8 endLine, u8 frequency, u8 amplitude,
     params.dmaDest = (void *)(REG_ADDR_BG0HOFS + regOffset);
     params.dmaControl = SCANLINE_EFFECT_DMACNT_16BIT;
     params.initState = 1;
-    params.unused9 = 0;
     ScanlineEffect_SetParams(params);
 
     taskId = CreateTask(TaskFunc_UpdateWavePerFrame, 0);

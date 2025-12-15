@@ -3,7 +3,6 @@
 #include "battle_anim.h"
 #include "battle_arena.h"
 #include "battle_environment.h"
-#include "battle_pyramid.h"
 #include "battle_util.h"
 #include "battle_controllers.h"
 #include "battle_interface.h"
@@ -33,10 +32,9 @@
 #include "battle_ai_main.h"
 #include "battle_ai_util.h"
 #include "event_data.h"
-#include "link.h"
 #include "malloc.h"
 #include "berry.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "mail.h"
 #include "field_weather.h"
 #include "constants/abilities.h"
@@ -682,10 +680,7 @@ bool32 TryRunFromBattle(u32 battler)
     if (FlagGet(B_FLAG_NO_RUNNING))
         return effect;
 
-    if (gBattleMons[battler].item == ITEM_ENIGMA_BERRY_E_READER)
-        holdEffect = gEnigmaBerries[battler].holdEffect;
-    else
-        holdEffect = GetItemHoldEffect(gBattleMons[battler].item);
+    oldEffect = GetItemHoldEffect(gBattleMons[battler].item);
 
     gPotentialItemEffectBattler = battler;
 
@@ -1778,8 +1773,7 @@ u32 GetBattlerAffectionHearts(u32 battler)
     if (!IsOnPlayerSide(battler))
         return AFFECTION_NO_HEARTS;
     else if (gSpeciesInfo[species].isMegaEvolution
-          || (gBattleTypeFlags & (BATTLE_TYPE_EREADER_TRAINER
-                                | BATTLE_TYPE_FRONTIER
+          || (gBattleTypeFlags & (BATTLE_TYPE_FRONTIER
                                 | BATTLE_TYPE_LINK
                                 | BATTLE_TYPE_RECORDED_LINK
                                 | BATTLE_TYPE_SECRET_BASE)))
@@ -6536,27 +6530,18 @@ enum HoldEffect GetBattlerHoldEffectInternal(u32 battler, u32 ability)
 
     gPotentialItemEffectBattler = battler;
 
-    if (gBattleMons[battler].item == ITEM_ENIGMA_BERRY_E_READER)
-        return gEnigmaBerries[battler].holdEffect;
-    else
-        return GetItemHoldEffect(gBattleMons[battler].item);
+    return GetItemHoldEffect(gBattleMons[battler].item);
 }
 
 enum HoldEffect GetBattlerHoldEffectIgnoreNegation(u32 battler)
 {
     gPotentialItemEffectBattler = battler;
-    if (gBattleMons[battler].item == ITEM_ENIGMA_BERRY_E_READER)
-        return gEnigmaBerries[battler].holdEffect;
-    else
-        return GetItemHoldEffect(gBattleMons[battler].item);
+    return GetItemHoldEffect(gBattleMons[battler].item);
 }
 
 u32 GetBattlerHoldEffectParam(u32 battler)
 {
-    if (gBattleMons[battler].item == ITEM_ENIGMA_BERRY_E_READER)
-        return gEnigmaBerries[battler].holdEffectParam;
-    else
-        return GetItemHoldEffectParam(gBattleMons[battler].item);
+    return GetItemHoldEffectParam(gBattleMons[battler].item);
 }
 
 bool32 CanBattlerAvoidContactEffects(u32 battlerAtk, u32 battlerDef, enum Ability abilityAtk, enum HoldEffect holdEffectAtk, u32 move)
@@ -9333,8 +9318,6 @@ bool32 CanBattlerGetOrLoseItem(u32 battler, u16 itemId)
 
     if (ItemIsMail(itemId))
         return FALSE;
-    else if (itemId == ITEM_ENIGMA_BERRY_E_READER)
-        return FALSE;
     else if (DoesSpeciesUseHoldItemToChangeForm(species, itemId))
         return FALSE;
     else if (holdEffect == HOLD_EFFECT_Z_CRYSTAL)
@@ -9763,8 +9746,7 @@ bool32 CanStealItem(u32 battlerStealing, u32 battlerItem, u16 item)
     // Check if the battler trying to steal should be able to
     if (stealerSide == B_SIDE_OPPONENT
         && !(gBattleTypeFlags &
-             (BATTLE_TYPE_EREADER_TRAINER
-              | BATTLE_TYPE_FRONTIER
+             (BATTLE_TYPE_FRONTIER
               | BATTLE_TYPE_LINK
               | BATTLE_TYPE_RECORDED_LINK
               | BATTLE_TYPE_SECRET_BASE
@@ -9774,8 +9756,7 @@ bool32 CanStealItem(u32 battlerStealing, u32 battlerItem, u16 item)
         return FALSE;
     }
     else if (!(gBattleTypeFlags &
-          (BATTLE_TYPE_EREADER_TRAINER
-           | BATTLE_TYPE_FRONTIER
+          (BATTLE_TYPE_FRONTIER
            | BATTLE_TYPE_LINK
            | BATTLE_TYPE_RECORDED_LINK
            | BATTLE_TYPE_SECRET_BASE))

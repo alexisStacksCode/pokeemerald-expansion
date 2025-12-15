@@ -1,6 +1,5 @@
 #include "global.h"
 #include "malloc.h"
-#include "berry_powder.h"
 #include "fake_rtc.h"
 #include "follower_npc.h"
 #include "item.h"
@@ -12,7 +11,6 @@
 #include "random.h"
 #include "save_location.h"
 #include "script_pokemon_util.h"
-#include "trainer_hill.h"
 #include "gba/flash_internal.h"
 #include "decoration_inventory.h"
 #include "agb_flash.h"
@@ -25,8 +23,8 @@ static void ApplyNewEncryptionKeyToAllEncryptedData(u32 encryptionKey);
 
 struct LoadedSaveData
 {
- /*0x0000*/ struct Bag bag;
- /*0x02E8*/ struct Mail mail[MAIL_COUNT];
+    /*0x0000*/ struct Bag bag;
+    /*0x02E8*/ struct Mail mail[MAIL_COUNT];
 };
 
 // EWRAM DATA
@@ -299,7 +297,6 @@ static void ApplyNewEncryptionKeyToAllEncryptedData(u32 encryptionKey)
 {
     ApplyNewEncryptionKeyToGameStats(encryptionKey);
     ApplyNewEncryptionKeyToBagItems(encryptionKey);
-    ApplyNewEncryptionKeyToBerryPowder(encryptionKey);
     ApplyNewEncryptionKeyToWord(&gSaveBlock1Ptr->money, encryptionKey);
     ApplyNewEncryptionKeyToHword(&gSaveBlock1Ptr->coins, encryptionKey);
 }

@@ -19,7 +19,6 @@ struct ScanlineEffectParams
     volatile void *dmaDest;
     u32 dmaControl;
     u8 initState;
-    u8 unused9;
 };
 
 struct ScanlineEffect

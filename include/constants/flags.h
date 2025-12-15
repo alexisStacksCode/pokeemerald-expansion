@@ -224,7 +224,7 @@
 #define FLAG_RECEIVED_PINK_SCARF             0xCA
 #define FLAG_RECEIVED_GREEN_SCARF            0xCB
 #define FLAG_RECEIVED_YELLOW_SCARF           0xCC
-#define FLAG_INTERACTED_WITH_STEVEN_SPACE_CENTER    0xCD
+#define FLAG_INTERACTED_WITH_STEVEN_SPACE_CENTER 0xCD
 #define FLAG_ENCOUNTERED_LATIAS_OR_LATIOS    0xCE
 #define FLAG_MET_ARCHIE_METEOR_FALLS         0xCF
 #define FLAG_GOT_BASEMENT_KEY_FROM_WATTSON   0xD0
@@ -240,7 +240,7 @@
 #define FLAG_MET_WAILMER_TRAINER             0xDA
 #define FLAG_EVIL_LEADER_PLEASE_STOP         0xDB
 
-#define FLAG_NEVER_SET_0x0DC                 0xDC // This flag is read, but never written to
+#define FLAG_UNUSED_0x0DC                    0xDC // Unused Flag
 
 #define FLAG_RECEIVED_GO_GOGGLES             0xDD
 #define FLAG_WINGULL_SENT_ON_ERRAND          0xDE
@@ -337,27 +337,27 @@
 #define FLAG_WALLACE_GOES_TO_SKY_PILLAR      0x137 // Set after speaking to Wallace within the Cave of Origin.
 #define FLAG_RECEIVED_HM_WATERFALL           0x138
 #define FLAG_BEAT_MAGMA_GRUNT_JAGGED_PASS    0x139
-#define FLAG_RECEIVED_AURORA_TICKET          0x13A
-#define FLAG_RECEIVED_MYSTIC_TICKET          0x13B
-#define FLAG_RECEIVED_OLD_SEA_MAP            0x13C
-#define FLAG_WONDER_CARD_UNUSED_1            0x13D // These Wonder Card flags are referenced but never set
-#define FLAG_WONDER_CARD_UNUSED_2            0x13E
-#define FLAG_WONDER_CARD_UNUSED_3            0x13F
-#define FLAG_WONDER_CARD_UNUSED_4            0x140
-#define FLAG_WONDER_CARD_UNUSED_5            0x141
-#define FLAG_WONDER_CARD_UNUSED_6            0x142
-#define FLAG_WONDER_CARD_UNUSED_7            0x143
-#define FLAG_WONDER_CARD_UNUSED_8            0x144
-#define FLAG_WONDER_CARD_UNUSED_9            0x145
-#define FLAG_WONDER_CARD_UNUSED_10           0x146
-#define FLAG_WONDER_CARD_UNUSED_11           0x147
-#define FLAG_WONDER_CARD_UNUSED_12           0x148
-#define FLAG_WONDER_CARD_UNUSED_13           0x149
-#define FLAG_WONDER_CARD_UNUSED_14           0x14A
-#define FLAG_WONDER_CARD_UNUSED_15           0x14B
-#define FLAG_WONDER_CARD_UNUSED_16           0x14C
-#define FLAG_WONDER_CARD_UNUSED_17           0x14D
-#define NUM_WONDER_CARD_FLAGS                (1 + FLAG_WONDER_CARD_UNUSED_17 - FLAG_RECEIVED_AURORA_TICKET)
+
+#define FLAG_UNUSED_0x13A                    0x13A // Unused Flag
+#define FLAG_UNUSED_0x13B                    0x13B // Unused Flag
+#define FLAG_UNUSED_0x13C                    0x13C // Unused Flag
+#define FLAG_UNUSED_0x13D                    0x13D // Unused Flag
+#define FLAG_UNUSED_0x13E                    0x13E // Unused Flag
+#define FLAG_UNUSED_0x13F                    0x13F // Unused Flag
+#define FLAG_UNUSED_0x140                    0x140 // Unused Flag
+#define FLAG_UNUSED_0x141                    0x141 // Unused Flag
+#define FLAG_UNUSED_0x142                    0x142 // Unused Flag
+#define FLAG_UNUSED_0x143                    0x143 // Unused Flag
+#define FLAG_UNUSED_0x144                    0x144 // Unused Flag
+#define FLAG_UNUSED_0x145                    0x145 // Unused Flag
+#define FLAG_UNUSED_0x146                    0x146 // Unused Flag
+#define FLAG_UNUSED_0x147                    0x147 // Unused Flag
+#define FLAG_UNUSED_0x148                    0x148 // Unused Flag
+#define FLAG_UNUSED_0x149                    0x149 // Unused Flag
+#define FLAG_UNUSED_0x14A                    0x14A // Unused Flag
+#define FLAG_UNUSED_0x14B                    0x14B // Unused Flag
+#define FLAG_UNUSED_0x14C                    0x14C // Unused Flag
+#define FLAG_UNUSED_0x14D                    0x14D // Unused Flag
 
 #define FLAG_MIRAGE_TOWER_VISIBLE            0x14E
 #define FLAG_CHOSE_ROOT_FOSSIL               0x14F
@@ -462,12 +462,12 @@
 
 #define FLAG_UNUSED_0x1AA                    0x1AA // Unused Flag
 #define FLAG_UNUSED_0x1AB                    0x1AB // Unused Flag
+#define FLAG_UNUSED_0x1AC                    0x1AC // Unused Flag
+#define FLAG_UNUSED_0x1AD                    0x1AD // Unused Flag
+#define FLAG_UNUSED_0x1AE                    0x1AE // Unused Flag
+#define FLAG_UNUSED_0x1AF                    0x1AF // Unused Flag
+#define FLAG_UNUSED_0x1B0                    0x1B0 // Unused Flag
 
-#define FLAG_DEFEATED_DEOXYS                 0x1AC
-#define FLAG_BATTLED_DEOXYS                  0x1AD
-#define FLAG_SHOWN_EON_TICKET                0x1AE
-#define FLAG_SHOWN_AURORA_TICKET             0x1AF
-#define FLAG_SHOWN_OLD_SEA_MAP               0x1B0
 #define FLAG_MOVE_TUTOR_TAUGHT_SWAGGER       0x1B1
 #define FLAG_MOVE_TUTOR_TAUGHT_ROLLOUT       0x1B2
 #define FLAG_MOVE_TUTOR_TAUGHT_FURY_CUTTER   0x1B3
@@ -511,35 +511,31 @@
 #define FLAG_ENABLE_JUAN_MATCH_CALL          0x1D9
 
 #define FLAG_UNUSED_0x1DA                    0x1DA // Unused Flag
-
-#define FLAG_SHOWN_MYSTIC_TICKET             0x1DB
-#define FLAG_DEFEATED_HO_OH                  0x1DC
-#define FLAG_DEFEATED_LUGIA                  0x1DD
-
+#define FLAG_UNUSED_0x1DB                    0x1DB // Unused Flag
+#define FLAG_UNUSED_0x1DC                    0x1DC // Unused Flag
+#define FLAG_UNUSED_0x1DD                    0x1DD // Unused Flag
 #define FLAG_UNUSED_0x1DE                    0x1DE // Unused Flag
 #define FLAG_UNUSED_0x1DF                    0x1DF // Unused Flag
 #define FLAG_UNUSED_0x1E0                    0x1E0 // Unused Flag
 #define FLAG_UNUSED_0x1E1                    0x1E1 // Unused Flag
 #define FLAG_UNUSED_0x1E2                    0x1E2 // Unused Flag
 #define FLAG_UNUSED_0x1E3                    0x1E3 // Unused Flag
-
-// Mystery Gift Flags (Unknown)
-#define FLAG_MYSTERY_GIFT_DONE               0x1E4
-#define FLAG_MYSTERY_GIFT_1                  0x1E5
-#define FLAG_MYSTERY_GIFT_2                  0x1E6
-#define FLAG_MYSTERY_GIFT_3                  0x1E7
-#define FLAG_MYSTERY_GIFT_4                  0x1E8
-#define FLAG_MYSTERY_GIFT_5                  0x1E9
-#define FLAG_MYSTERY_GIFT_6                  0x1EA
-#define FLAG_MYSTERY_GIFT_7                  0x1EB
-#define FLAG_MYSTERY_GIFT_8                  0x1EC
-#define FLAG_MYSTERY_GIFT_9                  0x1ED
-#define FLAG_MYSTERY_GIFT_10                 0x1EE
-#define FLAG_MYSTERY_GIFT_11                 0x1EF
-#define FLAG_MYSTERY_GIFT_12                 0x1F0
-#define FLAG_MYSTERY_GIFT_13                 0x1F1
-#define FLAG_MYSTERY_GIFT_14                 0x1F2
-#define FLAG_MYSTERY_GIFT_15                 0x1F3
+#define FLAG_UNUSED_0x1E4                    0x1E4 // Unused Flag
+#define FLAG_UNUSED_0x1E5                    0x1E5 // Unused Flag
+#define FLAG_UNUSED_0x1E6                    0x1E6 // Unused Flag
+#define FLAG_UNUSED_0x1E7                    0x1E7 // Unused Flag
+#define FLAG_UNUSED_0x1E8                    0x1E8 // Unused Flag
+#define FLAG_UNUSED_0x1E9                    0x1E9 // Unused Flag
+#define FLAG_UNUSED_0x1EA                    0x1EA // Unused Flag
+#define FLAG_UNUSED_0x1EB                    0x1EB // Unused Flag
+#define FLAG_UNUSED_0x1EC                    0x1EC // Unused Flag
+#define FLAG_UNUSED_0x1ED                    0x1ED // Unused Flag
+#define FLAG_UNUSED_0x1EE                    0x1EE // Unused Flag
+#define FLAG_UNUSED_0x1EF                    0x1EF // Unused Flag
+#define FLAG_UNUSED_0x1F0                    0x1F0 // Unused Flag
+#define FLAG_UNUSED_0x1F1                    0x1F1 // Unused Flag
+#define FLAG_UNUSED_0x1F2                    0x1F2 // Unused Flag
+#define FLAG_UNUSED_0x1F3                    0x1F3 // Unused Flag
 
 // Hidden Items
 #define FLAG_HIDDEN_ITEMS_START                                                         0x1F4
@@ -1316,23 +1312,23 @@
 #define FLAG_UNUSED_0x4EE                                           0x4EE // Unused Flag
 #define FLAG_UNUSED_0x4EF                                           0x4EF // Unused Flag
 
-#define FLAG_DEFEATED_RUSTBORO_GYM                                  0x4F0
-#define FLAG_DEFEATED_DEWFORD_GYM                                   0x4F1
-#define FLAG_DEFEATED_MAUVILLE_GYM                                  0x4F2
-#define FLAG_DEFEATED_LAVARIDGE_GYM                                 0x4F3
-#define FLAG_DEFEATED_PETALBURG_GYM                                 0x4F4
-#define FLAG_DEFEATED_FORTREE_GYM                                   0x4F5
-#define FLAG_DEFEATED_MOSSDEEP_GYM                                  0x4F6
-#define FLAG_DEFEATED_SOOTOPOLIS_GYM                                0x4F7
+#define FLAG_DEFEATED_GYM01                                         0x4F0
+#define FLAG_DEFEATED_GYM02                                         0x4F1
+#define FLAG_DEFEATED_GYM03                                         0x4F2
+#define FLAG_DEFEATED_GYM04                                         0x4F3
+#define FLAG_DEFEATED_GYM05                                         0x4F4
+#define FLAG_DEFEATED_GYM06                                         0x4F5
+#define FLAG_DEFEATED_GYM07                                         0x4F6
+#define FLAG_DEFEATED_GYM08                                         0x4F7
 #define FLAG_DEFEATED_METEOR_FALLS_STEVEN                           0x4F8
 
 #define FLAG_UNUSED_0x4F9                                           0x4F9 // Unused Flag
 #define FLAG_UNUSED_0x4FA                                           0x4FA // Unused Flag
 
-#define FLAG_DEFEATED_ELITE_4_SIDNEY                                0x4FB
-#define FLAG_DEFEATED_ELITE_4_PHOEBE                                0x4FC
-#define FLAG_DEFEATED_ELITE_4_GLACIA                                0x4FD
-#define FLAG_DEFEATED_ELITE_4_DRAKE                                 0x4FE
+#define FLAG_DEFEATED_ELITE_4_FIRST                                 0x4FB
+#define FLAG_DEFEATED_ELITE_4_SECOND                                0x4FC
+#define FLAG_DEFEATED_ELITE_4_THIRD                                 0x4FD
+#define FLAG_DEFEATED_ELITE_4_FOURTH                                0x4FE
 
 #define FLAG_UNUSED_0x4FF                                           0x4FF // Unused Flag
 
@@ -1436,7 +1432,7 @@
 #define FLAG_LANDMARK_FIERY_PATH                    (SYSTEM_FLAGS + 0x4A)
 
 #define FLAG_SYS_PC_LANETTE                         (SYSTEM_FLAGS + 0x4B)
-#define FLAG_SYS_MYSTERY_EVENT_ENABLE               (SYSTEM_FLAGS + 0x4C)
+#define FLAG_SYS_MYSTERY_EVENT_ENABLE               (SYSTEM_FLAGS + 0x4C) // Unused Flag
 #define FLAG_SYS_ENC_UP_ITEM                        (SYSTEM_FLAGS + 0x4D)
 #define FLAG_SYS_ENC_DOWN_ITEM                      (SYSTEM_FLAGS + 0x4E)
 #define FLAG_SYS_BRAILLE_DIG                        (SYSTEM_FLAGS + 0x4F)

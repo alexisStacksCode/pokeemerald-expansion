@@ -1,7 +1,7 @@
 #include "global.h"
 #include "pokemon.h"
 #include "egg_hatch.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "constants/items.h"
 #include "script.h"
 #include "decompress.h"
@@ -362,7 +362,7 @@ static void CreateHatchedMon(struct Pokemon *egg, struct Pokemon *temp)
 static void AddHatchedMonToParty(u8 id)
 {
     u8 isEgg = 0x46; // ?
-    enum NationalDexOrder species;
+    enum DexOrder species;
     u8 name[POKEMON_NAME_LENGTH + 1];
     u16 metLevel;
     metloc_u8_t metLocation;
@@ -375,7 +375,7 @@ static void AddHatchedMonToParty(u8 id)
     StringCopy(name, GetSpeciesName(species));
     SetMonData(mon, MON_DATA_NICKNAME, name);
 
-    species = SpeciesToNationalPokedexNum(species);
+    species = SpeciesToDexNum(species);
     GetSetPokedexFlag(species, FLAG_SET_SEEN);
     GetSetPokedexFlag(species, FLAG_SET_CAUGHT);
 

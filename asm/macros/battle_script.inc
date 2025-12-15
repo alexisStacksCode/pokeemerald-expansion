@@ -536,10 +536,6 @@
 	.byte \battler
 	.endm
 
-	.macro endlinkbattle
-	.byte 0x57
-	.endm
-
 	.macro returntoball battler:req, changingForm:req
 	.byte 0x58
 	.byte \battler

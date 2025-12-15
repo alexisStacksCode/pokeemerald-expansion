@@ -2,9 +2,6 @@
 #include "item_menu.h"
 #include "battle.h"
 #include "battle_controllers.h"
-#include "battle_pyramid.h"
-#include "frontier_util.h"
-#include "battle_pyramid_bag.h"
 #include "berry_tag_screen.h"
 #include "bg.h"
 #include "data.h"
@@ -22,7 +19,6 @@
 #include "item_use.h"
 #include "lilycove_lady.h"
 #include "list_menu.h"
-#include "link.h"
 #include "mail.h"
 #include "malloc.h"
 #include "map_name_popup.h"
@@ -45,8 +41,6 @@
 #include "text_window.h"
 #include "menu_helpers.h"
 #include "window.h"
-#include "apprentice.h"
-#include "battle_pike.h"
 #include "constants/items.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
@@ -185,7 +179,6 @@ static void WaitAfterItemSell(u8);
 static void TryDepositItem(u8);
 static void Task_ChooseHowManyToDeposit(u8 taskId);
 static void WaitDepositErrorMessage(u8);
-static void CB2_ApprenticeExitBagMenu(void);
 static void CB2_FavorLadyExitBagMenu(void);
 static void CB2_QuizLadyExitBagMenu(void);
 static void UpdatePocketItemLists(void);
@@ -356,10 +349,6 @@ static const u8 sContextMenuItems_BerryBlenderCrush[] = {
     ACTION_DUMMY,       ACTION_CANCEL
 };
 
-static const u8 sContextMenuItems_Apprentice[] = {
-    ACTION_SHOW,        ACTION_CANCEL
-};
-
 static const u8 sContextMenuItems_FavorLady[] = {
     ACTION_GIVE_FAVOR_LADY, ACTION_CANCEL
 };
@@ -378,7 +367,6 @@ static const TaskFunc sContextMenuFuncs[] = {
     [ITEMMENULOCATION_ITEMPC] =                 Task_ItemContext_Deposit,
     [ITEMMENULOCATION_FAVOR_LADY] =             Task_ItemContext_Normal,
     [ITEMMENULOCATION_QUIZ_LADY] =              Task_ItemContext_Normal,
-    [ITEMMENULOCATION_APPRENTICE] =             Task_ItemContext_Normal,
     [ITEMMENULOCATION_WALLY] =                  NULL,
     [ITEMMENULOCATION_PCBOX] =                  Task_ItemContext_GiveToPC,
     [ITEMMENULOCATION_BERRY_TREE_MULCH] =       Task_FadeAndCloseBagMenuIfMulch,
@@ -627,13 +615,6 @@ void CB2_GoToSellMenu(void)
 void CB2_GoToItemDepositMenu(void)
 {
     GoToBagMenu(ITEMMENULOCATION_ITEMPC, POCKETS_COUNT, CB2_PlayerPCExitBagMenu);
-}
-
-void ApprenticeOpenBagMenu(void)
-{
-    GoToBagMenu(ITEMMENULOCATION_APPRENTICE, POCKETS_COUNT, CB2_ApprenticeExitBagMenu);
-    gSpecialVar_0x8005 = ITEM_NONE;
-    gSpecialVar_Result = FALSE;
 }
 
 void FavorLadyOpenBagMenu(void)
@@ -1625,20 +1606,8 @@ static void OpenContextMenu(u8 taskId)
         gBagMenu->contextMenuItemsPtr = sContextMenuItems_BerryBlenderCrush;
         gBagMenu->contextMenuNumItems = ARRAY_COUNT(sContextMenuItems_BerryBlenderCrush);
         break;
-    case ITEMMENULOCATION_APPRENTICE:
-        if (!GetItemImportance(gSpecialVar_ItemId) && gSpecialVar_ItemId != ITEM_ENIGMA_BERRY_E_READER)
-        {
-            gBagMenu->contextMenuItemsPtr = sContextMenuItems_Apprentice;
-            gBagMenu->contextMenuNumItems = ARRAY_COUNT(sContextMenuItems_Apprentice);
-        }
-        else
-        {
-            gBagMenu->contextMenuItemsPtr = sContextMenuItems_Cancel;
-            gBagMenu->contextMenuNumItems = ARRAY_COUNT(sContextMenuItems_Cancel);
-        }
-        break;
     case ITEMMENULOCATION_FAVOR_LADY:
-        if (!GetItemImportance(gSpecialVar_ItemId) && gSpecialVar_ItemId != ITEM_ENIGMA_BERRY_E_READER)
+        if (!GetItemImportance(gSpecialVar_ItemId))
         {
             gBagMenu->contextMenuItemsPtr = sContextMenuItems_FavorLady;
             gBagMenu->contextMenuNumItems = ARRAY_COUNT(sContextMenuItems_FavorLady);
@@ -1650,7 +1619,7 @@ static void OpenContextMenu(u8 taskId)
         }
         break;
     case ITEMMENULOCATION_QUIZ_LADY:
-        if (!GetItemImportance(gSpecialVar_ItemId) && gSpecialVar_ItemId != ITEM_ENIGMA_BERRY_E_READER)
+        if (!GetItemImportance(gSpecialVar_ItemId))
         {
             gBagMenu->contextMenuItemsPtr = sContextMenuItems_QuizLady;
             gBagMenu->contextMenuNumItems = ARRAY_COUNT(sContextMenuItems_QuizLady);
@@ -1669,7 +1638,7 @@ static void OpenContextMenu(u8 taskId)
     default:
         if (MenuHelpers_IsLinkActive() == TRUE || InUnionRoom() == TRUE)
         {
-            if (gBagPosition.pocket == POCKET_KEY_ITEMS || !IsHoldingItemAllowed(gSpecialVar_ItemId))
+            if (gBagPosition.pocket == POCKET_KEY_ITEMS)
             {
                 gBagMenu->contextMenuItemsPtr = sContextMenuItems_Cancel;
                 gBagMenu->contextMenuNumItems = ARRAY_COUNT(sContextMenuItems_Cancel);
@@ -2027,11 +1996,7 @@ static void ItemMenu_Register(u8 taskId)
 static void ItemMenu_Give(u8 taskId)
 {
     RemoveContextWindow();
-    if (!IsWritingMailAllowed(gSpecialVar_ItemId))
-    {
-        DisplayItemMessage(taskId, FONT_NORMAL, gText_CantWriteMail, HandleErrorMessage);
-    }
-    else if (!GetItemImportance(gSpecialVar_ItemId))
+    if (!GetItemImportance(gSpecialVar_ItemId))
     {
         if (CalculatePlayerPartyCount() == 0)
         {
@@ -2111,17 +2076,7 @@ void CB2_ReturnToBagMenuPocket(void)
 
 static void Task_ItemContext_GiveToParty(u8 taskId)
 {
-    if (!IsWritingMailAllowed(gSpecialVar_ItemId))
-    {
-        DisplayItemMessage(taskId, FONT_NORMAL, gText_CantWriteMail, HandleErrorMessage);
-    }
-    else if (!IsHoldingItemAllowed(gSpecialVar_ItemId))
-    {
-        CopyItemName(gSpecialVar_ItemId, gStringVar1);
-        StringExpandPlaceholders(gStringVar4, sText_Var1CantBeHeldHere);
-        DisplayItemMessage(taskId, FONT_NORMAL, gStringVar4, HandleErrorMessage);
-    }
-    else if (gBagPosition.pocket != POCKET_KEY_ITEMS && !GetItemImportance(gSpecialVar_ItemId))
+    if (gBagPosition.pocket != POCKET_KEY_ITEMS && !GetItemImportance(gSpecialVar_ItemId))
     {
         Task_FadeAndCloseBagMenu(taskId);
     }
@@ -2479,22 +2434,6 @@ static void Task_WallyTutorialBagMenu(u8 taskId)
 }
 
 #undef tTimer
-
-// This action is used to show the Apprentice an item when
-// they ask what item they should make their Pokémon hold
-static void ItemMenu_Show(u8 taskId)
-{
-    gSpecialVar_0x8005 = gSpecialVar_ItemId;
-    gSpecialVar_Result = TRUE;
-    RemoveContextWindow();
-    Task_FadeAndCloseBagMenu(taskId);
-}
-
-static void CB2_ApprenticeExitBagMenu(void)
-{
-    gFieldCallback = Apprentice_ScriptContext_Enable;
-    SetMainCallback2(CB2_ReturnToField);
-}
 
 static void ItemMenu_GiveFavorLady(u8 taskId)
 {

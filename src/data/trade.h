@@ -46,9 +46,7 @@ static const u8 sText_ChooseAPkmn[] = _("Choose a POKéMON.");
 static const u8 sText_Summary[] = _("SUMMARY");
 static const u8 sText_Trade[] = _("TRADE");
 static const u8 sText_CancelTrade[] = _("Cancel trade?");
-static const u8 sJPText_PressBButtonToQuit[] = _("Bボタン　で　もどります");
 static const u8 sText_Summary2[] = _("SUMMARY");
-static const u8 sText_Trade2[] = _("TRADE");
 static const u8 sText_CommunicationStandby[] = _("{COLOR DARK_GRAY}{HIGHLIGHT WHITE}{SHADOW LIGHT_GRAY}Communication standby…\nPlease wait.");
 static const u8 sText_TheTradeHasBeenCanceled[] = _("{COLOR DARK_GRAY}{HIGHLIGHT WHITE}{SHADOW LIGHT_GRAY}The trade has\nbeen canceled.");
 static const u8 sText_OnlyPkmnForBattle[] = _("That's your only\nPOKéMON for battle.");
@@ -367,13 +365,11 @@ static const u8 *const sActionTexts[] =
     [TEXT_SUMMARY]      = sText_Summary,
     [TEXT_TRADE]        = sText_Trade,
     [TEXT_CANCEL_TRADE] = sText_CancelTrade,
-    [TEXT_JP_QUIT]      = sJPText_PressBButtonToQuit
 };
 
 static const struct MenuAction sSelectTradeMonActions[] =
 {
     {sText_Summary2, {Task_DrawSelectionSummary}},
-    {sText_Trade2,   {Task_DrawSelectionTrade}}
 };
 
 static const u8 *const sMessages[] =
@@ -614,7 +610,6 @@ static const struct WindowTemplate sTradeYesNoWindowTemplate =
     .baseBlock = 582
 };
 
-static const u8 sText_ShedinjaJP[] = _("ヌケニン");
 static const u8 sSelectedMonLevelGenderCoords[3][2] =
 {
     [TRADE_PLAYER]  = {4,  3},
@@ -623,12 +618,8 @@ static const u8 sSelectedMonLevelGenderCoords[3][2] =
 
 static const u16 sPokeball_Pal[] = INCBIN_U16("graphics/trade/pokeball.gbapal");
 static const u8 sPokeball_Gfx[] = INCBIN_U8("graphics/trade/pokeball.4bpp");
-static const u8 sPokeballSymbol_Gfx[] = INCBIN_U8("graphics/trade/pokeball_symbol.8bpp"); // unused
 static const u16 sCableCloseup_Map[] = INCBIN_U16("graphics/trade/crossing_highlight_cable.bin");
-static const u16 sPokeballSymbol_Map[] = INCBIN_U16("graphics/trade/pokeball_symbol_map.bin"); // unused?
-static const u16 sUnusedPal1[] = INCBIN_U16("graphics/trade/unused1.gbapal");
 static const u16 sGba_Pal[] = INCBIN_U16("graphics/trade/gba.gbapal");
-static const u16 sUnusedPal2[] = INCBIN_U16("graphics/trade/unused2.gbapal");
 static const u16 sWirelessSignalNone_Pal_Unused[] = INCBIN_U16("graphics/trade/wireless_signal_none.gbapal");
 static const u16 sLinkMon_Pal[] = INCBIN_U16("graphics/trade/link_mon.gbapal");
 static const u8 sLinkMonGlow_Gfx[] = INCBIN_U8("graphics/trade/link_mon_glow.4bpp");

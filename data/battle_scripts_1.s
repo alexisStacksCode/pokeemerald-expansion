@@ -4439,9 +4439,6 @@ BattleScript_FaintedMonTryChoose:
 	openpartyscreen BS_FAINTED, BattleScript_FaintedMonEnd
 	switchhandleorder BS_FAINTED, 2
 	jumpifnotbattletype BATTLE_TYPE_TRAINER, BattleScript_FaintedMonSendOutNew
-	jumpifbattletype BATTLE_TYPE_LINK, BattleScript_FaintedMonSendOutNew
-	jumpifbattletype BATTLE_TYPE_RECORDED_LINK, BattleScript_FaintedMonSendOutNew
-	jumpifbattletype BATTLE_TYPE_FRONTIER, BattleScript_FaintedMonSendOutNew
 	jumpifbattletype BATTLE_TYPE_DOUBLE, BattleScript_FaintedMonSendOutNew
 	jumpifword CMP_COMMON_BITS, gHitMarker, HITMARKER_PLAYER_FAINTED, BattleScript_FaintedMonSendOutNew
 	jumpifbyte CMP_EQUAL, sBATTLE_STYLE, OPTIONS_BATTLE_STYLE_SET, BattleScript_FaintedMonSendOutNew
@@ -4555,9 +4552,6 @@ BattleScript_PayDayMoneyAndPickUpItems::
 
 BattleScript_LocalBattleLost::
 	jumpifbattletype BATTLE_TYPE_DOME, BattleScript_CheckDomeDrew
-	jumpifbattletype BATTLE_TYPE_FRONTIER, BattleScript_LocalBattleLostPrintTrainersWinText
-	jumpifbattletype BATTLE_TYPE_TRAINER_HILL, BattleScript_LocalBattleLostPrintTrainersWinText
-	jumpifbattletype BATTLE_TYPE_EREADER_TRAINER, BattleScript_LocalBattleLostEnd
 	jumpifhalfword CMP_EQUAL, gTrainerBattleParameter + 2, TRAINER_SECRET_BASE, BattleScript_LocalBattleLostEnd
 	jumpifnowhiteout BattleScript_LocalBattleLostEnd_
 	jumpifbattletype BATTLE_TYPE_INGAME_PARTNER, BattleScript_LocalBattleLostPrintWhiteOut
@@ -4605,76 +4599,6 @@ BattleScript_LocalBattleLostDoTrainer2WinText::
 	waitstate
 	printstring STRINGID_TRAINER2WINTEXT
 BattleScript_LocalBattleLostEnd_::
-	end2
-
-BattleScript_FrontierLinkBattleLost::
-	returnopponentmon1toball
-	waitstate
-	returnopponentmon2toball
-	waitstate
-	trainerslidein BS_OPPONENT1
-	waitstate
-	printstring STRINGID_TRAINER1WINTEXT
-	trainerslideout BS_OPPONENT1
-	waitstate
-	trainerslidein BS_OPPONENT2
-	waitstate
-	printstring STRINGID_TRAINER2WINTEXT
-	jumpifbattletype BATTLE_TYPE_RECORDED, BattleScript_FrontierLinkBattleLostEnd
-	endlinkbattle
-BattleScript_FrontierLinkBattleLostEnd::
-	waitmessage B_WAIT_TIME_LONG
-	end2
-
-BattleScript_LinkBattleWonOrLost::
-	jumpifbattletype BATTLE_TYPE_BATTLE_TOWER, BattleScript_TowerLinkBattleWon
-	printstring STRINGID_BATTLEEND
-	waitmessage B_WAIT_TIME_LONG
-	jumpifbattletype BATTLE_TYPE_RECORDED, BattleScript_LinkBattleWonOrLostWaitEnd
-	endlinkbattle
-BattleScript_LinkBattleWonOrLostWaitEnd::
-	waitmessage B_WAIT_TIME_LONG
-	end2
-
-BattleScript_TowerLinkBattleWon::
-	playtrainerdefeatedmusic
-	printstring STRINGID_BATTLEEND
-	waitmessage B_WAIT_TIME_LONG
-	trainerslidein BS_OPPONENT1
-	waitstate
-	printstring STRINGID_TRAINER1LOSETEXT
-	trainerslideout BS_OPPONENT1
-	waitstate
-	trainerslidein BS_OPPONENT2
-	waitstate
-	printstring STRINGID_TRAINER2LOSETEXT
-	jumpifbattletype BATTLE_TYPE_RECORDED, BattleScript_TowerLinkBattleWonEnd
-	endlinkbattle
-BattleScript_TowerLinkBattleWonEnd::
-	waitmessage B_WAIT_TIME_LONG
-	end2
-
-BattleScript_FrontierTrainerBattleWon::
-	jumpifnotbattletype BATTLE_TYPE_TRAINER, BattleScript_PayDayMoneyAndPickUpItems
-	jumpifbattletype BATTLE_TYPE_TWO_OPPONENTS, BattleScript_FrontierTrainerBattleWon_TwoDefeated
-	printstring STRINGID_PLAYERDEFEATEDTRAINER1
-	goto BattleScript_FrontierTrainerBattleWon_LoseTexts
-BattleScript_FrontierTrainerBattleWon_TwoDefeated:
-	printstring STRINGID_TWOENEMIESDEFEATED
-BattleScript_FrontierTrainerBattleWon_LoseTexts:
-	trainerslidein BS_OPPONENT1
-	waitstate
-	printstring STRINGID_TRAINER1LOSETEXT
-	jumpifnotbattletype BATTLE_TYPE_TWO_OPPONENTS, BattleScript_TryPickUpItems
-	trainerslideout BS_OPPONENT1
-	waitstate
-	trainerslidein BS_OPPONENT2
-	waitstate
-	printstring STRINGID_TRAINER2LOSETEXT
-BattleScript_TryPickUpItems:
-	jumpifnotbattletype BATTLE_TYPE_PYRAMID, BattleScript_FrontierTrainerBattleWon_End
-	pickup
-BattleScript_FrontierTrainerBattleWon_End:
 	end2
 
 BattleScript_SmokeBallEscape::
@@ -7964,13 +7888,6 @@ BattleScript_AskIfWantsToForfeitMatch::
 
 BattleScript_PrintPlayerForfeited::
 	printstring STRINGID_FORFEITEDMATCH
-	waitmessage B_WAIT_TIME_LONG
-	end2
-
-BattleScript_PrintPlayerForfeitedLinkBattle::
-	printstring STRINGID_FORFEITEDMATCH
-	waitmessage B_WAIT_TIME_LONG
-	endlinkbattle
 	waitmessage B_WAIT_TIME_LONG
 	end2
 

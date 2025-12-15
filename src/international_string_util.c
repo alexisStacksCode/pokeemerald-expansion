@@ -1,7 +1,7 @@
 #include "global.h"
 #include "international_string_util.h"
 #include "list_menu.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "script_menu.h"
 #include "string_util.h"
 #include "strings.h"

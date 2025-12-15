@@ -61,13 +61,6 @@ struct SecretBaseRegistryMenu
     u8 names[11][32];
 };
 
-struct SecretBaseRecordMixer
-{
-    struct SecretBase *secretBases;
-    u32 version;
-    u32 language;
-};
-
 struct SecretBaseEntranceMetatiles
 {
     u16 closedMetatileId;
@@ -372,7 +365,6 @@ void SetPlayerSecretBase(void)
     VarSet(VAR_CURRENT_SECRET_BASE, 0);
     StringCopyN(gSaveBlock1Ptr->secretBases[0].trainerName, gSaveBlock2Ptr->playerName, GetNameLength(gSaveBlock2Ptr->playerName));
     gSaveBlock1Ptr->secretBases[0].gender = gSaveBlock2Ptr->playerGender;
-    gSaveBlock1Ptr->secretBases[0].language = GAME_LANGUAGE;
     VarSet(VAR_SECRET_BASE_MAP, gMapHeader.regionMapSectionId);
 }
 
@@ -1339,21 +1331,6 @@ static void SaveSecretBase(u8 secretBaseIdx, struct SecretBase *secretBase, u32 
 
     gSaveBlock1Ptr->secretBases[secretBaseIdx] = *secretBase;
     gSaveBlock1Ptr->secretBases[secretBaseIdx].registryStatus = NEW;
-    if (version == VERSION_SAPPHIRE || version == VERSION_RUBY)
-        gSaveBlock1Ptr->secretBases[secretBaseIdx].language = GAME_LANGUAGE;
-
-    if (version == VERSION_EMERALD && language == LANGUAGE_JAPANESE)
-    {
-        name = gSaveBlock1Ptr->secretBases[secretBaseIdx].trainerName;
-        for (stringLength = 0; stringLength < PLAYER_NAME_LENGTH; stringLength++)
-        {
-            if (name[stringLength] == EOS)
-                break;
-        }
-
-        if (stringLength > 5)
-            gSaveBlock1Ptr->secretBases[secretBaseIdx].language = GAME_LANGUAGE;
-    }
 }
 
 static bool8 SecretBasesHaveSameTrainerId(struct SecretBase *secretBase1, struct SecretBase *secretBase2)
@@ -1503,18 +1480,6 @@ static void SortSecretBasesByRegistryStatus(void)
     }
 }
 
-// Used to save a record mixing friends' bases other than their own
-// registryStatus is so registered bases can be attempted first
-static void TrySaveFriendsSecretBases(struct SecretBaseRecordMixer *mixer, u8 registryStatus)
-{
-    u16 i;
-    for (i = 1; i < SECRET_BASES_COUNT; i++)
-    {
-        if (mixer->secretBases[i].registryStatus == registryStatus)
-            TrySaveFriendsSecretBase(&mixer->secretBases[i], mixer->version, mixer->language);
-    }
-}
-
 static bool8 SecretBaseBelongsToPlayer(struct SecretBase *secretBase)
 {
     u8 i;
@@ -1540,55 +1505,6 @@ static bool8 SecretBaseBelongsToPlayer(struct SecretBase *secretBase)
 
     return TRUE;
 }
-
-#define DELETED_BASE_A  (1 << 0)
-#define DELETED_BASE_B  (1 << 1)
-#define DELETED_BASE_C  (1 << 2)
-
-static void DeleteFirstOldBaseFromPlayerInRecordMixingFriendsRecords(struct SecretBase *basesA, struct SecretBase *basesB, struct SecretBase *basesC)
-{
-    u8 i;
-    u8 sbFlags = 0;
-
-    for (i = 0; i < SECRET_BASES_COUNT; i++)
-    {
-        if (!(sbFlags & DELETED_BASE_A))
-        {
-            if (SecretBaseBelongsToPlayer(&basesA[i]) == TRUE)
-            {
-                ClearSecretBase(&basesA[i]);
-                sbFlags |= DELETED_BASE_A;
-            }
-        }
-
-        if (!(sbFlags & DELETED_BASE_B))
-        {
-            if (SecretBaseBelongsToPlayer(&basesB[i]) == TRUE)
-            {
-                ClearSecretBase(&basesB[i]);
-                sbFlags |= DELETED_BASE_B;
-            }
-        }
-
-        if (!(sbFlags & DELETED_BASE_C))
-        {
-            if (SecretBaseBelongsToPlayer(&basesC[i]) == TRUE)
-            {
-                ClearSecretBase(&basesC[i]);
-                sbFlags |= DELETED_BASE_C;
-            }
-        }
-
-        if (sbFlags == (DELETED_BASE_A | DELETED_BASE_B | DELETED_BASE_C))
-        {
-            break;
-        }
-    }
-}
-
-#undef DELETED_BASE_A
-#undef DELETED_BASE_B
-#undef DELETED_BASE_C
 
 // returns TRUE if secretBase was deleted, FALSE otherwise
 static bool8 ClearDuplicateOwnedSecretBase(struct SecretBase *secretBase, struct SecretBase *secretBases, u8 idx)
@@ -1677,119 +1593,6 @@ static void TrySaveRegisteredDuplicate(struct SecretBase *base, u32 version, u32
     {
         TrySaveFriendsSecretBase(base, version, language);
         ClearSecretBase(base);
-    }
-}
-
-static void TrySaveRegisteredDuplicates(struct SecretBaseRecordMixer *mixers)
-{
-    u16 i;
-
-    for (i = 0; i < SECRET_BASES_COUNT; i++)
-    {
-        TrySaveRegisteredDuplicate(&mixers[0].secretBases[i], mixers[0].version, mixers[0].language);
-        TrySaveRegisteredDuplicate(&mixers[1].secretBases[i], mixers[1].version, mixers[1].language);
-        TrySaveRegisteredDuplicate(&mixers[2].secretBases[i], mixers[2].version, mixers[2].language);
-    }
-}
-
-static void SaveRecordMixBases(struct SecretBaseRecordMixer *mixers)
-{
-    DeleteFirstOldBaseFromPlayerInRecordMixingFriendsRecords(mixers[0].secretBases, mixers[1].secretBases, mixers[2].secretBases);
-    ClearDuplicateOwnedSecretBases(gSaveBlock1Ptr->secretBases, mixers[0].secretBases, mixers[1].secretBases, mixers[2].secretBases);
-
-    // First, save any registered secret bases that were deleted as duplicates
-    TrySaveRegisteredDuplicates(mixers);
-
-    // Then try to save the record mixing friends' own bases
-    TrySaveFriendsSecretBase(mixers[0].secretBases, mixers[0].version, mixers[0].language);
-    TrySaveFriendsSecretBase(mixers[1].secretBases, mixers[1].version, mixers[1].language);
-    TrySaveFriendsSecretBase(mixers[2].secretBases, mixers[2].version, mixers[2].language);
-
-    // Then try to save as many of their registered bases as possible
-    TrySaveFriendsSecretBases(&mixers[0], REGISTERED);
-    TrySaveFriendsSecretBases(&mixers[1], REGISTERED);
-    TrySaveFriendsSecretBases(&mixers[2], REGISTERED);
-
-    // Lastly save as many of their unregistered bases as possible
-    TrySaveFriendsSecretBases(&mixers[0], UNREGISTERED);
-    TrySaveFriendsSecretBases(&mixers[1], UNREGISTERED);
-    TrySaveFriendsSecretBases(&mixers[2], UNREGISTERED);
-}
-
-#define INIT_SECRET_BASE_RECORD_MIXER(linkId1, linkId2, linkId3)        \
-            mixers[0].secretBases = secretBases + linkId1 * recordSize; \
-            mixers[0].version = gLinkPlayers[linkId1].version & 0xFF;   \
-            mixers[0].language = gLinkPlayers[linkId1].language;        \
-            mixers[1].secretBases = secretBases + linkId2 * recordSize; \
-            mixers[1].version = gLinkPlayers[linkId2].version & 0xFF;   \
-            mixers[1].language = gLinkPlayers[linkId2].language;        \
-            mixers[2].secretBases = secretBases + linkId3 * recordSize; \
-            mixers[2].version = gLinkPlayers[linkId3].version & 0xFF;   \
-            mixers[2].language = gLinkPlayers[linkId3].language;
-
-void ReceiveSecretBasesData(void *secretBases, size_t recordSize, u8 linkIdx)
-{
-    struct SecretBaseRecordMixer mixers[3];
-    u16 i;
-
-    if (linkIdx > 3)
-        return;
-
-    if (FlagGet(FLAG_RECEIVED_SECRET_POWER))
-    {
-        switch (GetLinkPlayerCount())
-        {
-        case 2:
-            memset(secretBases + 2 * recordSize, 0, recordSize);
-            memset(secretBases + 3 * recordSize, 0, recordSize);
-            break;
-        case 3:
-            memset(secretBases + 3 * recordSize, 0, recordSize);
-            break;
-        }
-
-        switch (linkIdx)
-        {
-        case 0:
-            INIT_SECRET_BASE_RECORD_MIXER(1, 2, 3)
-            break;
-        case 1:
-            INIT_SECRET_BASE_RECORD_MIXER(2, 3, 0)
-            break;
-        case 2:
-            INIT_SECRET_BASE_RECORD_MIXER(3, 0, 1)
-            break;
-        case 3:
-            INIT_SECRET_BASE_RECORD_MIXER(0, 1, 2)
-            break;
-        }
-
-        SaveRecordMixBases(mixers);
-
-        for (i = 1; i < SECRET_BASES_COUNT; i++)
-        {
-            // In the process of deleting duplicate bases, if a base the player has registered is deleted it is
-            // flagged with the temporary toRegister flag, so it can be re-registered after it has been newly saved
-            if (gSaveBlock1Ptr->secretBases[i].toRegister == TRUE)
-            {
-                gSaveBlock1Ptr->secretBases[i].registryStatus = REGISTERED;
-                gSaveBlock1Ptr->secretBases[i].toRegister = FALSE;
-            }
-        }
-
-        SortSecretBasesByRegistryStatus();
-        for (i = 1; i < SECRET_BASES_COUNT; i++)
-        {
-            // Unmark "new" bases, they've been saved now and are no longer important
-            if (gSaveBlock1Ptr->secretBases[i].registryStatus == NEW)
-                gSaveBlock1Ptr->secretBases[i].registryStatus = UNREGISTERED;
-        }
-
-        if (gSaveBlock1Ptr->secretBases[0].secretBaseId != 0
-         && gSaveBlock1Ptr->secretBases[0].numSecretBasesReceived != 0xFFFF)
-        {
-            gSaveBlock1Ptr->secretBases[0].numSecretBasesReceived++;
-        }
     }
 }
 

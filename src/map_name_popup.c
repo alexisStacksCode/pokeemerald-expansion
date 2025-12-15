@@ -1,5 +1,4 @@
 #include "global.h"
-#include "battle_pyramid.h"
 #include "bg.h"
 #include "event_data.h"
 #include "field_weather.h"
@@ -16,7 +15,6 @@
 #include "string_util.h"
 #include "task.h"
 #include "text.h"
-#include "constants/battle_frontier.h"
 #include "constants/layouts.h"
 #include "constants/region_map_sections.h"
 #include "constants/weather.h"

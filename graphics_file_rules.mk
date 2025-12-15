@@ -16,7 +16,6 @@ PKNAVOPTIONSGFXDIR := graphics/pokenav/options
 WALLPAPERGFXDIR := graphics/pokemon_storage/wallpapers
 OBJEVENTGFXDIR := graphics/object_events
 MISCGFXDIR := graphics/misc
-JPCONTESTGFXDIR := graphics/contest/japanese
 POKEDEXGFXDIR := graphics/pokedex
 STARTERGFXDIR := graphics/starter_choose
 NAMINGGFXDIR := graphics/naming_screen
@@ -251,25 +250,7 @@ $(FONTGFXDIR)/short_narrow.latfont: $(FONTGFXDIR)/latin_short_narrow.png
 $(FONTGFXDIR)/short_narrower.latfont: $(FONTGFXDIR)/latin_short_narrower.png
 	$(GFX) $< $@
 
-$(FONTGFXDIR)/small.hwjpnfont: $(FONTGFXDIR)/japanese_small.png
-	$(GFX) $< $@
-
-$(FONTGFXDIR)/normal.hwjpnfont: $(FONTGFXDIR)/japanese_normal.png
-	$(GFX) $< $@
-
-$(FONTGFXDIR)/bold.hwjpnfont: $(FONTGFXDIR)/japanese_bold.png
-	$(GFX) $< $@
-
-$(FONTGFXDIR)/short.fwjpnfont: $(FONTGFXDIR)/japanese_short.png
-	$(GFX) $< $@
-
 $(FONTGFXDIR)/braille.fwjpnfont: $(FONTGFXDIR)/braille.png
-	$(GFX) $< $@
-
-$(FONTGFXDIR)/frlg_male.fwjpnfont: $(FONTGFXDIR)/japanese_frlg_male.png
-	$(GFX) $< $@
-
-$(FONTGFXDIR)/frlg_female.fwjpnfont: $(FONTGFXDIR)/japanese_frlg_female.png
 	$(GFX) $< $@
 
 
@@ -286,9 +267,6 @@ graphics/pokemon_jump/bg.4bpp: %.4bpp: %.png
 
 graphics/pokenav/region_map/map.8bpp: %.8bpp: %.png
 	$(GFX) $< $@ -num_tiles 233 -Wnum_tiles
-
-$(MISCGFXDIR)/japanese_hof.4bpp: %.4bpp: %.png
-	$(GFX) $< $@ -num_tiles 29 -Wnum_tiles
 
 $(MISCGFXDIR)/mirage_tower.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -num_tiles 73 -Wnum_tiles

@@ -9,8 +9,6 @@
 #include "overworld.h"
 #include "hall_of_fame.h"
 #include "pokemon_storage_system.h"
-#include "trainer_hill.h"
-#include "link.h"
 #include "constants/game_stat.h"
 
 static u16 CalculateChecksum(void *, u16);
@@ -721,12 +719,6 @@ u8 HandleSavingData(u8 saveType)
     UpdateSaveAddresses();
     switch (saveType)
     {
-    case SAVE_HALL_OF_FAME_ERASE_BEFORE:
-        // Unused. Erases the special save sectors (HOF, Trainer Hill, Recorded Battle)
-        // before overwriting HOF.
-        for (i = SECTOR_ID_HOF_1; i < SECTORS_COUNT; i++)
-            EraseFlashSector(i);
-        // fallthrough
     case SAVE_HALL_OF_FAME:
         if (GetGameStat(GAME_STAT_ENTERED_HOF) < 999)
             IncrementGameStat(GAME_STAT_ENTERED_HOF);
@@ -749,7 +741,6 @@ u8 HandleSavingData(u8 saveType)
         WriteSaveSectorOrSlot(FULL_SAVE_SLOT, gRamSaveSectorLocations);
         break;
     case SAVE_LINK:
-    case SAVE_EREADER: // Dummied, now duplicate of SAVE_LINK
         // Used by link / Battle Frontier
         // Write only SaveBlocks 1 and 2 (skips the PC)
         CopyPartyAndObjectsToSave();
@@ -989,7 +980,6 @@ u32 TryWriteSpecialSaveSector(u8 sector, u8 *src)
 
 #define tState         data[0]
 #define tTimer         data[1]
-#define tInBattleTower data[2]
 
 // Note that this is very different from TrySavingData(SAVE_LINK).
 // Most notably it does save the PC data.

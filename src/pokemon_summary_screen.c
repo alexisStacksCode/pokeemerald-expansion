@@ -2,9 +2,7 @@
 #include "main.h"
 #include "battle.h"
 #include "battle_anim.h"
-#include "frontier_util.h"
 #include "battle_message.h"
-#include "battle_tent.h"
 #include "battle_factory.h"
 #include "bg.h"
 #include "contest.h"
@@ -18,7 +16,6 @@
 #include "graphics.h"
 #include "international_string_util.h"
 #include "item.h"
-#include "link.h"
 #include "m4a.h"
 #include "malloc.h"
 #include "menu.h"
@@ -136,7 +133,6 @@ static EWRAM_DATA struct PokemonSummaryScreenData
         u16 species2; // 0x2
         u8 isEgg:1; // 0x4
         u8 isShiny:1;
-        u8 padding:6;
         u8 level; // 0x5
         u8 ribbonCount; // 0x6
         u8 ailment; // 0x7
@@ -186,7 +182,6 @@ static EWRAM_DATA struct PokemonSummaryScreenData
     u8 spriteIds[SPRITE_ARR_ID_COUNT];
     bool8 handleDeoxys;
     s16 switchCounter; // Used for various switch statement cases that decompress/load graphics or Pokémon data
-    u8 unk_filler4[6];
     u8 categoryIconSpriteId;
 } *sMonSummaryScreen = NULL;
 
@@ -3272,11 +3267,11 @@ static void PrintNotEggInfo(void)
 {
     struct Pokemon *mon = &sMonSummaryScreen->currentMon;
     struct PokeSummary *summary = &sMonSummaryScreen->summary;
-    u16 dexNum = SpeciesToPokedexNum(summary->species);
+    u16 dexNum = SpeciesToDexNum(summary->species);
 
     if (dexNum != 0xFFFF)
     {
-        u8 digitCount = (NATIONAL_DEX_COUNT > 999 && IsNationalPokedexEnabled()) ? 4 : 3;
+        u8 digitCount = DEX_COUNT > 4 ? 4 : 3;
         StringCopy(gStringVar1, &gText_NumberClear01[0]);
         ConvertIntToDecimalStringN(gStringVar2, dexNum, STR_CONV_MODE_LEADING_ZEROS, digitCount);
         StringAppend(gStringVar1, gStringVar2);
@@ -3869,13 +3864,7 @@ static void PrintHeldItemName(void)
     u32 fontId;
     int x;
 
-    if (sMonSummaryScreen->summary.item == ITEM_ENIGMA_BERRY_E_READER
-        && IsMultiBattle() == TRUE
-        && (sMonSummaryScreen->curMonIndex == 1 || sMonSummaryScreen->curMonIndex == 4 || sMonSummaryScreen->curMonIndex == 5))
-    {
-        text = GetItemName(ITEM_ENIGMA_BERRY_E_READER);
-    }
-    else if (sMonSummaryScreen->summary.item == ITEM_NONE)
+    if (sMonSummaryScreen->summary.item == ITEM_NONE)
     {
         text = gText_None;
     }

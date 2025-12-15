@@ -68,7 +68,7 @@ extern vu16 GPIOPortDirection;
 
 static bool8 sLocked;
 
-static int WriteCommand(u8 value);
+static void WriteCommand(u8 value);
 static int WriteData(u8 value);
 static u8 ReadData();
 
@@ -383,7 +383,7 @@ bool8 SiiRtcSetAlarm(struct SiiRtcInfo *rtc)
     return TRUE;
 }
 
-static int WriteCommand(u8 value)
+static void WriteCommand(u8 value)
 {
     u8 i;
     u8 temp;
@@ -396,12 +396,6 @@ static int WriteCommand(u8 value)
         GPIO_PORT_DATA = (temp << 1) | CS_HI;
         GPIO_PORT_DATA = (temp << 1) | SCK_HI | CS_HI;
     }
-
-    // Nothing uses the returned value from this function,
-    // so the undefined behavior is harmless in the vanilla game.
-#ifdef UBFIX
-    return 0;
-#endif
 }
 
 static int WriteData(u8 value)

@@ -77,7 +77,6 @@ struct PaletteFadeControl
     bool32 softwareFadeFinishing:1;
     bool32 objPaletteToggle:1;
     u32 deltaY:4; // rate of change of blend coefficient
-    u32 padding:15;
 };
 
 extern const struct BlendSettings gTimeOfDayBlend[];

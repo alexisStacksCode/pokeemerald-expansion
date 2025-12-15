@@ -14,7 +14,7 @@
 #include "new_game.h"
 #include "overworld.h"
 #include "palette.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "pokemon.h"
 #include "random.h"
 #include "region_map.h"
@@ -1072,8 +1072,7 @@ static bool32 MapAllowsMatchCall(void)
         return FALSE;
 
     if (gMapHeader.regionMapSectionId == MAPSEC_SOOTOPOLIS_CITY
-     && FlagGet(FLAG_HIDE_SOOTOPOLIS_CITY_RAYQUAZA) == TRUE
-     && FlagGet(FLAG_NEVER_SET_0x0DC) == FALSE)
+     && FlagGet(FLAG_HIDE_SOOTOPOLIS_CITY_RAYQUAZA) == TRUE)
         return FALSE;
 
     if (gMapHeader.regionMapSectionId == MAPSEC_MT_CHIMNEY

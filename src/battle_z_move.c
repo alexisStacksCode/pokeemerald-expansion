@@ -23,7 +23,7 @@
 #include "util.h"
 #include "gpu_regs.h"
 #include "battle_message.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "palette.h"
 #include "international_string_util.h"
 #include "safari_zone.h"
@@ -121,7 +121,7 @@ bool32 CanUseZMove(u32 battler)
         return FALSE;
 
     // Add '| BATTLE_TYPE_FRONTIER' to below if issues occur
-    if (gBattleTypeFlags & (BATTLE_TYPE_SAFARI | BATTLE_TYPE_WALLY_TUTORIAL))
+    if (gBattleTypeFlags & (BATTLE_TYPE_SAFARI | BATTLE_TYPE_TUTORIAL))
         return FALSE;
 
     // Check if Trainer has already used a Z-Move.

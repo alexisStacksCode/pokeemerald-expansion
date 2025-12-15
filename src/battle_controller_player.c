@@ -3,18 +3,15 @@
 #include "battle_anim.h"
 #include "battle_arena.h"
 #include "battle_controllers.h"
-#include "battle_dome.h"
 #include "battle_interface.h"
 #include "battle_message.h"
 #include "battle_setup.h"
-#include "battle_tv.h"
 #include "battle_z_move.h"
 #include "battle_gimmick.h"
 #include "bg.h"
 #include "data.h"
 #include "item.h"
 #include "item_menu.h"
-#include "link.h"
 #include "main.h"
 #include "m4a.h"
 #include "palette.h"
@@ -22,7 +19,6 @@
 #include "pokeball.h"
 #include "pokemon.h"
 #include "random.h"
-#include "recorded_battle.h"
 #include "reshow_battle_screen.h"
 #include "sound.h"
 #include "string_util.h"
@@ -45,7 +41,7 @@
 #include "menu.h"
 #include "pokemon_summary_screen.h"
 #include "type_icons.h"
-#include "pokedex.h"
+#include "pokedex_plus_hgss.h"
 #include "test/battle.h"
 #include "test/test_runner_battle.h"
 
@@ -73,7 +69,6 @@ static void PlayerHandleDrawPartyStatusSummary(u32 battler);
 static void PlayerHandleEndBounceEffect(u32 battler);
 static void PlayerHandleLinkStandbyMsg(u32 battler);
 static void PlayerHandleResetActionMoveSelection(u32 battler);
-static void PlayerHandleEndLinkBattle(u32 battler);
 static void PlayerHandleBattleDebug(u32 battler);
 
 static void PlayerBufferRunCommand(u32 battler);
@@ -150,7 +145,6 @@ static void (*const sPlayerBufferCommands[CONTROLLER_CMDS_COUNT])(u32 battler) =
     [CONTROLLER_BATTLEANIMATION]          = BtlController_HandleBattleAnimation,
     [CONTROLLER_LINKSTANDBYMSG]           = PlayerHandleLinkStandbyMsg,
     [CONTROLLER_RESETACTIONMOVESELECTION] = PlayerHandleResetActionMoveSelection,
-    [CONTROLLER_ENDLINKBATTLE]            = PlayerHandleEndLinkBattle,
     [CONTROLLER_DEBUGMENU]                = PlayerHandleBattleDebug,
     [CONTROLLER_TERMINATOR_NOP]           = BtlController_TerminatorNop
 };
@@ -1162,63 +1156,6 @@ void HandleMoveSwitching(u32 battler)
     }
 }
 
-static void SetLinkBattleEndCallbacks(u32 battler)
-{
-    if (gWirelessCommType == 0)
-    {
-        if (gReceivedRemoteLinkPlayers == 0)
-        {
-            m4aSongNumStop(MUS_LITTLEROOT_TEST);
-            gMain.inBattle = FALSE;
-            gMain.callback1 = gPreBattleCallback1;
-            SetMainCallback2(CB2_InitEndLinkBattle);
-            if (gBattleOutcome == B_OUTCOME_WON)
-                TryPutLinkBattleTvShowOnAir();
-            FreeAllWindowBuffers();
-        }
-    }
-    else
-    {
-        if (IsLinkTaskFinished())
-        {
-            m4aSongNumStop(MUS_LITTLEROOT_TEST);
-            gMain.inBattle = FALSE;
-            gMain.callback1 = gPreBattleCallback1;
-            SetMainCallback2(CB2_InitEndLinkBattle);
-            if (gBattleOutcome == B_OUTCOME_WON)
-                TryPutLinkBattleTvShowOnAir();
-            FreeAllWindowBuffers();
-        }
-    }
-}
-
-// Despite handling link battles separately, this is only ever used by link battles
-void SetBattleEndCallbacks(u32 battler)
-{
-    if (!gPaletteFade.active)
-    {
-        if (gBattleTypeFlags & BATTLE_TYPE_LINK)
-        {
-            if (IsLinkTaskFinished())
-            {
-                if (gWirelessCommType == 0)
-                    SetCloseLinkCallback();
-                else
-                    SetLinkStandbyCallback();
-
-                gBattlerControllerFuncs[battler] = SetLinkBattleEndCallbacks;
-            }
-        }
-        else
-        {
-            m4aSongNumStop(MUS_LITTLEROOT_TEST);
-            gMain.inBattle = FALSE;
-            gMain.callback1 = gPreBattleCallback1;
-            SetMainCallback2(gMain.savedCallback);
-        }
-    }
-}
-
 static void Intro_WaitForShinyAnimAndHealthbox(u32 battler)
 {
     bool8 healthboxAnimDone = FALSE;
@@ -1835,23 +1772,6 @@ static void PlayerHandleLoadMonSprite(u32 battler)
     gBattlerControllerFuncs[battler] = CompleteOnBattlerSpritePosX_0;
 }
 
-u32 LinkPlayerGetTrainerPicId(u32 multiplayerId)
-{
-    u32 trainerPicId;
-
-    u8 gender = gLinkPlayers[multiplayerId].gender;
-    u8 version = gLinkPlayers[multiplayerId].version & 0xFF;
-
-    if (version == VERSION_FIRE_RED || version == VERSION_LEAF_GREEN)
-        trainerPicId = gender + TRAINER_BACK_PIC_RED;
-    else if (version == VERSION_RUBY || version == VERSION_SAPPHIRE)
-        trainerPicId = gender + TRAINER_BACK_PIC_RUBY_SAPPHIRE_BRENDAN;
-    else
-        trainerPicId = gender + TRAINER_BACK_PIC_BRENDAN;
-
-    return trainerPicId;
-}
-
 static u32 PlayerGetTrainerBackPicId(void)
 {
     u32 trainerPicId;
@@ -2315,17 +2235,6 @@ static void PlayerHandleResetActionMoveSelection(u32 battler)
     BtlController_Complete(battler);
 }
 
-static void PlayerHandleEndLinkBattle(u32 battler)
-{
-    RecordedBattle_RecordAllBattlerData(&gBattleResources->bufferA[battler][4]);
-    gBattleOutcome = gBattleResources->bufferA[battler][1];
-    gSaveBlock2Ptr->frontier.disableRecordBattle = gBattleResources->bufferA[battler][2];
-    FadeOutMapMusic(5);
-    BeginFastPaletteFade(3);
-    BtlController_Complete(battler);
-    gBattlerControllerFuncs[battler] = SetBattleEndCallbacks;
-}
-
 static void Controller_WaitForDebug(u32 battler)
 {
     if (gMain.callback2 == BattleMainCB2 && !gPaletteFade.active)
@@ -2354,10 +2263,10 @@ enum
 static bool32 ShouldShowTypeEffectiveness(u32 targetId)
 {
     if (B_SHOW_EFFECTIVENESS == SHOW_EFFECTIVENESS_CAUGHT)
-        return GetSetPokedexFlag(SpeciesToNationalPokedexNum(gBattleMons[targetId].species), FLAG_GET_CAUGHT);
+        return GetSetPokedexFlag(SpeciesToDexNum(gBattleMons[targetId].species), FLAG_GET_CAUGHT);
 
     if (B_SHOW_EFFECTIVENESS == SHOW_EFFECTIVENESS_SEEN)
-        return GetSetPokedexFlag(SpeciesToNationalPokedexNum(gBattleMons[targetId].species), FLAG_GET_SEEN);
+        return GetSetPokedexFlag(SpeciesToDexNum(gBattleMons[targetId].species), FLAG_GET_SEEN);
 
     return TRUE;
 }

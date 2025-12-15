@@ -7,7 +7,7 @@
 #define EASY_CHAT_TYPE_BATTLE_LOST             3
 #define EASY_CHAT_TYPE_MAIL                    4
 #define EASY_CHAT_TYPE_INTERVIEW               5
-#define EASY_CHAT_TYPE_BARD_SONG               6
+#define EASY_CHAT_TYPE_BARD_SONG               6 // Unused
 #define EASY_CHAT_TYPE_FAN_CLUB                7
 #define EASY_CHAT_TYPE_DUMMY_SHOW              8
 #define EASY_CHAT_TYPE_TRENDY_PHRASE           9
@@ -20,7 +20,7 @@
 #define EASY_CHAT_TYPE_QUIZ_QUESTION           16
 #define EASY_CHAT_TYPE_QUIZ_SET_QUESTION       17
 #define EASY_CHAT_TYPE_QUIZ_SET_ANSWER         18
-#define EASY_CHAT_TYPE_APPRENTICE              19
+#define EASY_CHAT_TYPE_APPRENTICE              19 // Unused
 #define EASY_CHAT_TYPE_QUESTIONNAIRE           20
 
 #define EASY_CHAT_PERSON_REPORTER_MALE   0

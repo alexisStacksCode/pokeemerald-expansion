@@ -390,8 +390,8 @@ static const struct TilesPal sBerryPicTable[] =
     [ITEM_TO_BERRY(ITEM_JABOCA_BERRY) - 1]          = {gBerryPic_Jaboca, gBerryPalette_Jaboca},
     [ITEM_TO_BERRY(ITEM_ROWAP_BERRY)  - 1]          = {gBerryPic_Rowap, gBerryPalette_Rowap},
     [ITEM_TO_BERRY(ITEM_KEE_BERRY)    - 1]          = {gBerryPic_Kee, gBerryPalette_Kee},
-    [ITEM_TO_BERRY(ITEM_MARANGA_BERRY)- 1]          = {gBerryPic_Maranga, gBerryPalette_Maranga},
-    [ITEM_TO_BERRY(ITEM_ENIGMA_BERRY_E_READER) - 1] = {gBerryPic_Enigma, gBerryPalette_Enigma},
+    [ITEM_TO_BERRY(ITEM_MARANGA_BERRY) - 1]         = {gBerryPic_Maranga, gBerryPalette_Maranga},
+    [ITEM_TO_BERRY(ITEM_HOPO_BERRY) - 1]            = {gBerryPic_Enigma, gBerryPalette_Enigma},
 };
 
 const struct CompressedSpriteSheet gBerryCheckCircleSpriteSheet =

@@ -490,7 +490,7 @@
     },
     {
       "id": "MAPSEC_ABANDONED_SHIP",
-      "name": "ABANDONED SHIP",
+      "name": "TEST",
       "x": 6,
       "y": 14,
       "width": 1,
@@ -1228,6 +1228,14 @@
       "name": "TRAINER HILL",
       "x": 8,
       "y": 4,
+      "width": 1,
+      "height": 1
+    },
+    {
+      "id": "MAPSEC_TEST_AREA",
+      "name": "Test Area",
+      "x": 21,
+      "y": 0,
       "width": 1,
       "height": 1
     }

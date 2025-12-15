@@ -135,7 +135,6 @@
 .include "sound/voicegroups/rs_sfx_2.inc"
 .include "sound/cry_tables.inc"
 .include "sound/voicegroups/frlg_sfx.inc"
-.include "sound/voicegroups/bard.inc"
 .include "sound/voicegroups/unused_2.inc" @ used by unused GSC radio tower takeover test track in RS
 
 @ FRLG

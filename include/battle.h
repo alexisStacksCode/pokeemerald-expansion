@@ -126,7 +126,6 @@ struct DisableStruct
     u8 usedProteanLibero:1;
     u8 flashFireBoosted:1;
     u8 boosterEnergyActivated:1;
-    u8 padding1:1;
     u16 overwrittenAbility;   // abilities overwritten during battle (keep separate from battle history in case of switching)
     u8 roostActive:1;
     u8 unburdenActive:1;
@@ -138,7 +137,6 @@ struct DisableStruct
     u8 tryEjectPack:1;
     u8 octolockedBy:3;
     u8 paradoxBoostedStat:4;
-    u8 padding2:1;
 };
 
 // Fully Cleared each turn after end turn effects are done. A few things are cleared before end turn effects
@@ -172,7 +170,6 @@ struct ProtectStruct
     u16 assuranceDoubled:1;
     u16 myceliumMight:1;
     u16 revengeDoubled:4;
-    u16 padding:7;
     // End of 16-bit bitfield
     u16 physicalDmg;
     u16 specialDmg;
@@ -193,14 +190,12 @@ struct SpecialStatus
     u8 afterYou:1;
     u8 enduredDamage:1;
     u8 dancerUsedMove:1;
-    u8 padding1:1;
     // End of byte
     u8 switchInAbilityDone:1;
     u8 switchInItemDone:1;
     u8 instructedChosenTarget:3;
     u8 berryReduced:1;
     u8 neutralizingGasRemoved:1;    // See VARIOUS_TRY_END_NEUTRALIZING_GAS
-    u8 padding2:1;
     // End of byte
     u8 gemParam;
     // End of byte
@@ -213,7 +208,6 @@ struct SpecialStatus
     u8 criticalHit:1;
     // End of byte
     u8 dancerOriginalTarget:3;
-    u8 padding3:5;
     // End of byte
 };
 
@@ -289,7 +283,6 @@ struct AiPartyMon
     u8 gender:2;
     u8 isFainted:1;
     u8 wasSentInBattle:1;
-    u8 padding:4;
 };
 
 struct AiPartyData // Opposing battlers - party mons.
@@ -336,9 +329,7 @@ struct AiLogicData
     u8 aiPredictionInProgress:1; // Tracks whether the AI is in the middle of running prediction calculations
     u8 aiCalcInProgress:1;
     u8 predictingMove:1; // Determines whether AI will use move predictions this turn or not
-    u8 padding1:1;
     u8 shouldSwitch:4; // Stores result of ShouldSwitch, which decides whether a mon should be switched out
-    u8 padding2:4;
     u16 predictedMove[MAX_BATTLERS_COUNT];
 };
 
@@ -508,16 +499,8 @@ struct BattleTvMovePoints
     s16 points[2][PARTY_SIZE * 4];
 };
 
-struct LinkBattlerHeader
+enum IllusionState
 {
-    u8 versionSignatureLo;
-    u8 versionSignatureHi;
-    u8 vsScreenHealthFlagsLo;
-    u8 vsScreenHealthFlagsHi;
-    struct BattleEnigmaBerry battleEnigmaBerry;
-};
-
-enum IllusionState {
     ILLUSION_NOT_SET,
     ILLUSION_OFF,
     ILLUSION_ON
@@ -562,7 +545,8 @@ struct LostItem
     u16 stolen:1;
 };
 
-struct BattleVideo {
+struct BattleVideo
+{
     u32 battleTypeFlags;
     rng_value_t rngSeed;
 };
@@ -589,7 +573,6 @@ struct BattlerState
     u32 wasAboveHalfHp:1; // For Berserk, Emergency Exit, Wimp Out and Anger Shell.
     u32 commanderSpecies:11;
     u32 selectionScriptFinished:1;
-    u32 padding:3;
     // End of Word
 };
 
@@ -604,7 +587,6 @@ struct PartyState
     u32 timesGotHit:5;
     u32 changedSpecies:11; // For forms when multiple mons can change into the same pokemon.
     u32 sentOut:1;
-    u32 padding:9;
     u16 usedHeldItem;
 };
 
@@ -621,7 +603,6 @@ struct EventStates
     enum BattlerId faintedActionBattler:4;
     enum MoveSuccessOrder atkCanceler:8;
     enum BattleIntroStates battleIntro:8;
-    u32 padding:24;
 };
 
 // Cleared at the beginning of the battle. Fields need to be cleared when needed manually otherwise.
@@ -657,14 +638,11 @@ struct BattleStruct
     u8 safariPkblThrowCounter;
     u8 safariEscapeFactor;
     u8 safariCatchFactor;
-    u8 linkBattleVsSpriteId_V; // The letter "V"
-    u8 linkBattleVsSpriteId_S; // The letter "S"
     u8 chosenMovePositions[MAX_BATTLERS_COUNT];
     u8 stateIdAfterSelScript[MAX_BATTLERS_COUNT];
     u8 prevSelectedPartySlot;
     u8 stringMoveType;
     u8 palaceFlags; // First 4 bits are "is <= 50% HP and not asleep" for each battler, last 4 bits are selected moves to pass to AI
-    u8 field_93; // related to choosing pokemon?
     u8 wallyBattleState;
     u8 wallyMovesState;
     u8 wallyWaitFrames;
@@ -687,10 +665,6 @@ struct BattleStruct
     u16 changedItems[MAX_BATTLERS_COUNT];
     u8 switchInBattlerCounter;
     u16 lastTakenMoveFrom[MAX_BATTLERS_COUNT][MAX_BATTLERS_COUNT]; // a 2-D array [target][attacker]
-    union {
-        struct LinkBattlerHeader linkBattlerHeader;
-        struct BattleVideo battleVideo;
-    } multiBuffer;
     u8 startingStatus; // status to apply at battle start. defined in constants/battle.h
     u8 friskedAbility:1; // If identifies two mons, show the ability pop-up only once.
     u8 fickleBeamBoosted:1;
@@ -698,8 +672,6 @@ struct BattleStruct
     u8 toxicChainPriority:1; // If Toxic Chain will trigger on target, all other non volatiles will be blocked
     u8 moldBreakerActive:1;
     u16 startingStatusTimer;
-    struct BattleTvMovePoints tvMovePoints;
-    struct BattleTv tv;
     u8 AI_monToSwitchIntoId[MAX_BATTLERS_COUNT];
     s8 arenaMindPoints[2];
     s8 arenaSkillPoints[2];
@@ -774,7 +746,6 @@ struct BattleStruct
     u8 printedStrongWindsWeakenedAttack:1;
     u8 numSpreadTargets:2;
     u8 noTargetPresent:1;
-    u8 padding2:1;
     struct MessageStatus slideMessageStatus;
     u8 trainerSlideSpriteIds[MAX_BATTLERS_COUNT];
     u8 hazardsQueue[NUM_BATTLE_SIDES][HAZARDS_MAX_COUNT];
@@ -786,7 +757,6 @@ struct BattleStruct
     u16 flingItem;
     u8 incrementEchoedVoice:1;
     u8 echoedVoiceCounter:3;
-    u8 padding3:4;
 };
 
 struct AiBattleData
@@ -798,7 +768,6 @@ struct AiBattleData
     u16 aiUsingGimmick:6;
     u8 actionFlee:1;
     u8 choiceWatch:1;
-    u8 padding:6;
 };
 
 // The palaceFlags member of struct BattleStruct contains 1 flag per move to indicate which moves the AI should consider,
@@ -1092,7 +1061,6 @@ extern u16 gBattleWeather;
 extern struct WishFutureKnock gWishFutureKnock;
 extern u16 gIntroSlideFlags;
 extern u8 gSentPokesToOpponent[2];
-extern struct BattleEnigmaBerry gEnigmaBerries[MAX_BATTLERS_COUNT];
 extern struct BattleScripting gBattleScripting;
 extern struct BattleStruct *gBattleStruct;
 extern struct AiBattleData *gAiBattleData;
@@ -1100,8 +1068,6 @@ extern struct AiThinkingStruct *gAiThinkingStruct;
 extern struct AiLogicData *gAiLogicData;
 extern struct AiPartyData *gAiPartyData;
 extern struct BattleHistory *gBattleHistory;
-extern u8 *gLinkBattleSendBuffer;
-extern u8 *gLinkBattleRecvBuffer;
 extern struct BattleResources *gBattleResources;
 extern u8 gActionSelectionCursor[MAX_BATTLERS_COUNT];
 extern u8 gMoveSelectionCursor[MAX_BATTLERS_COUNT];

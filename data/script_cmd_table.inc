@@ -34,9 +34,6 @@ gScriptCmdTable::
 	script_cmd_table_entry SCR_OP_CALL_STD                      ScrCmd_callstd,                     requests_effects=1  @ 0x09
 	script_cmd_table_entry SCR_OP_GOTO_STD_IF                   ScrCmd_gotostd_if,                  requests_effects=1  @ 0x0a
 	script_cmd_table_entry SCR_OP_CALL_STD_IF                   ScrCmd_callstd_if,                  requests_effects=1  @ 0x0b
-	script_cmd_table_entry SCR_OP_RETURNRAM                     ScrCmd_returnram,                   requests_effects=1  @ 0x0c
-	script_cmd_table_entry SCR_OP_ENDRAM                        ScrCmd_endram,                      requests_effects=1  @ 0x0d
-	script_cmd_table_entry SCR_OP_SETMYSTERYEVENTSTATUS         ScrCmd_setmysteryeventstatus,       requests_effects=1  @ 0x0e
 	script_cmd_table_entry SCR_OP_LOAD_WORD                     ScrCmd_loadword,                    requests_effects=1  @ 0x0f
 	script_cmd_table_entry SCR_OP_LOAD_BYTE                     ScrCmd_loadbyte,                    requests_effects=1  @ 0x10
 	script_cmd_table_entry SCR_OP_SETPTR                        ScrCmd_setptr,                      requests_effects=1  @ 0x11
@@ -229,7 +226,6 @@ gScriptCmdTable::
 	script_cmd_table_entry SCR_OP_COMPAREHIDDENVAR              ScrCmd_nop1,                        requests_effects=1  @ 0xcc
 	script_cmd_table_entry SCR_OP_SETMODERNFATEFULENCOUNTER     ScrCmd_setmodernfatefulencounter,   requests_effects=1  @ 0xcd
 	script_cmd_table_entry SCR_OP_CHECKMODERNFATEFULENCOUNTER   ScrCmd_checkmodernfatefulencounter, requests_effects=1  @ 0xce
-	script_cmd_table_entry SCR_OP_TRYWONDERCARDSCRIPT           ScrCmd_trywondercardscript,         requests_effects=1  @ 0xcf
 	script_cmd_table_entry SCR_OP_SETWORLDMAPFLAG               ScrCmd_nop1,                        requests_effects=1  @ 0xd0
 	script_cmd_table_entry SCR_OP_WARPSPINENTER                 ScrCmd_warpspinenter,               requests_effects=1  @ 0xd1
 	script_cmd_table_entry SCR_OP_SETMONMETLOCATION             ScrCmd_setmonmetlocation,           requests_effects=1  @ 0xd2

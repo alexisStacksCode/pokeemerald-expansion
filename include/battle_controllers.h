@@ -260,7 +260,6 @@ enum
     CONTROLLER_BATTLEANIMATION,
     CONTROLLER_LINKSTANDBYMSG,
     CONTROLLER_RESETACTIONMOVESELECTION,
-    CONTROLLER_ENDLINKBATTLE,
     CONTROLLER_DEBUGMENU,
     /*new controllers should go here*/
     CONTROLLER_TERMINATOR_NOP,
@@ -273,11 +272,9 @@ extern void (*gBattlerControllerEndFuncs[MAX_BATTLERS_COUNT])(u32 battler);
 extern u8 gBattleControllerData[MAX_BATTLERS_COUNT];
 
 // general functions
-void HandleLinkBattleSetup(void);
 void SetUpBattleVarsAndBirchZigzagoon(void);
 void InitBattleControllers(void);
 bool32 IsValidForBattle(struct Pokemon *mon);
-void TryReceiveLinkBattleData(void);
 void PrepareBufferDataTransferLink(u32 battler, u32 bufferId, u16 size, u8 *data);
 void UpdateFriendshipFromXItem(u32 battler);
 
@@ -323,7 +320,6 @@ void BtlController_EmitSpriteInvisibility(u32 battler, u32 bufferId, bool8 isInv
 void BtlController_EmitBattleAnimation(u32 battler, u32 bufferId, u8 animationId, struct DisableStruct *disableStructPtr, u16 argument);
 void BtlController_EmitLinkStandbyMsg(u32 battler, u32 bufferId, u8 mode, bool32 record);
 void BtlController_EmitResetActionMoveSelection(u32 battler, u32 bufferId, u8 caseId);
-void BtlController_EmitEndLinkBattle(u32 battler, u32 bufferId, u8 battleOutcome);
 void BtlController_EmitDebugMenu(u32 battler, u32 bufferId);
 
 void BtlController_Complete(u32 battler); // Can be used for all the controllers.
@@ -371,10 +367,8 @@ void BtlController_HandleBattleAnimation(u32 battler);
 // player controller
 void SetControllerToPlayer(u32 battler);
 void PlayerBufferExecCompleted(u32 battler);
-void SetBattleEndCallbacks(u32 battler);
 void PlayerHandleBallThrowAnim(u32 battler);
 void PlayerHandleExpUpdate(u32 battler);
-u32 LinkPlayerGetTrainerPicId(u32 multiplayerId);
 void CB2_SetUpReshowBattleScreenAfterMenu(void);
 void CB2_SetUpReshowBattleScreenAfterMenu2(void);
 void Task_PlayerController_RestoreBgmAfterCry(u8 taskId);

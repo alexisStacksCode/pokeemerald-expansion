@@ -1,8 +1,6 @@
 #ifndef GUARD_BERRY_H
 #define GUARD_BERRY_H
 
-void SetEnigmaBerry(u8 *src);
-bool32 IsEnigmaBerryValid(void);
 const struct Berry *GetBerryInfo(u8 berry);
 struct BerryTree *GetBerryTreeInfo(u8 id);
 bool32 ObjectEventInteractionWaterBerryTree(void);
@@ -28,12 +26,5 @@ void SetBerryTreesSeen(void);
 bool32 BerryTreeGrow(struct BerryTree *tree);
 
 extern const struct Berry gBerries[];
-
-struct BerryCrushBerryData {
-    u8 difficulty; // The number of A presses required to crush it
-    u16 powder;
-};
-
-extern const struct BerryCrushBerryData gBerryCrush_BerryData[];
 
 #endif // GUARD_BERRY_H

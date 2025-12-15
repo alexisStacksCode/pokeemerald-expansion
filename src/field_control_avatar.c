@@ -21,7 +21,6 @@
 #include "fldeff_misc.h"
 #include "follower_npc.h"
 #include "item_menu.h"
-#include "link.h"
 #include "match_call.h"
 #include "metatile_behavior.h"
 #include "overworld.h"
@@ -32,7 +31,6 @@
 #include "sound.h"
 #include "start_menu.h"
 #include "trainer_see.h"
-#include "trainer_hill.h"
 #include "vs_seeker.h"
 #include "wild_encounter.h"
 #include "constants/event_bg.h"
@@ -40,7 +38,6 @@
 #include "constants/field_poison.h"
 #include "constants/metatile_behaviors.h"
 #include "constants/songs.h"
-#include "constants/trainer_hill.h"
 
 static EWRAM_DATA u8 sWildEncounterImmunitySteps = 0;
 static EWRAM_DATA u16 sPrevMetatileBehavior = 0;
@@ -291,7 +288,6 @@ static bool8 TryStartInteractionScript(struct MapPosition *position, u16 metatil
     if (script != LittlerootTown_BrendansHouse_2F_EventScript_PC
      && script != LittlerootTown_MaysHouse_2F_EventScript_PC
      && script != SecretBase_EventScript_PC
-     && script != SecretBase_EventScript_RecordMixingPC
      && script != SecretBase_EventScript_DollInteract
      && script != SecretBase_EventScript_CushionInteract
      && script != EventScript_PC)
@@ -500,14 +496,8 @@ static const u8 *GetInteractedMetatileScript(struct MapPosition *position, u8 me
         return EventScript_ShopShelf;
     if (MetatileBehavior_IsBlueprint(metatileBehavior) == TRUE)
         return EventScript_Blueprint;
-    if (MetatileBehavior_IsPlayerFacingWirelessBoxResults(metatileBehavior, direction) == TRUE)
-        return EventScript_WirelessBoxResults;
-    if (MetatileBehavior_IsCableBoxResults2(metatileBehavior, direction) == TRUE)
-        return EventScript_CableBoxResults;
     if (MetatileBehavior_IsQuestionnaire(metatileBehavior) == TRUE)
         return EventScript_Questionnaire;
-    if (MetatileBehavior_IsTrainerHillTimer(metatileBehavior) == TRUE)
-        return EventScript_TrainerHillTimer;
     if (MetatileBehavior_IsPokeMartSign(metatileBehavior) == TRUE)
     {
         if(direction != DIR_NORTH)
@@ -530,8 +520,6 @@ static const u8 *GetInteractedMetatileScript(struct MapPosition *position, u8 me
     {
         if (MetatileBehavior_IsSecretBasePC(metatileBehavior) == TRUE)
             return SecretBase_EventScript_PC;
-        if (MetatileBehavior_IsRecordMixingSecretBasePC(metatileBehavior) == TRUE)
-            return SecretBase_EventScript_RecordMixingPC;
         if (MetatileBehavior_IsSecretBaseSandOrnament(metatileBehavior) == TRUE)
             return SecretBase_EventScript_SandOrnament;
         if (MetatileBehavior_IsSecretBaseShieldOrToyTV(metatileBehavior) == TRUE)

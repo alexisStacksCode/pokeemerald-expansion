@@ -16,8 +16,7 @@
 #include "battle_interface.h"
 #include "text.h"
 #include "sound.h"
-#include "pokedex.h"
-#include "recorded_battle.h"
+#include "pokedex_plus_hgss.h"
 #include "window.h"
 #include "reshow_battle_screen.h"
 #include "main.h"
@@ -40,8 +39,6 @@
 #include "rtc.h"
 #include "party_menu.h"
 #include "battle_arena.h"
-#include "battle_pike.h"
-#include "battle_pyramid.h"
 #include "field_specials.h"
 #include "pokemon_summary_screen.h"
 #include "pokenav.h"
@@ -426,7 +423,6 @@ static void Cmd_trainerslidein(void);
 static void Cmd_playse(void);
 static void Cmd_fanfare(void);
 static void Cmd_playfaintcry(void);
-static void Cmd_endlinkbattle(void);
 static void Cmd_returntoball(void);
 static void Cmd_handlelearnnewmove(void);
 static void Cmd_yesnoboxlearnmove(void);
@@ -685,7 +681,6 @@ void (*const gBattleScriptingCommandsTable[])(void) =
     Cmd_playse,                                  //0x54
     Cmd_fanfare,                                 //0x55
     Cmd_playfaintcry,                            //0x56
-    Cmd_endlinkbattle,                           //0x57
     Cmd_returntoball,                            //0x58
     Cmd_handlelearnnewmove,                      //0x59
     Cmd_yesnoboxlearnmove,                       //0x5A
@@ -1750,7 +1745,7 @@ static void Cmd_critcalc(void)
         else
             gBattleStruct->critChance[battlerDef] = CalcCritChanceStage(gBattlerAttacker, battlerDef, gCurrentMove, TRUE, abilityAtk, abilityDef, holdEffectAtk);
 
-        if (gBattleTypeFlags & (BATTLE_TYPE_WALLY_TUTORIAL | BATTLE_TYPE_FIRST_BATTLE))
+        if (gBattleTypeFlags & (BATTLE_TYPE_TUTORIAL | BATTLE_TYPE_FIRST_BATTLE))
             gSpecialStatuses[battlerDef].criticalHit = FALSE;
         else if (gBattleStruct->critChance[battlerDef] == -1)
             gSpecialStatuses[battlerDef].criticalHit = FALSE;
@@ -4516,16 +4511,13 @@ FEATURE_FLAG_ASSERT(I_EXP_SHARE_FLAG, YouNeedToSetTheExpShareFlagToAnUnusedFlag)
 
 static bool32 BattleTypeAllowsExp(void)
 {
-    if (RECORDED_WILD_BATTLE)
-        return TRUE;
     else if (gBattleTypeFlags &
               ( BATTLE_TYPE_LINK
               | BATTLE_TYPE_RECORDED_LINK
               | BATTLE_TYPE_TRAINER_HILL
               | BATTLE_TYPE_FRONTIER
               | BATTLE_TYPE_SAFARI
-              | BATTLE_TYPE_BATTLE_TOWER
-              | BATTLE_TYPE_EREADER_TRAINER))
+              | BATTLE_TYPE_BATTLE_TOWER))
         return FALSE;
     else
         return TRUE;
@@ -4533,17 +4525,8 @@ static bool32 BattleTypeAllowsExp(void)
 
 static u32 GetMonHoldEffect(struct Pokemon *mon)
 {
-    enum HoldEffect holdEffect;
     u32 item = GetMonData(mon, MON_DATA_HELD_ITEM);
-
-    if (item == ITEM_ENIGMA_BERRY_E_READER)
-    #if FREE_ENIGMA_BERRY == FALSE
-        holdEffect = gSaveBlock1Ptr->enigmaBerry.holdEffect;
-    #else
-        holdEffect = 0;
-    #endif //FREE_ENIGMA_BERRY
-    else
-        holdEffect = GetItemHoldEffect(item);
+    enum HoldEffect holdEffect = GetItemHoldEffect(item);
 
     return holdEffect;
 }
@@ -8168,17 +8151,6 @@ static void Cmd_playfaintcry(void)
     gBattlescriptCurrInstr = cmd->nextInstr;
 }
 
-static void Cmd_endlinkbattle(void)
-{
-    CMD_ARGS();
-
-    u32 battler = GetBattlerAtPosition(B_POSITION_PLAYER_LEFT);
-    BtlController_EmitEndLinkBattle(battler, B_COMM_TO_CONTROLLER, gBattleOutcome);
-    MarkBattlerForControllerExec(battler);
-
-    gBattlescriptCurrInstr = cmd->nextInstr;
-}
-
 static void Cmd_returntoball(void)
 {
     CMD_ARGS(u8 battler, bool8 changingForm);
@@ -8227,7 +8199,7 @@ static void Cmd_handlelearnnewmove(void)
             learnMove = MonTryLearningNewMove(&gPlayerParty[monId], FALSE);
     }
 
-    if (learnMove == MOVE_NONE || RECORDED_WILD_BATTLE)
+    if (learnMove == MOVE_NONE)
     {
         gBattlescriptCurrInstr = cmd->nothingToLearnPtr;
     }
@@ -8921,7 +8893,7 @@ static void Cmd_drawlvlupbox(void)
         }
         break;
     case 6:
-        if (gMain.newKeys != 0 || RECORDED_WILD_BATTLE)
+        if (gMain.newKeys != 0)
         {
             // Draw page 2 of level up box
             PlaySE(SE_SELECT);
@@ -8931,7 +8903,7 @@ static void Cmd_drawlvlupbox(void)
         }
         break;
     case 8:
-        if (gMain.newKeys != 0 || RECORDED_WILD_BATTLE)
+        if (gMain.newKeys != 0)
         {
             // Close level up box
             PlaySE(SE_SELECT);
@@ -12700,7 +12672,6 @@ static void Cmd_tryswapitems(void)
     if (gBattleTypeFlags & BATTLE_TYPE_TRAINER_HILL
         || (!IsOnPlayerSide(gBattlerAttacker)
             && !(gBattleTypeFlags & (BATTLE_TYPE_LINK
-                                  | BATTLE_TYPE_EREADER_TRAINER
                                   | BATTLE_TYPE_FRONTIER
                                   | BATTLE_TYPE_SECRET_BASE
                                   | BATTLE_TYPE_RECORDED_LINK
@@ -12716,7 +12687,6 @@ static void Cmd_tryswapitems(void)
 
         // You can't swap items if they were knocked off in regular battles
         if (!(gBattleTypeFlags & (BATTLE_TYPE_LINK
-                             | BATTLE_TYPE_EREADER_TRAINER
                              | BATTLE_TYPE_FRONTIER
                              | BATTLE_TYPE_SECRET_BASE
                              | BATTLE_TYPE_RECORDED_LINK))
@@ -13563,7 +13533,7 @@ static void Cmd_handleballthrow(void)
         MarkBattlerForControllerExec(gBattlerAttacker);
         gBattlescriptCurrInstr = BattleScript_TrainerBallBlock;
     }
-    else if (gBattleTypeFlags & BATTLE_TYPE_WALLY_TUTORIAL)
+    else if (gBattleTypeFlags & BATTLE_TYPE_TUTORIAL)
     {
         BtlController_EmitBallThrowAnim(gBattlerAttacker, B_COMM_TO_CONTROLLER, BALL_3_SHAKES_SUCCESS);
         MarkBattlerForControllerExec(gBattlerAttacker);
@@ -13637,7 +13607,7 @@ static void Cmd_handleballthrow(void)
                 }
                 break;
             case BALL_REPEAT:
-                if (GetSetPokedexFlag(SpeciesToNationalPokedexNum(gBattleMons[gBattlerTarget].species), FLAG_GET_CAUGHT))
+                if (GetSetPokedexFlag(SpeciesToDexNum(gBattleMons[gBattlerTarget].species), FLAG_GET_CAUGHT))
                     ballMultiplier = (B_REPEAT_BALL_MODIFIER >= GEN_7 ? 350 : 300);
                 break;
             case BALL_TIMER:
@@ -13831,8 +13801,8 @@ static void Cmd_handleballthrow(void)
 
             if (shakes == maxShakes) // mon caught, copy of the code above
             {
-                enum NationalDexOrder natDexNo = SpeciesToNationalPokedexNum(gBattleMons[gBattlerTarget].species);
-                if ((B_CRITICAL_CAPTURE_IF_OWNED >= GEN_9 && GetSetPokedexFlag(natDexNo, FLAG_GET_CAUGHT))
+                enum DexOrder dexNum = SpeciesToDexNum(gBattleMons[gBattlerTarget].species);
+                if ((B_CRITICAL_CAPTURE_IF_OWNED >= GEN_9 && GetSetPokedexFlag(dexNum, FLAG_GET_CAUGHT))
                  || IsCriticalCapture())
                 {
                     gBattleSpritesDataPtr->animationData->isCriticalCapture = TRUE;
@@ -14039,13 +14009,13 @@ static void Cmd_trysetcaughtmondexflags(void)
     u32 species = GetMonData(caughtMon, MON_DATA_SPECIES, NULL);
     u32 personality = GetMonData(caughtMon, MON_DATA_PERSONALITY, NULL);
 
-    if (GetSetPokedexFlag(SpeciesToNationalPokedexNum(species), FLAG_GET_CAUGHT))
+    if (GetSetPokedexFlag(SpeciesToDexNum(species), FLAG_GET_CAUGHT))
     {
         gBattlescriptCurrInstr = cmd->failInstr;
     }
     else
     {
-        HandleSetPokedexFlag(SpeciesToNationalPokedexNum(species), FLAG_SET_CAUGHT, personality);
+        HandleSetPokedexFlag(SpeciesToDexNum(species), FLAG_SET_CAUGHT, personality);
         gBattlescriptCurrInstr = cmd->nextInstr;
     }
 }
@@ -14070,9 +14040,7 @@ static void Cmd_displaydexinfo(void)
         if (!gPaletteFade.active)
         {
             FreeAllWindowBuffers();
-            gBattleCommunication[TASK_ID] = DisplayCaughtMonDexPage(species,
-                                                                    GetMonData(mon, MON_DATA_IS_SHINY),
-                                                                    GetMonData(mon, MON_DATA_PERSONALITY));
+            gBattleCommunication[TASK_ID] = DisplayCaughtMonDexPage(species);
             gBattleCommunication[0]++;
         }
         break;
@@ -14596,12 +14564,12 @@ static bool32 CriticalCapture(u32 odds)
     if (B_CRITICAL_CAPTURE == FALSE)
         return FALSE;
 
-    totalDexCount = NATIONAL_DEX_COUNT;
+    totalDexCount = DEX_COUNT;
 
     if (CheckBagHasItem(ITEM_CATCHING_CHARM, 1))
         charmBoost = (100 + B_CATCHING_CHARM_BOOST) / 100;
 
-    numCaught = GetNationalPokedexCount(FLAG_GET_CAUGHT);
+    numCaught = GetDexCount(FLAG_GET_CAUGHT);
     if (numCaught > (totalDexCount * 600) / 650)
         odds = (odds * (250 * charmBoost)) / 100;
     else if (numCaught > (totalDexCount * 450) / 650)
@@ -15501,7 +15469,6 @@ static void TryUpdateEvolutionTracker(u32 evolutionCondition, u32 upAmount, u16 
 
     if (IsOnPlayerSide(gBattlerAttacker)
      && !(gBattleTypeFlags & (BATTLE_TYPE_LINK
-                             | BATTLE_TYPE_EREADER_TRAINER
                              | BATTLE_TYPE_RECORDED_LINK
                              | BATTLE_TYPE_TRAINER_HILL
                              | BATTLE_TYPE_FRONTIER)))

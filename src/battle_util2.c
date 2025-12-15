@@ -4,7 +4,6 @@
 #include "battle_controllers.h"
 #include "malloc.h"
 #include "pokemon.h"
-#include "trainer_hill.h"
 #include "party_menu.h"
 #include "event_data.h"
 #include "constants/abilities.h"
@@ -33,9 +32,6 @@ void AllocateBattleResources(void)
     gBattleResources->battleScriptsStack = AllocZeroed(sizeof(*gBattleResources->battleScriptsStack));
     gBattleResources->battleCallbackStack = AllocZeroed(sizeof(*gBattleResources->battleCallbackStack));
     gBattleResources->beforeLvlUp = AllocZeroed(sizeof(*gBattleResources->beforeLvlUp));
-
-    gLinkBattleSendBuffer = AllocZeroed(BATTLE_BUFFER_LINK_SIZE);
-    gLinkBattleRecvBuffer = AllocZeroed(BATTLE_BUFFER_LINK_SIZE);
 
     gBattleAnimBgTileBuffer = AllocZeroed(0x2000);
     gBattleAnimBgTilemapBuffer = AllocZeroed(0x1000);
@@ -67,9 +63,6 @@ void FreeBattleResources(void)
         FREE_AND_SET_NULL(gBattleResources->battleCallbackStack);
         FREE_AND_SET_NULL(gBattleResources->beforeLvlUp);
         FREE_AND_SET_NULL(gBattleResources);
-
-        FREE_AND_SET_NULL(gLinkBattleSendBuffer);
-        FREE_AND_SET_NULL(gLinkBattleRecvBuffer);
 
         FREE_AND_SET_NULL(gBattleAnimBgTileBuffer);
         FREE_AND_SET_NULL(gBattleAnimBgTilemapBuffer);

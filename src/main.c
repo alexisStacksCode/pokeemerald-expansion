@@ -1,9 +1,6 @@
 #include "global.h"
 #include "crt0.h"
 #include "malloc.h"
-#include "link.h"
-#include "link_rfu.h"
-#include "librfu.h"
 #include "m4a.h"
 #include "bg.h"
 #include "rtc.h"
@@ -22,7 +19,6 @@
 #include "text.h"
 #include "intro.h"
 #include "main.h"
-#include "trainer_hill.h"
 #include "test_runner.h"
 #include "constants/rgb.h"
 
@@ -35,12 +31,6 @@ static void IntrDummy(void);
 // Defined in the linker script so that the test build can override it.
 extern void gInitialMainCB2(void);
 extern void CB2_FlashNotDetectedScreen(void);
-
-const u8 gGameVersion = GAME_VERSION;
-
-const u8 gGameLanguage = GAME_LANGUAGE; // English
-
-const char BuildDateTime[] = "2005 02 21 11:10";
 
 const IntrFunc gIntrTableTemplate[] =
 {
@@ -68,7 +58,6 @@ COMMON_DATA struct Main gMain = {0};
 COMMON_DATA u16 gKeyRepeatContinueDelay = 0;
 COMMON_DATA bool8 gSoftResetDisabled = 0;
 COMMON_DATA IntrFunc gIntrTable[INTR_COUNT] = {0};
-COMMON_DATA u8 gLinkVSyncDisabled = 0;
 COMMON_DATA s8 gPcmDmaCounter = 0;
 COMMON_DATA void *gAgbMainLoop_sp = NULL;
 
@@ -356,15 +345,7 @@ void SetSerialCallback(IntrCallback callback)
 
 static void VBlankIntr(void)
 {
-    if (gWirelessCommType != 0)
-        RfuVSync();
-    else if (gLinkVSyncDisabled == FALSE)
-        LinkVSync();
-
     gMain.vblankCounter1++;
-
-    if (gTrainerHillVBlankCounter && *gTrainerHillVBlankCounter < 0xFFFFFFFF)
-        (*gTrainerHillVBlankCounter)++;
 
     if (gMain.vblankCallback)
         gMain.vblankCallback();
@@ -377,12 +358,9 @@ static void VBlankIntr(void)
     gPcmDmaCounter = gSoundInfo.pcmDmaCounter;
 
     m4aSoundMain();
-    TryReceiveLinkBattleData();
 
-    if (!gTestRunnerEnabled && (!gMain.inBattle || !(gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_FRONTIER | BATTLE_TYPE_RECORDED))))
+    if (!gTestRunnerEnabled && (!gMain.inBattle || !(gBattleTypeFlags & BATTLE_TYPE_RECORDED)))
         AdvanceRandom();
-
-    UpdateWirelessStatusIndicatorSprite();
 
     INTR_CHECK |= INTR_FLAG_VBLANK;
     gMain.intrCheck |= INTR_FLAG_VBLANK;
@@ -427,28 +405,7 @@ static void IntrDummy(void)
 static void WaitForVBlank(void)
 {
     gMain.intrCheck &= ~INTR_FLAG_VBLANK;
-
-    if (gWirelessCommType != 0)
-    {
-        // Desynchronization may occur if wireless adapter is connected
-        // and we call VBlankIntrWait();
-        while (!(gMain.intrCheck & INTR_FLAG_VBLANK))
-            ;
-    }
-    else
-    {
-        VBlankIntrWait();
-    }
-}
-
-void SetTrainerHillVBlankCounter(u32 *counter)
-{
-    gTrainerHillVBlankCounter = counter;
-}
-
-void ClearTrainerHillVBlankCounter(void)
-{
-    gTrainerHillVBlankCounter = NULL;
+    VBlankIntrWait();
 }
 
 void DoSoftReset(void)
