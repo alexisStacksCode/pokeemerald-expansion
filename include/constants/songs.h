@@ -280,7 +280,7 @@
 
 // Music
 #define START_MUS                   350
-#define MUS_LITTLEROOT_TEST         350 // MUS_TETSUJI          // Unused, likely a test track.
+#define MUS_LOW_HEALTH              350
 #define MUS_GSC_ROUTE38             351 // MUS_FIELD13          // Unused, likely a test track.
 #define MUS_CAUGHT                  352 // MUS_KACHI22
 #define MUS_VICTORY_WILD            353 // MUS_KACHI2

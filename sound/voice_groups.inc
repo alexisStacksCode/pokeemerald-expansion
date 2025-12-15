@@ -38,7 +38,6 @@
 .include "sound/voicegroups/drumsets/route110.inc"
 .include "sound/voicegroups/fortree.inc"
 .include "sound/voicegroups/birch_lab.inc"
-.include "sound/voicegroups/littleroot_test.inc"
 .include "sound/voicegroups/b_tower_rs.inc"
 .include "sound/voicegroups/encounter_swimmer.inc"
 .include "sound/voicegroups/cave_of_origin.inc"

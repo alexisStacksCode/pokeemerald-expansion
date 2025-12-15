@@ -921,7 +921,6 @@ void Compress(std::vector<Event>& events)
 void ReadMidiTracks()
 {
     long trackHeaderStart = 14;
-    int trackLoops = B_NUM_LOW_HEALTH_BEEPS;
 
     ReadMidiTrackHeader(trackHeaderStart);
     ReadSeqEvents();
@@ -961,10 +960,7 @@ void ReadMidiTracks()
                 if (g_compressionEnabled)
                     Compress(*events);
 
-                if ((strcmp(g_asmLabel.c_str(), "se_low_health") == 0) && trackLoops >= 0)
-                    PrintAgbTrackLoop(*events, trackLoops);
-                else
-                    PrintAgbTrack(*events);
+                PrintAgbTrack(*events);
 
                 g_agbTrack++;
             }
