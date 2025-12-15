@@ -29,6 +29,7 @@
 #include "constants/trainers.h"
 #include "recorded_battle.h"
 #include "random.h"
+#include "player_sprite.h"
 
 static void LinkOpponentHandleDrawTrainerPic(u32 battler);
 static void LinkOpponentHandleTrainerSlide(u32 battler);
@@ -314,7 +315,7 @@ static void LinkOpponentHandleDrawTrainerPic(u32 battler)
             }
             else
             {
-                trainerPicId = PlayerGenderToFrontTrainerPicId(gLinkPlayers[GetBattlerMultiplayerId(battler)].gender);
+                trainerPicId = GetPlayerFrontSpriteId_Compat(gLinkPlayers[GetBattlerMultiplayerId(battler)].gender);
             }
         }
     }
@@ -343,7 +344,7 @@ static void LinkOpponentHandleDrawTrainerPic(u32 battler)
         }
         else
         {
-            trainerPicId = PlayerGenderToFrontTrainerPicId(gLinkPlayers[GetMultiplayerId() ^ BIT_SIDE].gender);
+            trainerPicId = GetPlayerFrontSpriteId_Compat(gLinkPlayers[GetMultiplayerId() ^ BIT_SIDE].gender);
         }
     }
 

@@ -33,6 +33,7 @@
 #include "constants/rgb.h"
 #include "constants/trainers.h"
 #include "constants/union_room.h"
+#include "player_sprite.h"
 
 enum {
     WIN_MSG,
@@ -297,25 +298,6 @@ static const u8 sTrainerPicOffset[2][GENDER_COUNT][2] =
         [MALE]   = {1, 0},
         [FEMALE] = {1, 0}
     },
-};
-
-static const u8 sTrainerPicFacilityClass[][GENDER_COUNT] =
-{
-    [CARD_TYPE_FRLG] =
-    {
-        [MALE]   = FACILITY_CLASS_RED,
-        [FEMALE] = FACILITY_CLASS_LEAF
-    },
-    [CARD_TYPE_RS] =
-    {
-        [MALE]   = FACILITY_CLASS_RS_BRENDAN,
-        [FEMALE] = FACILITY_CLASS_RS_MAY
-    },
-    [CARD_TYPE_EMERALD] =
-    {
-        [MALE]   = FACILITY_CLASS_BRENDAN,
-        [FEMALE] = FACILITY_CLASS_MAY
-    }
 };
 
 static bool8 (*const sTrainerCardFlipTasks[])(struct Task *) =
@@ -1893,7 +1875,7 @@ static void CreateTrainerCardTrainerPic(void)
     }
     else
     {
-        CreateTrainerCardTrainerPicSprite(FacilityClassToPicIndex(sTrainerPicFacilityClass[sData->cardType][sData->trainerCard.gender]),
+        CreateTrainerCardTrainerPicSprite(GetPlayerFrontSpriteId(),
                     TRUE,
                     sTrainerPicOffset[sData->isHoenn][sData->trainerCard.gender][0],
                     sTrainerPicOffset[sData->isHoenn][sData->trainerCard.gender][1],

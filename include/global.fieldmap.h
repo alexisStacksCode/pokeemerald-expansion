@@ -269,7 +269,8 @@ struct ObjectEventGraphicsInfo
     /*0x20*/ const union AffineAnimCmd *const *affineAnims;
 };
 
-enum {
+enum PlayerAvatarState
+{
     PLAYER_AVATAR_STATE_NORMAL,
     PLAYER_AVATAR_STATE_MACH_BIKE,
     PLAYER_AVATAR_STATE_ACRO_BIKE,

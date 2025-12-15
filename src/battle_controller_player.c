@@ -48,6 +48,7 @@
 #include "pokedex.h"
 #include "test/battle.h"
 #include "test/test_runner_battle.h"
+#include "player_sprite.h"
 
 static void PlayerHandleLoadMonSprite(u32 battler);
 static void PlayerHandleDrawTrainerPic(u32 battler);
@@ -1852,18 +1853,6 @@ u32 LinkPlayerGetTrainerPicId(u32 multiplayerId)
     return trainerPicId;
 }
 
-static u32 PlayerGetTrainerBackPicId(void)
-{
-    u32 trainerPicId;
-
-    if (gBattleTypeFlags & BATTLE_TYPE_LINK)
-        trainerPicId = LinkPlayerGetTrainerPicId(GetMultiplayerId());
-    else
-        trainerPicId = gSaveBlock2Ptr->playerGender + TRAINER_BACK_PIC_BRENDAN;
-
-    return trainerPicId;
-}
-
 // In emerald it's possible to have a tag battle in the battle frontier facilities with AI
 // which use the front sprite for both the player and the partner as opposed to any other battles (including the one with Steven)
 // that use an animated back pic.
@@ -1883,7 +1872,7 @@ static void PlayerHandleDrawTrainerPic(u32 battler)
     }
     else
     {
-        trainerPicId = PlayerGetTrainerBackPicId();
+        trainerPicId = GetPlayerBackSpriteId();
         if (gBattleTypeFlags & BATTLE_TYPE_MULTI)
         {
             if ((GetBattlerPosition(battler) & BIT_FLANK) != B_FLANK_LEFT) // Second mon, on the right.
@@ -1911,7 +1900,7 @@ static void PlayerHandleDrawTrainerPic(u32 battler)
     // Use front pic table for any tag battles unless your partner is Steven or a custom partner.
     if (gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER && gPartnerTrainerId < TRAINER_PARTNER(PARTNER_NONE))
     {
-        trainerPicId = PlayerGenderToFrontTrainerPicId(gSaveBlock2Ptr->playerGender);
+        trainerPicId = GetPlayerFrontSpriteId();
         isFrontPic = TRUE;
     }
     else // Use back pic in all the other usual circumstances.
@@ -1924,7 +1913,7 @@ static void PlayerHandleDrawTrainerPic(u32 battler)
 
 static void PlayerHandleTrainerSlide(u32 battler)
 {
-    u32 trainerPicId = PlayerGetTrainerBackPicId();
+    u32 trainerPicId = GetPlayerBackSpriteId();
     BtlController_HandleTrainerSlide(battler, trainerPicId);
 }
 
@@ -2261,7 +2250,7 @@ static void PlayerHandleOneReturnValue_Duplicate(u32 battler)
 
 static void PlayerHandleIntroTrainerBallThrow(u32 battler)
 {
-    const u32 paletteIndex = PlayerGetTrainerBackPicId();
+    const u32 paletteIndex = GetPlayerBackSpriteId();
     const u16 *trainerPal = gTrainerBacksprites[paletteIndex].palette.data;
     BtlController_HandleIntroTrainerBallThrow(battler, 0xD6F8, trainerPal, 31, Intro_TryShinyAnimShowHealthbox);
 }

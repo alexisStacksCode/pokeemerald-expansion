@@ -34,6 +34,7 @@
 #include "constants/moves.h"
 #include "constants/songs.h"
 #include "constants/trainer_types.h"
+#include "player_sprite.h"
 
 #define NUM_FORCED_MOVEMENTS 18
 #define NUM_ACRO_BIKE_COLLISIONS 5
@@ -1056,14 +1057,14 @@ static void PlayerAvatarTransition_Dummy(struct ObjectEvent *objEvent)
 
 static void PlayerAvatarTransition_Normal(struct ObjectEvent *objEvent)
 {
-    ObjectEventSetGraphicsId(objEvent, GetPlayerAvatarGraphicsIdByStateId(PLAYER_AVATAR_STATE_NORMAL));
+    ObjectEventSetGraphicsId(objEvent, GetPlayerOverworldSpriteId(PLAYER_AVATAR_STATE_NORMAL));
     ObjectEventTurn(objEvent, objEvent->movementDirection);
     SetPlayerAvatarStateMask(PLAYER_AVATAR_FLAG_ON_FOOT);
 }
 
 static void PlayerAvatarTransition_MachBike(struct ObjectEvent *objEvent)
 {
-    ObjectEventSetGraphicsId(objEvent, GetPlayerAvatarGraphicsIdByStateId(PLAYER_AVATAR_STATE_MACH_BIKE));
+    ObjectEventSetGraphicsId(objEvent, GetPlayerOverworldSpriteId(PLAYER_AVATAR_STATE_MACH_BIKE));
     ObjectEventTurn(objEvent, objEvent->movementDirection);
     SetPlayerAvatarStateMask(PLAYER_AVATAR_FLAG_MACH_BIKE);
     BikeClearState(0, 0);
@@ -1071,7 +1072,7 @@ static void PlayerAvatarTransition_MachBike(struct ObjectEvent *objEvent)
 
 static void PlayerAvatarTransition_AcroBike(struct ObjectEvent *objEvent)
 {
-    ObjectEventSetGraphicsId(objEvent, GetPlayerAvatarGraphicsIdByStateId(PLAYER_AVATAR_STATE_ACRO_BIKE));
+    ObjectEventSetGraphicsId(objEvent, GetPlayerOverworldSpriteId(PLAYER_AVATAR_STATE_ACRO_BIKE));
     ObjectEventTurn(objEvent, objEvent->movementDirection);
     SetPlayerAvatarStateMask(PLAYER_AVATAR_FLAG_ACRO_BIKE);
     BikeClearState(0, 0);
@@ -1082,7 +1083,7 @@ static void PlayerAvatarTransition_Surfing(struct ObjectEvent *objEvent)
 {
     u8 spriteId;
 
-    ObjectEventSetGraphicsId(objEvent, GetPlayerAvatarGraphicsIdByStateId(PLAYER_AVATAR_STATE_SURFING));
+    ObjectEventSetGraphicsId(objEvent, GetPlayerOverworldSpriteId(PLAYER_AVATAR_STATE_SURFING));
     ObjectEventTurn(objEvent, objEvent->movementDirection);
     SetPlayerAvatarStateMask(PLAYER_AVATAR_FLAG_SURFING);
     gFieldEffectArguments[0] = objEvent->currentCoords.x;
@@ -1095,7 +1096,7 @@ static void PlayerAvatarTransition_Surfing(struct ObjectEvent *objEvent)
 
 static void PlayerAvatarTransition_Underwater(struct ObjectEvent *objEvent)
 {
-    ObjectEventSetGraphicsId(objEvent, GetPlayerAvatarGraphicsIdByStateId(PLAYER_AVATAR_STATE_UNDERWATER));
+    ObjectEventSetGraphicsId(objEvent, GetPlayerOverworldSpriteId(PLAYER_AVATAR_STATE_UNDERWATER));
     ObjectEventTurn(objEvent, objEvent->movementDirection);
     SetPlayerAvatarStateMask(PLAYER_AVATAR_FLAG_UNDERWATER);
     objEvent->fieldEffectSpriteId = StartUnderwaterSurfBlobBobbing(objEvent->spriteId);
@@ -1482,11 +1483,6 @@ u16 GetRivalAvatarGraphicsIdByStateIdAndGender(u8 state, u8 gender)
     return sRivalAvatarGfxIds[state][gender];
 }
 
-u16 GetPlayerAvatarGraphicsIdByStateIdAndGender(u8 state, u8 gender)
-{
-    return sPlayerAvatarGfxIds[state][gender];
-}
-
 u16 GetFRLGAvatarGraphicsIdByGender(u8 gender)
 {
     return sFRLGAvatarGfxIds[gender];
@@ -1495,11 +1491,6 @@ u16 GetFRLGAvatarGraphicsIdByGender(u8 gender)
 u16 GetRSAvatarGraphicsIdByGender(u8 gender)
 {
     return sRSAvatarGfxIds[gender];
-}
-
-u16 GetPlayerAvatarGraphicsIdByStateId(u8 state)
-{
-    return GetPlayerAvatarGraphicsIdByStateIdAndGender(state, gPlayerAvatar.gender);
 }
 
 u8 GetPlayerAvatarGenderByGraphicsId(u16 gfxId)
@@ -1604,14 +1595,14 @@ void SetPlayerAvatarExtraStateTransition(u16 graphicsId, u8 transitionFlag)
     DoPlayerAvatarTransition();
 }
 
-void InitPlayerAvatar(s16 x, s16 y, u8 direction, u8 gender)
+void InitPlayerAvatar(s16 x, s16 y, u8 direction)
 {
     struct ObjectEventTemplate playerObjEventTemplate;
     u8 objectEventId;
     struct ObjectEvent *objectEvent;
 
     playerObjEventTemplate.localId = LOCALID_PLAYER;
-    playerObjEventTemplate.graphicsId = GetPlayerAvatarGraphicsIdByStateIdAndGender(PLAYER_AVATAR_STATE_NORMAL, gender);
+    playerObjEventTemplate.graphicsId = GetPlayerOverworldSpriteId(PLAYER_AVATAR_STATE_NORMAL);
     playerObjEventTemplate.x = x - MAP_OFFSET;
     playerObjEventTemplate.y = y - MAP_OFFSET;
     playerObjEventTemplate.elevation = 0;
@@ -1632,7 +1623,7 @@ void InitPlayerAvatar(s16 x, s16 y, u8 direction, u8 gender)
     gPlayerAvatar.tileTransitionState = T_NOT_MOVING;
     gPlayerAvatar.objectEventId = objectEventId;
     gPlayerAvatar.spriteId = objectEvent->spriteId;
-    gPlayerAvatar.gender = gender;
+    gPlayerAvatar.gender = gSaveBlock2Ptr->playerGender;
     SetPlayerAvatarStateMask(PLAYER_AVATAR_FLAG_CONTROLLABLE | PLAYER_AVATAR_FLAG_ON_FOOT);
     CreateFollowerNPCAvatar();
 }
@@ -1647,20 +1638,20 @@ void SetPlayerInvisibility(bool8 invisible)
 void SetPlayerAvatarFieldMove(void)
 {
     EndORASDowsing();
-    ObjectEventSetGraphicsId(&gObjectEvents[gPlayerAvatar.objectEventId], GetPlayerAvatarGraphicsIdByStateId(PLAYER_AVATAR_STATE_FIELD_MOVE));
+    ObjectEventSetGraphicsId(&gObjectEvents[gPlayerAvatar.objectEventId], GetPlayerOverworldSpriteId(PLAYER_AVATAR_STATE_FIELD_MOVE));
     StartSpriteAnim(&gSprites[gPlayerAvatar.spriteId], ANIM_FIELD_MOVE);
 }
 
 void SetPlayerAvatarFishing(u8 direction)
 {
     EndORASDowsing();
-    ObjectEventSetGraphicsId(&gObjectEvents[gPlayerAvatar.objectEventId], GetPlayerAvatarGraphicsIdByStateId(PLAYER_AVATAR_STATE_FISHING));
+    ObjectEventSetGraphicsId(&gObjectEvents[gPlayerAvatar.objectEventId], GetPlayerOverworldSpriteId(PLAYER_AVATAR_STATE_FISHING));
     StartSpriteAnim(&gSprites[gPlayerAvatar.spriteId], GetFishingDirectionAnimNum(direction));
 }
 
 void PlayerUseAcroBikeOnBumpySlope(u8 direction)
 {
-    ObjectEventSetGraphicsId(&gObjectEvents[gPlayerAvatar.objectEventId], GetPlayerAvatarGraphicsIdByStateId(PLAYER_AVATAR_STATE_ACRO_BIKE));
+    ObjectEventSetGraphicsId(&gObjectEvents[gPlayerAvatar.objectEventId], GetPlayerOverworldSpriteId(PLAYER_AVATAR_STATE_ACRO_BIKE));
     StartSpriteAnim(&gSprites[gPlayerAvatar.spriteId], GetAcroWheelieDirectionAnimNum(direction));
     SeekSpriteAnim(&gSprites[gPlayerAvatar.spriteId], 1);
 }
@@ -1668,7 +1659,7 @@ void PlayerUseAcroBikeOnBumpySlope(u8 direction)
 void SetPlayerAvatarWatering(u8 direction)
 {
     EndORASDowsing();
-    ObjectEventSetGraphicsId(&gObjectEvents[gPlayerAvatar.objectEventId], GetPlayerAvatarGraphicsIdByStateId(PLAYER_AVATAR_STATE_WATERING));
+    ObjectEventSetGraphicsId(&gObjectEvents[gPlayerAvatar.objectEventId], GetPlayerOverworldSpriteId(PLAYER_AVATAR_STATE_WATERING));
     StartSpriteAnim(&gSprites[gPlayerAvatar.spriteId], GetFaceDirectionAnimNum(direction));
 }
 
@@ -1910,7 +1901,7 @@ static void Task_WaitStopSurfing(u8 taskId)
 
     if (ObjectEventClearHeldMovementIfFinished(playerObjEvent))
     {
-        ObjectEventSetGraphicsId(playerObjEvent, GetPlayerAvatarGraphicsIdByStateId(PLAYER_AVATAR_STATE_NORMAL));
+        ObjectEventSetGraphicsId(playerObjEvent, GetPlayerOverworldSpriteId(PLAYER_AVATAR_STATE_NORMAL));
         ObjectEventSetHeldMovement(playerObjEvent, GetFaceDirectionMovementAction(playerObjEvent->facingDirection));
         gPlayerAvatar.preventStep = FALSE;
         UnlockPlayerFieldControls();

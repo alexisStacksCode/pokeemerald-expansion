@@ -26,6 +26,7 @@
 #include "constants/songs.h"
 #include "constants/trainers.h"
 #include "constants/rgb.h"
+#include "player_sprite.h"
 
 #define PALTAG_UNUSED_MUGSHOT 0x100A
 
@@ -2631,10 +2632,7 @@ static void Mugshots_CreateTrainerPics(struct Task *task)
         SetOamMatrixRotationScaling(partnerSprite->oam.matrixNum, -512, 512, 0);
     }
 
-    task->tPlayerSpriteId = CreateTrainerSprite(PlayerGenderToFrontTrainerPicId(gSaveBlock2Ptr->playerGender), 
-                                                DISPLAY_WIDTH + 32, 
-                                                106, 
-                                                0, NULL); 
+    task->tPlayerSpriteId = CreateTrainerSprite(GetPlayerFrontSpriteId(), DISPLAY_WIDTH + 32, 106, 0, NULL);
 
     opponentSpriteA = &gSprites[task->tOpponentSpriteAId];
     playerSprite = &gSprites[task->tPlayerSpriteId];

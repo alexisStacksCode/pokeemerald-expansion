@@ -39,6 +39,7 @@
 #include "constants/metatile_behaviors.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
+#include "player_sprite.h"
 
 #define subsprite_table(ptr) {.subsprites = ptr, .subspriteCount = (sizeof ptr) / (sizeof(struct Subsprite))}
 
@@ -3291,7 +3292,7 @@ static void SurfFieldEffect_JumpOnSurfBlob(struct Task *task)
     if (!FieldEffectActiveListContains(FLDEFF_FIELD_MOVE_SHOW_MON))
     {
         objectEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
-        ObjectEventSetGraphicsId(objectEvent, GetPlayerAvatarGraphicsIdByStateId(PLAYER_AVATAR_STATE_SURFING));
+        ObjectEventSetGraphicsId(objectEvent, GetPlayerOverworldSpriteId(PLAYER_AVATAR_STATE_SURFING));
         ObjectEventClearHeldMovementIfFinished(objectEvent);
         ObjectEventSetHeldMovement(objectEvent, GetJumpSpecialMovementAction(objectEvent->movementDirection));
         FollowerNPC_FollowerToWater();
@@ -3502,7 +3503,7 @@ static void FlyOutFieldEffect_JumpOnBird(struct Task *task)
     if ((++task->tTimer) >= 8)
     {
         struct ObjectEvent *objectEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
-        ObjectEventSetGraphicsId(objectEvent, GetPlayerAvatarGraphicsIdByStateId(PLAYER_AVATAR_STATE_SURFING));
+        ObjectEventSetGraphicsId(objectEvent, GetPlayerOverworldSpriteId(PLAYER_AVATAR_STATE_SURFING));
         StartSpriteAnim(&gSprites[objectEvent->spriteId], ANIM_GET_ON_OFF_POKEMON_WEST);
         objectEvent->inanimate = TRUE;
         ObjectEventSetHeldMovement(objectEvent, MOVEMENT_ACTION_JUMP_IN_PLACE_LEFT);
@@ -3739,7 +3740,7 @@ static void FlyInFieldEffect_BirdSwoopDown(struct Task *task)
         {
             SetSurfBlob_BobState(objectEvent->fieldEffectSpriteId, BOB_NONE);
         }
-        ObjectEventSetGraphicsId(objectEvent, GetPlayerAvatarGraphicsIdByStateId(PLAYER_AVATAR_STATE_SURFING));
+        ObjectEventSetGraphicsId(objectEvent, GetPlayerOverworldSpriteId(PLAYER_AVATAR_STATE_SURFING));
         CameraObjectFreeze();
         ObjectEventTurn(objectEvent, DIR_WEST);
         StartSpriteAnim(&gSprites[objectEvent->spriteId], ANIM_GET_ON_OFF_POKEMON_WEST);
@@ -3849,7 +3850,7 @@ static void FlyInFieldEffect_End(struct Task *task)
             state = PLAYER_AVATAR_STATE_SURFING;
             SetSurfBlob_BobState(objectEvent->fieldEffectSpriteId, BOB_PLAYER_AND_MON);
         }
-        ObjectEventSetGraphicsId(objectEvent, GetPlayerAvatarGraphicsIdByStateId(state));
+        ObjectEventSetGraphicsId(objectEvent, GetPlayerOverworldSpriteId(state));
         ObjectEventTurn(objectEvent, DIR_SOUTH);
         gPlayerAvatar.flags = task->tAvatarFlags;
         gPlayerAvatar.preventStep = FALSE;
@@ -4283,7 +4284,7 @@ static bool8 RockClimb_JumpOnRockClimbBlob(struct Task *task, struct ObjectEvent
     if (!FieldEffectActiveListContains(FLDEFF_FIELD_MOVE_SHOW_MON))
     {
         objectEvent->noShadow = TRUE; // hide shadow
-        ObjectEventSetGraphicsId(objectEvent, GetPlayerAvatarGraphicsIdByStateId(PLAYER_AVATAR_STATE_SURFING));
+        ObjectEventSetGraphicsId(objectEvent, GetPlayerOverworldSpriteId(PLAYER_AVATAR_STATE_SURFING));
         ObjectEventClearHeldMovementIfFinished(objectEvent);
         ObjectEventSetHeldMovement(objectEvent, GetJumpSpecialMovementAction(objectEvent->movementDirection));
         gFieldEffectArguments[0] = task->tDestX;
@@ -4406,7 +4407,7 @@ static bool8 RockClimb_WaitStopRockClimb(struct Task *task, struct ObjectEvent *
     struct ObjectEvent *followerObject = GetFollowerObject();
     if (ObjectEventClearHeldMovementIfFinished(objectEvent))
     {
-        ObjectEventSetGraphicsId(objectEvent, GetPlayerAvatarGraphicsIdByStateId(PLAYER_AVATAR_STATE_NORMAL));
+        ObjectEventSetGraphicsId(objectEvent, GetPlayerOverworldSpriteId(PLAYER_AVATAR_STATE_NORMAL));
         ObjectEventSetHeldMovement(objectEvent, GetFaceDirectionMovementAction(objectEvent->facingDirection));
         gPlayerAvatar.preventStep = FALSE;
         if (followerObject)
