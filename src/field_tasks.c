@@ -141,9 +141,7 @@ static void Task_RunPerStepCallback(u8 taskId)
     sPerStepCallbacks[idx](taskId);
 }
 
-#define tState           data[0]
-#define tAmbientCryState data[1]
-#define tAmbientCryDelay data[2]
+#define tState data[0]
 
 #define TIME_UPDATE_INTERVAL (1 << 12)
 
@@ -172,7 +170,6 @@ static void Task_RunTimeBasedEvents(u8 taskId)
     if (!ArePlayerFieldControlsLocked())
     {
         RunTimeBasedEvents(data);
-        UpdateAmbientCry(&tAmbientCryState, (u16*) &tAmbientCryDelay);
     }
 }
 
@@ -210,27 +207,6 @@ void ActivatePerStepCallback(u8 callbackId)
             tCallbackId = callbackId;
     }
 }
-
-void ResetFieldTasksArgs(void)
-{
-    u8 taskId;
-    s16 *data;
-
-    taskId = FindTaskIdByFunc(Task_RunPerStepCallback);
-    if (taskId != TASK_NONE)
-        data = gTasks[taskId].data;
-
-    taskId = FindTaskIdByFunc(Task_RunTimeBasedEvents);
-    if (taskId != TASK_NONE)
-    {
-        data = gTasks[taskId].data;
-        tAmbientCryState = 0;
-        tAmbientCryDelay = 0;
-    }
-}
-
-#undef tAmbientCryState
-#undef tAmbientCryDelay
 
 static void DummyPerStepCallback(u8 taskId)
 {

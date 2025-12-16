@@ -127,7 +127,6 @@ u8 GetMapMusicFadeoutSpeed(void);
 void TryFadeOutOldMapMusic(void);
 bool8 BGMusicStopped(void);
 void Overworld_FadeOutMapMusic(void);
-void UpdateAmbientCry(s16 *state, u16 *delayCounter);
 enum MapType GetMapTypeByGroupAndId(s8 mapGroup, s8 mapNum);
 enum MapType GetMapTypeByWarpData(struct WarpData *warp);
 enum MapType GetCurrentMapType(void);

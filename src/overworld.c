@@ -115,7 +115,6 @@ static void CB2_LoadMapOnReturnToFieldCableClub(void);
 static void CB2_LoadMap2(void);
 static void VBlankCB_Field(void);
 static void SpriteCB_LinkPlayer(struct Sprite *);
-static void ChooseAmbientCrySpecies(void);
 static void DoMapLoadLoop(u8 *);
 static bool32 LoadMapInStepsLocal(u8 *, bool32);
 static bool32 LoadMapInStepsLink(u8 *);
@@ -214,8 +213,6 @@ EWRAM_DATA static struct WarpData sFixedDiveWarp = {0};
 EWRAM_DATA static struct WarpData sFixedHoleWarp = {0};
 EWRAM_DATA static mapsec_u16_t sLastMapSectionId = 0;
 EWRAM_DATA static struct InitialPlayerAvatarState sInitialPlayerAvatarState = {0};
-EWRAM_DATA static u16 sAmbientCrySpecies = 0;
-EWRAM_DATA static bool8 sIsAmbientCryWaterMon = FALSE;
 EWRAM_DATA static u8 sHoursOverride = 0; // used to override apparent time of day hours
 EWRAM_DATA struct LinkPlayerObjectEvent gLinkPlayerObjectEvents[4] = {0};
 EWRAM_DATA bool8 gExitStairsMovementDisabled = FALSE;
@@ -468,7 +465,6 @@ static void Overworld_ResetStateAfterWhiteOut(void)
 static void UpdateMiscOverworldStates(void)
 {
     FlagClear(FLAG_SYS_SAFARI_MODE);
-    ChooseAmbientCrySpecies();
     ResetCyclingRoadChallengeData();
     UpdateLocationHistoryForRoamer();
     MoveAllRoamersToOtherLocationSets();
@@ -865,7 +861,6 @@ void LoadMapFromCameraTransition(u8 mapGroup, u8 mapNum)
 
     DoTimeBasedEvents();
     SetSavedWeatherFromCurrMapHeader();
-    ChooseAmbientCrySpecies();
     SetDefaultFlashLevel();
     Overworld_ClearSavedMusic();
     RunOnTransitionMapScript();
@@ -879,7 +874,6 @@ void LoadMapFromCameraTransition(u8 mapGroup, u8 mapNum)
     UpdateLocationHistoryForRoamer();
     MoveAllRoamers();
     DoCurrentWeather();
-    ResetFieldTasksArgs();
     RunOnResumeMapScript();
 
     if (OW_HIDE_REPEAT_MAP_POPUP)
@@ -932,7 +926,6 @@ static void LoadMapFromWarp(bool32 a1)
     if (a1 != TRUE)
         DoTimeBasedEvents();
     SetSavedWeatherFromCurrMapHeader();
-    ChooseAmbientCrySpecies();
     if (isOutdoors)
         FlagClear(FLAG_SYS_USE_FLASH);
     SetDefaultFlashLevel();
@@ -1325,95 +1318,6 @@ bool8 BGMusicStopped(void)
 void Overworld_FadeOutMapMusic(void)
 {
     FadeOutMapMusic(4);
-}
-
-static void PlayAmbientCry(void)
-{
-    s16 x, y;
-    s8 pan;
-    s8 volume;
-
-    PlayerGetDestCoords(&x, &y);
-    if (sIsAmbientCryWaterMon == TRUE
-     && !MetatileBehavior_IsSurfableWaterOrUnderwater(MapGridGetMetatileBehaviorAt(x, y)))
-        return;
-    pan = (Random() % 88) + 212;
-    volume = (Random() % 30) + 50;
-    PlayCry_NormalNoDucking(sAmbientCrySpecies, pan, volume, CRY_PRIORITY_AMBIENT);
-}
-
-// States for UpdateAmbientCry
-enum {
-    AMB_CRY_INIT,
-    AMB_CRY_FIRST,
-    AMB_CRY_RESET,
-    AMB_CRY_WAIT,
-    AMB_CRY_IDLE,
-};
-
-void UpdateAmbientCry(s16 *state, u16 *delayCounter)
-{
-    u8 i, monsCount, divBy;
-
-    switch (*state)
-    {
-    case AMB_CRY_INIT:
-        // This state will be revisited whenever ResetFieldTasksArgs is called (which happens on map transition)
-        if (sAmbientCrySpecies == SPECIES_NONE)
-            *state = AMB_CRY_IDLE;
-        else
-            *state = AMB_CRY_FIRST;
-        break;
-    case AMB_CRY_FIRST:
-        // It takes between 1200-3599 frames (~20-60 seconds) to play the first ambient cry after entering a map
-        *delayCounter = (Random() % 2400) + 1200;
-        *state = AMB_CRY_WAIT;
-        break;
-    case AMB_CRY_RESET:
-        divBy = 1;
-        monsCount = CalculatePlayerPartyCount();
-        for (i = 0; i < monsCount; i++)
-        {
-            if (!GetMonData(&gPlayerParty[i], MON_DATA_SANITY_IS_EGG)
-                && GetMonAbility(&gPlayerParty[0]) == ABILITY_SWARM)
-            {
-                divBy = 2;
-                break;
-            }
-        }
-        // Ambient cries after the first one take between 1200-2399 frames (~20-40 seconds)
-        // If the player has a Pokémon with the ability Swarm in their party, the time is halved to 600-1199 frames (~10-20 seconds)
-        *delayCounter = ((Random() % 1200) + 1200) / divBy;
-        *state = AMB_CRY_WAIT;
-        break;
-    case AMB_CRY_WAIT:
-        if (--(*delayCounter) == 0)
-        {
-            PlayAmbientCry();
-            *state = AMB_CRY_RESET;
-        }
-        break;
-    case AMB_CRY_IDLE:
-        // No land/water Pokémon on this map
-        break;
-    }
-}
-
-static void ChooseAmbientCrySpecies(void)
-{
-    if ((gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(MAP_ROUTE130)
-     && gSaveBlock1Ptr->location.mapNum == MAP_NUM(MAP_ROUTE130))
-     && !IsMirageIslandPresent())
-    {
-        // Only play water Pokémon cries on this route
-        // when Mirage Island is not present
-        sIsAmbientCryWaterMon = TRUE;
-        sAmbientCrySpecies = GetLocalWaterMon();
-    }
-    else
-    {
-        sAmbientCrySpecies = GetLocalWildMon(&sIsAmbientCryWaterMon);
-    }
 }
 
 enum MapType GetMapTypeByGroupAndId(s8 mapGroup, s8 mapNum)
