@@ -265,9 +265,7 @@ static void CreateFanfareTask(void)
 
 void FadeInNewBGM(u16 songNum, u8 speed)
 {
-    if (gDisableMusic)
-        songNum = 0;
-    if (songNum == MUS_NONE)
+    if (gDisableMusic || songNum == MUS_NONE)
         songNum = 0;
     m4aSongNumStart(songNum);
     m4aMPlayImmInit(&gMPlayInfo_BGM);
@@ -567,9 +565,7 @@ static void RestoreBGMVolumeAfterPokemonCry(void)
 
 void PlayBGM(u16 songNum)
 {
-    if (gDisableMusic)
-        songNum = 0;
-    if (songNum == MUS_NONE)
+    if (gDisableMusic || songNum == MUS_NONE)
         songNum = 0;
     m4aSongNumStart(songNum);
 }
