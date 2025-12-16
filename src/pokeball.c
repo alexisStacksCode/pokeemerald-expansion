@@ -44,7 +44,7 @@ static void SpriteCB_TradePokeballSendOff(struct Sprite *sprite);
 static void SpriteCB_TradePokeballEnd(struct Sprite *sprite);
 static void SpriteCB_HealthboxSlideInDelayed(struct Sprite *sprite);
 static void SpriteCB_HealthboxSlideIn(struct Sprite *sprite);
-static void SpriteCB_HitAnimHealthoxEffect(struct Sprite *sprite);
+static void SpriteCB_HitAnimHealthboxEffect(struct Sprite *sprite);
 static u16 GetBattlerPokeballItemId(u8 battler);
 
 // rom const data
@@ -1564,13 +1564,13 @@ void DoHitAnimHealthboxEffect(u8 battler)
 {
     u8 spriteId;
 
-    spriteId = CreateInvisibleSpriteWithCallback(SpriteCB_HitAnimHealthoxEffect);
+    spriteId = CreateInvisibleSpriteWithCallback(SpriteCB_HitAnimHealthboxEffect);
     gSprites[spriteId].data[0] = 1;
     gSprites[spriteId].data[1] = gHealthboxSpriteIds[battler];
-    gSprites[spriteId].callback = SpriteCB_HitAnimHealthoxEffect;
+    gSprites[spriteId].callback = SpriteCB_HitAnimHealthboxEffect;
 }
 
-static void SpriteCB_HitAnimHealthoxEffect(struct Sprite *sprite)
+static void SpriteCB_HitAnimHealthboxEffect(struct Sprite *sprite)
 {
     u8 r1 = sprite->data[1];
 
