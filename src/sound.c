@@ -377,7 +377,7 @@ void PlayCry_Script(u16 species, u8 mode)
 void PlayCryInternal(u16 species, s8 pan, s8 volume, u8 priority, u8 mode)
 {
     enum PokemonCry cryId = GetCryIdBySpecies(species);
-    enum PokemonCry faintCryId = GetFaintCryIdBySpecies(species);
+    enum PokemonCry faintCryId = mode != CRY_MODE_FAINT ? CRY_NONE : GetFaintCryIdBySpecies(species);
     bool32 reverse;
     u32 release;
     u32 length;
@@ -391,12 +391,6 @@ void PlayCryInternal(u16 species, s8 pan, s8 volume, u8 priority, u8 mode)
     release = 0;
     pitch = 15360;
     chorus = 0;
-
-    if (cryId != CRY_NONE)
-    {
-        cryId--;
-    }
-    faintCryId = mode == CRY_MODE_FAINT && faintCryId != CRY_NONE ? faintCryId - 1 : CRY_NONE;
 
     switch (mode)
     {
