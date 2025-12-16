@@ -2422,7 +2422,7 @@ static void SafariTextIntoHealthboxObject(void *dest, u8 *windowTileData, u32 wi
 
 #define ABILITY_POP_UP_POS_X_DIFF  64
 #define ABILITY_POP_UP_POS_X_SLIDE 128
-#define ABILITY_POP_UP_POS_X_SPEED 4
+#define ABILITY_POP_UP_POS_X_SPEED 8
 
 #define ABILITY_POP_UP_WIN_WIDTH   10
 #define ABILITY_POP_UP_STR_WIDTH   (ABILITY_POP_UP_WIN_WIDTH * 8)
