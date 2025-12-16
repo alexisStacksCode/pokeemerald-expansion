@@ -6,15 +6,15 @@
 #include "battle_controllers.h"
 #include "link.h"
 
-const u8 sPlayerFrontSpriteIds[GENDER_COUNT] = {
+const u8 gPlayerFrontSpriteIds[GENDER_COUNT] = {
     [MALE] = TRAINER_PIC_BRENDAN,
     [FEMALE] = TRAINER_PIC_MAY,
 };
-const u8 sPlayerBackSpriteIds[GENDER_COUNT] = {
+const u8 gPlayerBackSpriteIds[GENDER_COUNT] = {
     [MALE] = TRAINER_BACK_PIC_BRENDAN,
     [FEMALE] = TRAINER_BACK_PIC_MAY,
 };
-const u8 sPlayerOverworldSpriteIds[][GENDER_COUNT] = {
+const u8 gPlayerOverworldSpriteIds[][GENDER_COUNT] = {
     [PLAYER_AVATAR_STATE_NORMAL] = {
         [MALE] = OBJ_EVENT_GFX_BRENDAN_NORMAL,
         [FEMALE] = OBJ_EVENT_GFX_MAY_NORMAL,
@@ -56,24 +56,24 @@ const u8 sPlayerOverworldSpriteIds[][GENDER_COUNT] = {
 // Returns the trainer front sprite ID for the player.
 u16 GetPlayerFrontSpriteId()
 {
-    return sPlayerFrontSpriteIds[gSaveBlock2Ptr->playerGender];
+    return gPlayerFrontSpriteIds[gSaveBlock2Ptr->playerGender];
 }
 
 // This function exists solely for Link Battles, which are planned to be removed
 // in the future.
 u16 GetPlayerFrontSpriteId_Compat(enum Gender gender)
 {
-    return sPlayerFrontSpriteIds[gender];
+    return gPlayerFrontSpriteIds[gender];
 }
 
 // Returns the trainer back sprite ID for the player.
 u32 GetPlayerBackSpriteId()
 {
-    return !(gBattleTypeFlags & BATTLE_TYPE_LINK) ? sPlayerBackSpriteIds[gSaveBlock2Ptr->playerGender] : LinkPlayerGetTrainerPicId(GetMultiplayerId());
+    return !(gBattleTypeFlags & BATTLE_TYPE_LINK) ? gPlayerBackSpriteIds[gSaveBlock2Ptr->playerGender] : LinkPlayerGetTrainerPicId(GetMultiplayerId());
 }
 
 // Returns the appropriate overworld sprite ID for the player.
 u16 GetPlayerOverworldSpriteId(enum PlayerAvatarState state)
 {
-    return sPlayerOverworldSpriteIds[state][gSaveBlock2Ptr->playerGender];
+    return gPlayerOverworldSpriteIds[state][gSaveBlock2Ptr->playerGender];
 }
