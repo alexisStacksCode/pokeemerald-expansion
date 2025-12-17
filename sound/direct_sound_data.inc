@@ -387,6 +387,10 @@ DirectSoundWaveData_unknown_17::
 	.incbin "sound/direct_sound_samples/unknown_17.bin"
 
 .if P_CRIES_ENABLED == TRUE
+	.align 2
+Cry_None::
+	.incbin "sound/direct_sound_samples/cries/unown.bin"
+
 .if P_FAMILY_BULBASAUR == TRUE
 	.align 2
 Cry_Bulbasaur::

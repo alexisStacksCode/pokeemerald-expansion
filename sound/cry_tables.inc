@@ -1,6 +1,7 @@
 	.align 2
 gCryTable::
 .if P_CRIES_ENABLED == TRUE
+	cry Cry_None
 .if P_FAMILY_BULBASAUR == TRUE
 	cry Cry_Bulbasaur
 	cry Cry_Ivysaur
