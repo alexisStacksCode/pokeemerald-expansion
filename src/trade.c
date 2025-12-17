@@ -1046,8 +1046,6 @@ static void Trade_Memcpy(void *dest, const void *src, u32 size)
 static bool8 BufferTradeParties(void)
 {
     u8 id = GetMultiplayerId();
-    int i;
-    struct Pokemon *mon;
 
     switch (sTradeMenu->bufferPartyState)
     {
