@@ -1864,12 +1864,6 @@ void OpenPokemon(u32 sourceLine, enum BattlerPosition position, u32 species)
     for (i = 0; i < MAX_MON_MOVES; i++)
         SetMonData(DATA.currentMon, MON_DATA_MOVE1 + i, &data);
     data = 0;
-    if (B_FRIENDSHIP_BOOST)
-    {
-        // This way, we avoid the boost affecting tests unless explicitly stated.
-        SetMonData(DATA.currentMon, MON_DATA_FRIENDSHIP, &data);
-        CalculateMonStats(DATA.currentMon);
-    }
 }
 
 void OpenPokemonMulti(u32 sourceLine, enum BattlerPosition position, u32 species)
@@ -1923,12 +1917,6 @@ void OpenPokemonMulti(u32 sourceLine, enum BattlerPosition position, u32 species
         SetMonData(DATA.currentMon, MON_DATA_PP1 + i, &data);
     }
     data = 0;
-    if (B_FRIENDSHIP_BOOST)
-    {
-        // This way, we avoid the boost affecting tests unless explicitly stated.
-        SetMonData(DATA.currentMon, MON_DATA_FRIENDSHIP, &data);
-        CalculateMonStats(DATA.currentMon);
-    }
 }
 
 // (sNaturePersonalities[i] % NUM_NATURES) == i

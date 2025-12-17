@@ -19,7 +19,6 @@
     F(UNEVOLVED_EXP_MULTIPLIER,  unevolvedExpMultiplier,  (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(LEVEL_UP_NOTIFICATION,     levelUpNotification,     (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     /* Stat settings */ \
-    F(FRIENDSHIP_BOOST,          friendshipBoost,         (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(MAX_LEVEL_EV_GAINS,        maxLevelEvGains,         (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(RECALCULATE_STATS,         recalculateStats,        (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     /* Damage settings */ \

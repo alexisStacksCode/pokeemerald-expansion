@@ -1673,7 +1673,6 @@ void CalculateMonStats(struct Pokemon *mon)
     s32 oldMaxHP = GetMonData(mon, MON_DATA_MAX_HP, NULL);
     s32 currentHP = GetMonData(mon, MON_DATA_HP, NULL);
     u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
-    u8 friendship = GetMonData(mon, MON_DATA_FRIENDSHIP, NULL);
     s32 level = GetLevelFromMonExp(mon);
     s32 newMaxHP;
 
@@ -1681,7 +1680,7 @@ void CalculateMonStats(struct Pokemon *mon)
 
     SetMonData(mon, MON_DATA_LEVEL, &level);
 
-    bool32 hyperTrained[NUM_STATS]; //In a battle test, hyper training flag indicates a fixed stat
+    bool32 hyperTrained[NUM_STATS]; // In a battle test, hyper training flag indicates a fixed stat
     s32 iv[NUM_STATS];
     s32 ev[NUM_STATS];
     for (u32 i = 0; i < NUM_STATS; i++)
@@ -1705,8 +1704,6 @@ void CalculateMonStats(struct Pokemon *mon)
         u8 baseStat = GetSpeciesBaseStat(species, i);
         s32 n = (((2 * baseStat + iv[i] + ev[i] / 4) * level) / 100) + 5;
         n = ModifyStatByNature(nature, n, i);
-        if (B_FRIENDSHIP_BOOST == TRUE)
-            n = n + ((n * 10 * friendship) / (MAX_FRIENDSHIP * 100));
         SetMonData(mon, MON_DATA_MAX_HP + i, &n);
     }
 
