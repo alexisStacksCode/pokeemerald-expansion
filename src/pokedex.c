@@ -4602,28 +4602,6 @@ u16 GetHoennPokedexCount(u8 caseID)
     return count;
 }
 
-u16 GetKantoPokedexCount(u8 caseID)
-{
-    u16 count = 0;
-    u16 i;
-
-    for (i = 0; i < KANTO_DEX_COUNT; i++)
-    {
-        switch (caseID)
-        {
-        case FLAG_GET_SEEN:
-            if (GetSetPokedexFlag(i + 1, FLAG_GET_SEEN))
-                count++;
-            break;
-        case FLAG_GET_CAUGHT:
-            if (GetSetPokedexFlag(i + 1, FLAG_GET_CAUGHT))
-                count++;
-            break;
-        }
-    }
-    return count;
-}
-
 bool16 HasAllHoennMons(void)
 {
     u32 i, j;
@@ -4632,19 +4610,6 @@ bool16 HasAllHoennMons(void)
     {
         j = HoennToNationalOrder(i + 1);
         if (!(gSpeciesInfo[j].isMythical && !gSpeciesInfo[j].dexForceRequired) && !GetSetPokedexFlag(j, FLAG_GET_CAUGHT))
-            return FALSE;
-    }
-    return TRUE;
-}
-
-bool8 HasAllKantoMons(void)
-{
-    u32 i;
-
-    // -1 excludes Mew
-    for (i = 0; i < KANTO_DEX_COUNT - 1; i++)
-    {
-        if (!GetSetPokedexFlag(i + 1, FLAG_GET_CAUGHT))
             return FALSE;
     }
     return TRUE;
