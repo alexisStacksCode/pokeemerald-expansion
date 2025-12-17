@@ -342,12 +342,12 @@ struct PokemonStats
 {
     u16 species;
     u8  genderRatio;
-    u8  baseHP;
-    u8  baseSpeed;
-    u8  baseAttack;
-    u8  baseSpAttack;
-    u8  baseDefense;
-    u8  baseSpDefense;
+    u16 baseHP;
+    u16 baseSpeed;
+    u16 baseAttack;
+    u16 baseSpAttack;
+    u16 baseDefense;
+    u16 baseSpDefense;
     u8  differentEVs;
     u8  evYield_HP;
     u8  evYield_Speed;
@@ -3574,7 +3574,7 @@ static void CreateStatBar(u8 *dst, u32 y, u32 width)
         WritePixel(dst, STAT_BAR_X_OFFSET + i, y + 4, COLOR_ID_BAR_WHITE);
     }
 }
-static const u8 sBaseStatOffsets[] =
+static const u16 sBaseStatOffsets[] =
 {
     offsetof(struct SpeciesInfo, baseHP),
     offsetof(struct SpeciesInfo, baseAttack),
@@ -3623,7 +3623,7 @@ static void CreateStatBars(struct PokedexListItem *dexMon)
         memcpy(gfx, sStatBarsGfx, sizeof(sStatBarsGfx));
         for (i = 0; i < NUM_STATS; i++)
         {
-            statValue = *((u8*)(&gSpeciesInfo[species]) + sBaseStatOffsets[i]);
+            statValue = *((u16*)(&gSpeciesInfo[species]) + sBaseStatOffsets[i]);
             if (statValue <= 100)
             {
                 width = statValue / 3;

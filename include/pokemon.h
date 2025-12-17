@@ -411,12 +411,12 @@ struct Evolution
 
 struct SpeciesInfo /*0xC4*/
 {
-    u8 baseHP;
-    u8 baseAttack;
-    u8 baseDefense;
-    u8 baseSpeed;
-    u8 baseSpAttack;
-    u8 baseSpDefense;
+    u16 baseHP;
+    u16 baseAttack;
+    u16 baseDefense;
+    u16 baseSpeed;
+    u16 baseSpAttack;
+    u16 baseSpDefense;
     enum Type types[2];
     u8 catchRate;
     u8 forceTeraType;
