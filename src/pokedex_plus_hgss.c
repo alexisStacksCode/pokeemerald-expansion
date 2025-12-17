@@ -4794,12 +4794,12 @@ static void SaveMonDataInStruct(void)
 
     sPokedexView->sPokemonStats.species             = species;
     sPokedexView->sPokemonStats.genderRatio         = gSpeciesInfo[species].genderRatio;
-    sPokedexView->sPokemonStats.baseHP              = GetSpeciesBaseHP(species);
-    sPokedexView->sPokemonStats.baseSpeed           = GetSpeciesBaseSpeed(species);
-    sPokedexView->sPokemonStats.baseAttack          = GetSpeciesBaseAttack(species);
-    sPokedexView->sPokemonStats.baseSpAttack        = GetSpeciesBaseSpAttack(species);
-    sPokedexView->sPokemonStats.baseDefense         = GetSpeciesBaseDefense(species);
-    sPokedexView->sPokemonStats.baseSpDefense       = GetSpeciesBaseSpDefense(species);
+    sPokedexView->sPokemonStats.baseHP              = GetSpeciesBaseStat(species, STAT_HP);
+    sPokedexView->sPokemonStats.baseSpeed           = GetSpeciesBaseStat(species, STAT_SPEED);
+    sPokedexView->sPokemonStats.baseAttack          = GetSpeciesBaseStat(species, STAT_ATK);
+    sPokedexView->sPokemonStats.baseSpAttack        = GetSpeciesBaseStat(species, STAT_SPATK);
+    sPokedexView->sPokemonStats.baseDefense         = GetSpeciesBaseStat(species, STAT_DEF);
+    sPokedexView->sPokemonStats.baseSpDefense       = GetSpeciesBaseStat(species, STAT_SPDEF);
     sPokedexView->sPokemonStats.differentEVs        = differentEVs;
     sPokedexView->sPokemonStats.evYield_HP          = evs[STAT_HP];
     sPokedexView->sPokemonStats.evYield_Speed       = evs[STAT_ATK];

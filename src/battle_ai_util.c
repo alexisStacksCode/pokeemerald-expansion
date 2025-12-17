@@ -515,12 +515,12 @@ bool32 IsBattlerTrapped(u32 battlerAtk, u32 battlerDef)
 
 u32 GetTotalBaseStat(u32 species)
 {
-    return GetSpeciesBaseHP(species)
-         + GetSpeciesBaseAttack(species)
-         + GetSpeciesBaseDefense(species)
-         + GetSpeciesBaseSpeed(species)
-         + GetSpeciesBaseSpAttack(species)
-         + GetSpeciesBaseSpDefense(species);
+    u32 sum = 0;
+    for (u32 i = 0; i < NUM_STATS; i++)
+    {
+        sum += GetSpeciesBaseStat(species, i);
+    }
+    return sum;
 }
 
 bool32 IsTruantMonVulnerable(u32 battlerAI, u32 opposingBattler)
@@ -4992,7 +4992,7 @@ void IncreaseBurnScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
     {
         if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL)
             || (!(gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_OMNISCIENT) // Not Omniscient but expects physical attacker
-                && GetSpeciesBaseAttack(gBattleMons[battlerDef].species) >= GetSpeciesBaseSpAttack(gBattleMons[battlerDef].species) + 10))
+                && GetSpeciesBaseStat(gBattleMons[battlerDef].species, STAT_ATK) >= GetSpeciesBaseStat(gBattleMons[battlerDef].species, STAT_SPATK) + 10))
         {
             if (GetMoveCategory(GetBestDmgMoveFromBattler(battlerDef, battlerAtk, AI_DEFENDING)) == DAMAGE_CATEGORY_PHYSICAL)
                 ADJUST_SCORE_PTR(DECENT_EFFECT);
@@ -5076,7 +5076,7 @@ void IncreaseFrostbiteScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score
     {
         if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL)
             || (!(gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_OMNISCIENT) // Not Omniscient but expects special attacker
-                && GetSpeciesBaseSpAttack(gBattleMons[battlerDef].species) >= GetSpeciesBaseAttack(gBattleMons[battlerDef].species) + 10))
+                && GetSpeciesBaseStat(gBattleMons[battlerDef].species, STAT_SPATK) >= GetSpeciesBaseStat(gBattleMons[battlerDef].species, STAT_ATK) + 10))
         {
             if (GetMoveCategory(GetBestDmgMoveFromBattler(battlerDef, battlerAtk, AI_DEFENDING)) == DAMAGE_CATEGORY_SPECIAL)
                 ADJUST_SCORE_PTR(DECENT_EFFECT);

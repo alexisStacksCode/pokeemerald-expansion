@@ -6159,11 +6159,11 @@ static s32 AI_Risky(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     switch (GetMoveEffect(move))
     {
     case EFFECT_COUNTER:
-        if (GetSpeciesBaseAttack(gBattleMons[battlerDef].species) >= GetSpeciesBaseSpAttack(gBattleMons[battlerDef].species) + 10)
+        if (GetSpeciesBaseStat(gBattleMons[battlerDef].species, STAT_ATK) >= GetSpeciesBaseStat(gBattleMons[battlerDef].species, STAT_SPATK) + 10)
             ADJUST_SCORE(STRONG_RISKY_EFFECT);
         break;
     case EFFECT_MIRROR_COAT:
-        if (GetSpeciesBaseSpAttack(gBattleMons[battlerDef].species) >= GetSpeciesBaseAttack(gBattleMons[battlerDef].species) + 10)
+        if (GetSpeciesBaseStat(gBattleMons[battlerDef].species, STAT_SPATK) >= GetSpeciesBaseStat(gBattleMons[battlerDef].species, STAT_ATK) + 10)
             ADJUST_SCORE(STRONG_RISKY_EFFECT);
         break;
     case EFFECT_EXPLOSION:
@@ -6177,7 +6177,7 @@ static s32 AI_Risky(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             ADJUST_SCORE(AVERAGE_RISKY_EFFECT);
         break;
     case EFFECT_REVENGE:
-        if (GetSpeciesBaseSpeed(gBattleMons[battlerDef].species) >= GetSpeciesBaseSpeed(gBattleMons[battlerAtk].species) + 10)
+        if (GetSpeciesBaseStat(gBattleMons[battlerDef].species, STAT_SPEED) >= GetSpeciesBaseStat(gBattleMons[battlerAtk].species, STAT_SPEED) + 10)
             ADJUST_SCORE(AVERAGE_RISKY_EFFECT);
         break;
     case EFFECT_BELLY_DRUM:

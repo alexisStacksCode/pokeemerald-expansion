@@ -535,7 +535,7 @@ SINGLE_BATTLE_TEST("(Z-MOVE) 10,000,000 Volt Thunderbolt has an increased critic
     GIVEN {
         WITH_CONFIG(CONFIG_CRIT_CHANCE, genConfig);
         ASSUME(GetMoveCriticalHitStage(MOVE_10_000_000_VOLT_THUNDERBOLT) == 2);
-        ASSUME(GetSpeciesBaseSpeed(SPECIES_PIKACHU_PARTNER) == 90);
+        ASSUME(GetSpeciesBaseStat(SPECIES_PIKACHU_PARTNER, STAT_SPEED) == 90);
         PLAYER(SPECIES_PIKACHU_PARTNER) { Item(ITEM_PIKASHUNIUM_Z); }
         OPPONENT(SPECIES_WOBBUFFET);
     } WHEN {
