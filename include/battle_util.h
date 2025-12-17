@@ -330,8 +330,6 @@ void ClearIllusionMon(u32 battler);
 u32 GetIllusionMonPartyId(struct Pokemon *party, struct Pokemon *mon, struct Pokemon *partnerMon, u32 battler);
 bool32 SetIllusionMon(struct Pokemon *mon, u32 battler);
 u32 TryImmunityAbilityHealStatus(u32 battler, enum AbilityEffect caseID);
-bool32 ShouldGetStatBadgeBoost(u16 flagId, u32 battler);
-uq4_12_t GetBadgeBoostModifier(void);
 enum DamageCategory GetBattleMoveCategory(u32 move);
 void SetDynamicMoveCategory(u32 battlerAtk, u32 battlerDef, u32 move);
 bool32 CanFling(u32 battler);
