@@ -5239,8 +5239,8 @@ u8 GetTrainerEncounterMusicId(u16 trainerOpponentId)
 
 u16 ModifyStatByNature(u8 nature, u16 stat, enum Stat statIndex)
 {
-    // Don't modify HP, Accuracy, or Evasion by nature
-    if (statIndex <= STAT_HP || statIndex > NUM_NATURE_STATS || gNaturesInfo[nature].statUp == gNaturesInfo[nature].statDown)
+    // Don't modify Accuracy or Evasion by nature
+    if (statIndex > NUM_NATURE_STATS || gNaturesInfo[nature].statUp == gNaturesInfo[nature].statDown)
         return stat;
     else if (statIndex == gNaturesInfo[nature].statUp)
         return stat * 110 / 100;
