@@ -409,25 +409,25 @@ struct Evolution
     const struct EvolutionParam *params;
 };
 
-struct SpeciesInfo /*0xC4*/
+struct SpeciesInfo
 {
     u16 baseHP;
     u16 baseAttack;
     u16 baseDefense;
-    u16 baseSpeed;
     u16 baseSpAttack;
     u16 baseSpDefense;
+    u16 baseSpeed;
     enum Type types[2];
     u8 catchRate;
     u8 forceTeraType;
     u16 expYield; // expYield was changed from u8 to u16 for the new Exp System.
-    u16 evYield_HP:2;
-    u16 evYield_Attack:2;
-    u16 evYield_Defense:2;
-    u16 evYield_Speed:2;
-    u16 evYield_SpAttack:2;
-    u16 evYield_SpDefense:2;
-    u16 padding2:4;
+    u8 evYield_HP:2;
+    u8 evYield_Attack:2;
+    u8 evYield_Defense:2;
+    u8 evYield_SpAttack:2;
+    u8 evYield_SpDefense:2;
+    u8 evYield_Speed:2;
+    u8 padding2:4;
     u16 itemCommon;
     u16 itemRare;
     u8 genderRatio;
@@ -453,7 +453,7 @@ struct SpeciesInfo /*0xC4*/
     const u8 *description;
     enum BodyColor bodyColor:7;
     // Graphical Data
-    u8 noFlip:1;
+    bool8 noFlip:1;
     const u32 *frontPic;
     const u32 *backPic;
     const u16 *palette;
@@ -487,32 +487,32 @@ struct SpeciesInfo /*0xC4*/
     u8 pokemonJumpType:2; // According to the clerk, the Pokémon allowed in Pokémon Jump are all <= 28 inches/71 cm, and do not only swim, burrow, or fly.
     u8 enemyMonElevation; // This determines how much higher above the usual position the enemy Pokémon is during battle. Species that float or fly have nonzero values.
     // Flags
-    u32 hasTwoPreEvolutions:1;
-    u32 isLegendary:1;
-    u32 isMythical:1;
-    u32 isUltraBeast:1;
-    u32 isParadox:1;
-    u32 isTotem:1;
-    u32 isMegaEvolution:1;
-    u32 isPrimalReversion:1;
-    u32 isUltraBurst:1;
-    u32 isGigantamax:1;
-    u32 isTeraForm:1;
-    u32 isAlolanForm:1;
-    u32 isGalarianForm:1;
-    u32 isHisuianForm:1;
-    u32 isPaldeanForm:1;
-    u32 cannotBeTraded:1;
-    u32 perfectIVCount:3;   // This species will always generate with the specified amount of perfect IVs.
-    u32 dexForceRequired:1; // This species will be taken into account for Pokédex ratings even if they have the "isMythical" flag set.
-    u32 tmIlliterate:1;     // This species will be unable to learn the universal moves.
-    u32 isFrontierBanned:1; // This species is not allowed to participate in Battle Frontier facilities.
-    u32 padding4:11;
+    bool8 hasTwoPreEvolutions:1;
+    bool8 isLegendary:1;
+    bool8 isMythical:1;
+    bool8 isUltraBeast:1;
+    bool8 isParadox:1;
+    bool8 isTotem:1;
+    bool8 isMegaEvolution:1;
+    bool8 isPrimalReversion:1;
+    bool8 isUltraBurst:1;
+    bool8 isGigantamax:1;
+    bool8 isTeraForm:1;
+    bool8 isAlolanForm:1;
+    bool8 isGalarianForm:1;
+    bool8 isHisuianForm:1;
+    bool8 isPaldeanForm:1;
+    bool8 cannotBeTraded:1;
+    u16 perfectIVCount:3; // This species will always generate with the specified amount of perfect IVs.
+    bool8 dexForceRequired:1; // This species will be taken into account for Pokédex ratings even if they have the "isMythical" flag set.
+    bool8 tmIlliterate:1; // This species will be unable to learn the universal moves.
+    bool8 isFrontierBanned:1; // This species is not allowed to participate in Battle Frontier facilities.
+    u16 padding4:11;
     // Shadow settings
     s8 enemyShadowXOffset; // This determines the X-offset for an enemy Pokémon's shadow during battle; negative values point left, positive values point right.
     s8 enemyShadowYOffset; // This determines the Y-offset for an enemy Pokémon's shadow during battle; negative values point up, positive values point down.
-    u16 enemyShadowSize:3; // This determines the size of the shadow sprite used for an enemy Pokémon's front sprite during battle.
-    u16 suppressEnemyShadow:1; // If set to true, then a shadow will not be drawn beneath an enemy Pokémon's front sprite during battle.
+    u8 enemyShadowSize:3; // This determines the size of the shadow sprite used for an enemy Pokémon's front sprite during battle.
+    bool8 suppressEnemyShadow:1; // If set to true, then a shadow will not be drawn beneath an enemy Pokémon's front sprite during battle.
     u16 padding5:12;
     // Move Data
     const struct LevelUpMove *levelUpLearnset;
