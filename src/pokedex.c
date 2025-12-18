@@ -171,7 +171,7 @@ struct PokedexListItem
 
 struct PokedexView
 {
-    struct PokedexListItem pokedexList[NATIONAL_DEX_COUNT + 1];
+    struct PokedexListItem pokedexList[POKEMON_SLOTS_NUMBER];
     u16 pokemonListCount;
     u16 selectedPokemon;
     u16 selectedPokemonBackup;
@@ -4619,7 +4619,7 @@ bool16 HasAllMons(void)
 {
     u32 i, j;
 
-    for (i = 1; i < NATIONAL_DEX_COUNT + 1; i++)
+    for (i = 1; i < POKEMON_SLOTS_NUMBER; i++)
     {
         j = NationalPokedexNumToSpecies(i);
         if (!(gSpeciesInfo[j].isMythical && !gSpeciesInfo[j].dexForceRequired) && !GetSetPokedexFlag(j, FLAG_GET_CAUGHT))
