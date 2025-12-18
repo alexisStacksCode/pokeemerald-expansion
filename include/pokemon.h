@@ -418,6 +418,7 @@ struct SpeciesInfo
     u16 baseSpDefense;
     u16 baseSpeed;
     enum Type types[2];
+    bool8 statLocks[NUM_STATS];
     u8 catchRate;
     u8 forceTeraType;
     u16 expYield; // expYield was changed from u8 to u16 for the new Exp System.

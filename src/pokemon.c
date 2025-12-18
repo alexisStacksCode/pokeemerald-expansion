@@ -1668,64 +1668,99 @@ static u16 CalculateBoxMonChecksumReencrypt(struct BoxPokemon *boxMon)
     return checksum;
 }
 
+u32 GetMonFinalStat(struct Pokemon *mon, u32 species, u32 level, u32 nature, enum Stat statIndex)
+{
+    // To reduce the amount of function calls, species, level, and nature are args.
+    u32 baseStat = GetSpeciesBaseStat(species, statIndex);
+
+    if (gSpeciesInfo[species].statLocks[statIndex])
+    {
+        return baseStat;
+    }
+
+    u32 iv = 0;
+    u32 ev = 0;
+    switch (statIndex)
+    {
+        default:
+            break;
+        case STAT_HP:
+            iv = !GetMonData(mon, MON_DATA_HYPER_TRAINED_HP) ? GetMonData(mon, MON_DATA_HP_IV) : MAX_PER_STAT_IVS;
+            ev = GetMonData(mon, MON_DATA_HP_EV);
+            break;
+        case STAT_ATK:
+            iv = !GetMonData(mon, MON_DATA_HYPER_TRAINED_ATK) ? GetMonData(mon, MON_DATA_ATK_IV) : MAX_PER_STAT_IVS;
+            ev = GetMonData(mon, MON_DATA_ATK_EV);
+            break;
+        case STAT_DEF:
+            iv = !GetMonData(mon, MON_DATA_HYPER_TRAINED_DEF) ? GetMonData(mon, MON_DATA_DEF_IV) : MAX_PER_STAT_IVS;
+            ev = GetMonData(mon, MON_DATA_DEF_EV);
+            break;
+        case STAT_SPATK:
+            iv = !GetMonData(mon, MON_DATA_HYPER_TRAINED_SPATK) ? GetMonData(mon, MON_DATA_SPATK_IV) : MAX_PER_STAT_IVS;
+            ev = GetMonData(mon, MON_DATA_SPATK_EV);
+            break;
+        case STAT_SPDEF:
+            iv = !GetMonData(mon, MON_DATA_HYPER_TRAINED_SPDEF) ? GetMonData(mon, MON_DATA_SPDEF_IV) : MAX_PER_STAT_IVS;
+            ev = GetMonData(mon, MON_DATA_SPDEF_EV);
+            break;
+        case STAT_SPEED:
+            iv = !GetMonData(mon, MON_DATA_HYPER_TRAINED_SPEED) ? GetMonData(mon, MON_DATA_SPEED_IV) : MAX_PER_STAT_IVS;
+            ev = GetMonData(mon, MON_DATA_SPEED_EV);
+            break;
+    }
+
+    u32 finalStat = 1;
+    bool32 isValidStat = TRUE;
+    switch (statIndex)
+    {
+        default:
+            isValidStat = FALSE;
+            break;
+        case STAT_HP:
+            finalStat = ((2 * baseStat + iv + (ev / 4)) * level / 100) + level + 10;
+            break;
+        case STAT_ATK:
+        case STAT_DEF:
+        case STAT_SPATK:
+        case STAT_SPDEF:
+        case STAT_SPEED:
+            finalStat = ((2 * baseStat + iv + (ev / 4)) * level / 100) + 5;
+            break;
+    }
+    if (isValidStat)
+    {
+        finalStat = ModifyStatByNature(nature, finalStat, statIndex);
+    }
+    return finalStat;
+}
+
 void CalculateMonStats(struct Pokemon *mon)
 {
-    s32 oldMaxHP = GetMonData(mon, MON_DATA_MAX_HP, NULL);
-    s32 currentHP = GetMonData(mon, MON_DATA_HP, NULL);
-    u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
-    s32 level = GetLevelFromMonExp(mon);
-    s32 newMaxHP;
+    u32 species = GetMonData(mon, MON_DATA_SPECIES);
+    u32 nature = GetMonData(mon, MON_DATA_HIDDEN_NATURE);
+    u32 oldMaxHP = GetMonData(mon, MON_DATA_MAX_HP);
+    u32 currentHP = GetMonData(mon, MON_DATA_HP);
 
-    u8 nature = GetMonData(mon, MON_DATA_HIDDEN_NATURE, NULL);
-
+    u32 level = GetLevelFromMonExp(mon);
     SetMonData(mon, MON_DATA_LEVEL, &level);
 
-    bool32 hyperTrained[NUM_STATS]; // In a battle test, hyper training flag indicates a fixed stat
-    s32 iv[NUM_STATS];
-    s32 ev[NUM_STATS];
-    for (u32 i = 0; i < NUM_STATS; i++)
-    {
-        hyperTrained[i] = GetMonData(mon, MON_DATA_HYPER_TRAINED_HP + i);
-        iv[i] = GetMonData(mon, MON_DATA_HP_IV + i);
-        ev[i] = GetMonData(mon, MON_DATA_HP_EV + i);
-
-        if (hyperTrained[i])
-        {
-        #if TESTING
-            if (gMain.inBattle)
-                continue;
-        #endif
-            iv[i] = MAX_PER_STAT_IVS;
-        }
-
-        if (i == STAT_HP)
-            continue;
-
-        u8 baseStat = GetSpeciesBaseStat(species, i);
-        s32 n = (((2 * baseStat + iv[i] + ev[i] / 4) * level) / 100) + 5;
-        n = ModifyStatByNature(nature, n, i);
-        SetMonData(mon, MON_DATA_MAX_HP + i, &n);
-    }
-
-#if TESTING
-    if (hyperTrained[STAT_HP] && gMain.inBattle)
-        return;
-#endif
-
-    if (species == SPECIES_SHEDINJA)
-    {
-        newMaxHP = 1;
-    }
-    else
-    {
-        s32 n = 2 * GetSpeciesBaseHP(species) + iv[STAT_HP];
-        newMaxHP = (((n + ev[STAT_HP] / 4) * level) / 100) + level + 10;
-    }
+    u32 newMaxHP = GetMonFinalStat(mon, species, level, nature, STAT_HP);
+    u32 newAttack = GetMonFinalStat(mon, species, level, nature, STAT_ATK);
+    u32 newDefense = GetMonFinalStat(mon, species, level, nature, STAT_DEF);
+    u32 newSpAttack = GetMonFinalStat(mon, species, level, nature, STAT_SPATK);
+    u32 newSpDefense = GetMonFinalStat(mon, species, level, nature, STAT_SPDEF);
+    u32 newSpeed = GetMonFinalStat(mon, species, level, nature, STAT_SPEED);
+    SetMonData(mon, MON_DATA_MAX_HP, &newMaxHP);
+    SetMonData(mon, MON_DATA_ATK, &newAttack);
+    SetMonData(mon, MON_DATA_DEF, &newDefense);
+    SetMonData(mon, MON_DATA_SPATK, &newSpAttack);
+    SetMonData(mon, MON_DATA_SPDEF, &newSpDefense);
+    SetMonData(mon, MON_DATA_SPEED, &newSpeed);
 
     gBattleScripting.levelUpHP = newMaxHP - oldMaxHP;
     if (gBattleScripting.levelUpHP == 0)
         gBattleScripting.levelUpHP = 1;
-    SetMonData(mon, MON_DATA_MAX_HP, &newMaxHP);
 
     // Since a pokemon's maxHP data could either not have
     // been initialized at this point or this pokemon is

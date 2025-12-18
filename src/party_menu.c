@@ -5260,22 +5260,34 @@ void ItemUseCB_ReduceEV(u8 taskId, TaskFunc task)
 
 static u16 ItemEffectToMonEv(struct Pokemon *mon, u8 effectType)
 {
+    u32 species = GetMonData(mon, MON_DATA_SPECIES);
+
     switch (effectType)
     {
-    case ITEM_EFFECT_HP_EV:
-        if (GetMonData(mon, MON_DATA_SPECIES) != SPECIES_SHEDINJA)
-            return GetMonData(mon, MON_DATA_HP_EV);
-        break;
-    case ITEM_EFFECT_ATK_EV:
-        return GetMonData(mon, MON_DATA_ATK_EV);
-    case ITEM_EFFECT_DEF_EV:
-        return GetMonData(mon, MON_DATA_DEF_EV);
-    case ITEM_EFFECT_SPEED_EV:
-        return GetMonData(mon, MON_DATA_SPEED_EV);
-    case ITEM_EFFECT_SPATK_EV:
-        return GetMonData(mon, MON_DATA_SPATK_EV);
-    case ITEM_EFFECT_SPDEF_EV:
-        return GetMonData(mon, MON_DATA_SPDEF_EV);
+        case ITEM_EFFECT_HP_EV:
+            if (!gSpeciesInfo[species].statLocks[STAT_HP])
+                return GetMonData(mon, MON_DATA_HP_EV);
+            break;
+        case ITEM_EFFECT_ATK_EV:
+            if (!gSpeciesInfo[species].statLocks[STAT_ATK])
+                return GetMonData(mon, MON_DATA_ATK_EV);
+            break;
+        case ITEM_EFFECT_DEF_EV:
+            if (!gSpeciesInfo[species].statLocks[STAT_DEF])
+                return GetMonData(mon, MON_DATA_DEF_EV);
+            break;
+        case ITEM_EFFECT_SPATK_EV:
+            if (!gSpeciesInfo[species].statLocks[STAT_SPATK])
+                return GetMonData(mon, MON_DATA_SPATK_EV);
+            break;
+        case ITEM_EFFECT_SPDEF_EV:
+            if (!gSpeciesInfo[species].statLocks[STAT_SPDEF])
+                return GetMonData(mon, MON_DATA_SPDEF_EV);
+            break;
+        case ITEM_EFFECT_SPEED_EV:
+            if (!gSpeciesInfo[species].statLocks[STAT_SPEED])
+                return GetMonData(mon, MON_DATA_SPEED_EV);
+            break;
     }
     return 0;
 }
