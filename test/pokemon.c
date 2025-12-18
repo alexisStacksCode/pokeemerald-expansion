@@ -87,7 +87,7 @@ TEST("Shininess independent from PID and OTID")
 
 TEST("Hyper Training increases stats without affecting IVs")
 {
-    u32 data, hp, atk, def, speed, spatk, spdef, friendship = 0;
+    u32 data, hp, atk, def, speed, spatk, spdef = 0;
     struct Pokemon mon;
     CreateMon(&mon, SPECIES_WOBBUFFET, 100, 3, TRUE, 0, OT_ID_PRESET, 0);
 
@@ -147,7 +147,7 @@ TEST("Status1 round-trips through BoxPokemon")
 
 TEST("canhypertrain/hypertrain affect MON_DATA_HYPER_TRAINED_* and recalculate stats")
 {
-    u32 atk, friendship = 0;
+    u32 atk = 0;
     CreateMon(&gPlayerParty[0], SPECIES_WOBBUFFET, 100, 0, FALSE, 0, OT_ID_PRESET, 0);
 
     atk = GetMonData(&gPlayerParty[0], MON_DATA_ATK);
