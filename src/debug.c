@@ -1849,11 +1849,10 @@ static void DebugAction_FlagsVars_SetValue(u8 taskId)
 
 static void DebugAction_FlagsVars_PokedexFlags_All(u8 taskId)
 {
-    u16 i;
-    for (i = 0; i < NATIONAL_DEX_COUNT; i++)
+    for (u32 i = 1; i < NATIONAL_DEX_COUNT; i++)
     {
-        GetSetPokedexFlag(i + 1, FLAG_SET_CAUGHT);
-        GetSetPokedexFlag(i + 1, FLAG_SET_SEEN);
+        GetSetPokedexFlag(i, FLAG_SET_CAUGHT);
+        GetSetPokedexFlag(i, FLAG_SET_SEEN);
     }
     Debug_DestroyMenu_Full(taskId);
     ScriptContext_Enable();
@@ -1861,15 +1860,14 @@ static void DebugAction_FlagsVars_PokedexFlags_All(u8 taskId)
 
 static void DebugAction_FlagsVars_PokedexFlags_Reset(u8 taskId)
 {
-    int boxId, boxPosition, partyId;
-    u16 species;
+    u32 species;
 
-    // Reset Pokedex to emtpy
+    // Reset Pokedex to empty
     memset(&gSaveBlock1Ptr->dexCaught, 0, sizeof(gSaveBlock1Ptr->dexCaught));
     memset(&gSaveBlock1Ptr->dexSeen, 0, sizeof(gSaveBlock1Ptr->dexSeen));
 
     // Add party Pokemon to Pokedex
-    for (partyId = 0; partyId < PARTY_SIZE; partyId++)
+    for (u32 partyId = 0; partyId < PARTY_SIZE; partyId++)
     {
         if (GetMonData(&gPlayerParty[partyId], MON_DATA_SANITY_HAS_SPECIES))
         {
@@ -1880,9 +1878,9 @@ static void DebugAction_FlagsVars_PokedexFlags_Reset(u8 taskId)
     }
 
     // Add box Pokemon to Pokedex
-    for (boxId = 0; boxId < TOTAL_BOXES_COUNT; boxId++)
+    for (u32 boxId = 0; boxId < TOTAL_BOXES_COUNT; boxId++)
     {
-        for (boxPosition = 0; boxPosition < IN_BOX_COUNT; boxPosition++)
+        for (u32 boxPosition = 0; boxPosition < IN_BOX_COUNT; boxPosition++)
         {
             if (GetBoxMonData(&gPokemonStoragePtr->boxes[boxId][boxPosition], MON_DATA_SANITY_HAS_SPECIES))
             {
