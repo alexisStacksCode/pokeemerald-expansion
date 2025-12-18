@@ -6165,6 +6165,7 @@ const struct SpeciesInfo gSpeciesInfoGen9[] =
         )
         .levelUpLearnset = sGholdengoLevelUpLearnset,
         .teachableLearnset = sGholdengoTeachableLearnset,
+        .hasTwoPreEvolutions = TRUE,
     },
 #endif //P_FAMILY_GIMMIGHOUL
 

@@ -6315,17 +6315,6 @@ static void HandlePreEvolutionSpeciesPrint(u8 taskId, u16 preSpecies, u16 specie
     }
 }
 
-static bool32 HasTwoPreEvolutions(u32 species)
-{
-    switch (species)
-    {
-        case SPECIES_GHOLDENGO:
-            return TRUE;
-        default:
-            return FALSE;
-    }
-}
-
 static u8 PrintPreEvolutions(u8 taskId, u16 species)
 {
     u16 i;
@@ -6381,7 +6370,7 @@ static u8 PrintPreEvolutions(u8 taskId, u16 species)
                 {
                     preEvolutionOne = i;
                     numPreEvolutions += 1;
-                    if (!HasTwoPreEvolutions(species))
+                    if (!gSpeciesInfo[species].hasTwoPreEvolutions)
                         break;
                 }
                 else
@@ -6394,7 +6383,7 @@ static u8 PrintPreEvolutions(u8 taskId, u16 species)
         }
     }
 
-    if (HasTwoPreEvolutions(species))
+    if (gSpeciesInfo[species].hasTwoPreEvolutions)
     {
         CreateCaughtBallEvolutionScreen(preEvolutionOne, base_x - 9, base_y + base_y_offset*0, 0);
         HandlePreEvolutionSpeciesPrint(taskId, preEvolutionOne, species, base_x, base_y, base_y_offset, 0);
