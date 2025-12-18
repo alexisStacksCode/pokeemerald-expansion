@@ -319,8 +319,7 @@ enum {
 
 enum {
     MON_SPR_GFX_MANAGER_A,
-    MON_SPR_GFX_MANAGER_B, // Nothing ever sets up this manager.
-    MON_SPR_GFX_MANAGERS_COUNT
+    MON_SPR_GFX_MANAGERS_COUNT,
 };
 
 #define UNPACK_VOLATILE_STRUCT(_enum, _fieldName, _typeMaxValue, ...) INVOKE_WITH_(UNPACK_VOLATILE_STRUCT_, _fieldName, UNPACK_B(_typeMaxValue));
