@@ -8,7 +8,7 @@ SINGLE_BATTLE_TEST("Schooling switches Level 20+ Wishiwashi's form when HP is 25
     PARAMETRIZE { level = 20; }
 
     GIVEN {
-        ASSUME(GetSpeciesBaseStat(SPECIES_WISHIWASHI_SOLO, STAT_HP) == GetSpeciesBaseStat(SPECIES_WISHIWASHI_SCHOOL, STAT_HP));
+        ASSUME(GetSpeciesBaseHP(SPECIES_WISHIWASHI_SOLO) == GetSpeciesBaseHP(SPECIES_WISHIWASHI_SCHOOL));
         PLAYER(SPECIES_WISHIWASHI_SOLO)
         {
             Level(level);
@@ -47,7 +47,7 @@ SINGLE_BATTLE_TEST("Schooling switches Level 20+ Wishiwashi's form when HP is ov
     PARAMETRIZE { level = 20; overQuarterHP = TRUE; }
 
     GIVEN {
-        ASSUME(GetSpeciesBaseStat(SPECIES_WISHIWASHI_SOLO, STAT_HP) == GetSpeciesBaseStat(SPECIES_WISHIWASHI_SCHOOL, STAT_HP));
+        ASSUME(GetSpeciesBaseHP(SPECIES_WISHIWASHI_SOLO) == GetSpeciesBaseHP(SPECIES_WISHIWASHI_SCHOOL));
         PLAYER(SPECIES_WISHIWASHI_SOLO)
         {
             Level(level);
@@ -80,7 +80,7 @@ SINGLE_BATTLE_TEST("Schooling switches Level 20+ Wishiwashi's form when HP is he
     PARAMETRIZE { level = 20; }
 
     GIVEN {
-        ASSUME(GetSpeciesBaseStat(SPECIES_WISHIWASHI_SOLO, STAT_HP) == GetSpeciesBaseStat(SPECIES_WISHIWASHI_SCHOOL, STAT_HP));
+        ASSUME(GetSpeciesBaseHP(SPECIES_WISHIWASHI_SOLO) == GetSpeciesBaseHP(SPECIES_WISHIWASHI_SCHOOL));
         PLAYER(SPECIES_WISHIWASHI_SOLO)
         {
             Level(level);

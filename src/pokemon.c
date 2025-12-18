@@ -1718,7 +1718,7 @@ void CalculateMonStats(struct Pokemon *mon)
     }
     else
     {
-        s32 n = 2 * GetSpeciesBaseStat(species, STAT_HP) + iv[STAT_HP];
+        s32 n = 2 * GetSpeciesBaseHP(species) + iv[STAT_HP];
         newMaxHP = (((n + ev[STAT_HP] / 4) * level) / 100) + level + 10;
     }
 
@@ -3524,26 +3524,54 @@ enum Ability GetSpeciesAbility(u16 species, u8 slot)
     return gSpeciesInfo[SanitizeSpeciesId(species)].abilities[slot];
 }
 
-u16 GetSpeciesBaseStat(u16 species, enum Stat statIndex)
+u32 GetSpeciesBaseHP(u16 species)
 {
-    species = SanitizeSpeciesId(species);
+    return gSpeciesInfo[SanitizeSpeciesId(species)].baseHP;
+}
+
+u32 GetSpeciesBaseAttack(u16 species)
+{
+    return gSpeciesInfo[SanitizeSpeciesId(species)].baseAttack;
+}
+
+u32 GetSpeciesBaseDefense(u16 species)
+{
+    return gSpeciesInfo[SanitizeSpeciesId(species)].baseDefense;
+}
+
+u32 GetSpeciesBaseSpAttack(u16 species)
+{
+    return gSpeciesInfo[SanitizeSpeciesId(species)].baseSpAttack;
+}
+
+u32 GetSpeciesBaseSpDefense(u16 species)
+{
+    return gSpeciesInfo[SanitizeSpeciesId(species)].baseSpDefense;
+}
+
+u32 GetSpeciesBaseSpeed(u16 species)
+{
+    return gSpeciesInfo[SanitizeSpeciesId(species)].baseSpeed;
+}
+
+u32 GetSpeciesBaseStat(u16 species, u32 statIndex)
+{
     switch (statIndex)
     {
-        default:
-            return 0;
-        case STAT_HP:
-            return gSpeciesInfo[species].baseHP;
-        case STAT_ATK:
-            return gSpeciesInfo[species].baseAttack;
-        case STAT_DEF:
-            return gSpeciesInfo[species].baseDefense;
-        case STAT_SPATK:
-            return gSpeciesInfo[species].baseSpAttack;
-        case STAT_SPDEF:
-            return gSpeciesInfo[species].baseSpDefense;
-        case STAT_SPEED:
-            return gSpeciesInfo[species].baseSpeed;
+    case STAT_HP:
+        return GetSpeciesBaseHP(species);
+    case STAT_ATK:
+        return GetSpeciesBaseAttack(species);
+    case STAT_DEF:
+        return GetSpeciesBaseDefense(species);
+    case STAT_SPEED:
+        return GetSpeciesBaseSpeed(species);
+    case STAT_SPATK:
+        return GetSpeciesBaseSpAttack(species);
+    case STAT_SPDEF:
+        return GetSpeciesBaseSpDefense(species);
     }
+    return 0;
 }
 
 const struct LevelUpMove *GetSpeciesLevelUpLearnset(u16 species)

@@ -1664,7 +1664,7 @@ s32 CalcCritChanceStageGen1(u32 battlerAtk, u32 battlerDef, u32 move, bool32 rec
     s32 moveCritStage = GetMoveCriticalHitStage(gCurrentMove);
     s32 bonusCritStage = gBattleMons[battlerAtk].volatiles.bonusCritStages; // G-Max Chi Strike
     u32 holdEffectCritStage = GetHoldEffectCritChanceIncrease(battlerAtk, holdEffectAtk);
-    u16 baseSpeed = GetSpeciesBaseStat(gBattleMons[battlerAtk].species, STAT_SPEED);
+    u16 baseSpeed = GetSpeciesBaseSpeed(gBattleMons[battlerAtk].species);
 
     critChance = baseSpeed / 2;
 
@@ -13710,7 +13710,7 @@ static void Cmd_handleballthrow(void)
                 }
                 break;
             case BALL_FAST:
-                if (GetSpeciesBaseStat(gBattleMons[gBattlerTarget].species, STAT_SPEED) >= 100)
+                if (GetSpeciesBaseSpeed(gBattleMons[gBattlerTarget].species) >= 100)
                     ballMultiplier = 400;
                 break;
             case BALL_HEAVY:

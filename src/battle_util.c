@@ -282,7 +282,7 @@ bool32 EndOrContinueWeather(void)
 static u32 CalcBeatUpPower(void)
 {
     u32 species = gBattleStruct->beatUpSpecies[gBattleStruct->beatUpSlot++];
-    return (GetSpeciesBaseStat(species, STAT_ATK) / 10) + 5;
+    return (GetSpeciesBaseAttack(species) / 10) + 5;
 }
 
 // Gen 3/4
@@ -292,11 +292,11 @@ static s32 CalcBeatUpDamage(struct DamageContext *ctx)
     struct Pokemon *party = GetBattlerParty(ctx->battlerAtk);
     u32 species = GetMonData(&party[partyIndex], MON_DATA_SPECIES);
     u32 levelFactor = GetMonData(&party[partyIndex], MON_DATA_LEVEL) * 2 / 5 + 2;
-    s32 dmg = GetSpeciesBaseStat(species, STAT_ATK);
+    s32 dmg = GetSpeciesBaseAttack(species);
 
     dmg *= GetMovePower(ctx->move);
     dmg *= levelFactor;
-    dmg /= GetSpeciesBaseStat(gBattleMons[ctx->battlerDef].species, STAT_DEF);
+    dmg /= GetSpeciesBaseDefense(gBattleMons[ctx->battlerDef].species);
     dmg = (dmg / 50) + 2;
 
     if (gProtectStructs[ctx->battlerAtk].helpingHand)
