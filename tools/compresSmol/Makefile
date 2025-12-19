@@ -1,19 +1,14 @@
 CXX ?= g++
-
 CXXFLAGS := -Werror -std=c++17 -O2
-
 INCLUDES := -I .
-
 SRCS := compresSmol.cpp compressAlgo.cpp tANS.cpp
 TILEMAP_SRCS := mainTiles.cpp compressSmolTiles.cpp tANS.cpp compressAlgo.cpp
-
 HEADERS := compressAlgo.h tANS.h
 TILEMAP_HEADERS := compressSmolTiles.h tANS.h compressAlgo.h
 
-ifeq ($(OS),Windows_NT)
-EXE := .exe
-else
 EXE :=
+ifeq ($(OS),Windows_NT)
+	EXE := .exe
 endif
 
 .PHONY: all clean

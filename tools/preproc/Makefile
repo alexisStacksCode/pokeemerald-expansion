@@ -1,17 +1,11 @@
 CXX ?= g++
-
 CXXFLAGS := -std=c++11 -O2 -Wall -Wno-switch -Werror
+SRCS := asm_file.cpp c_file.cpp charmap.cpp preproc.cpp string_parser.cpp utf8.cpp io.cpp
+HEADERS := asm_file.h c_file.h char_util.h charmap.h preproc.h string_parser.h utf8.h io.h
 
-SRCS := asm_file.cpp c_file.cpp charmap.cpp preproc.cpp string_parser.cpp \
-	utf8.cpp io.cpp
-
-HEADERS := asm_file.h c_file.h char_util.h charmap.h preproc.h string_parser.h \
-	utf8.h io.h
-
-ifeq ($(OS),Windows_NT)
-EXE := .exe
-else
 EXE :=
+ifeq ($(OS),Windows_NT)
+	EXE := .exe
 endif
 
 .PHONY: all clean

@@ -1,22 +1,21 @@
-GIT_VERSION := $(shell git describe --abbrev=7 --dirty --always --tags)
-
 CXX = g++
 STRIP = strip
-CXXFLAGS = -Wall -Wextra -Wconversion -std=c++17 -O2 -g -DGIT_VERSION=\"$(GIT_VERSION)\"
+LDFLAGS :=
+CXXFLAGS = -Wall -Wextra -Wconversion -std=c++17 -O2 -g
+
 EXE :=
 ifeq ($(OS),Windows_NT)
-  EXE := .exe
+	EXE := .exe
 endif
+
 BINARY = wav2agb$(EXE)
 
 SRC_FILES = $(wildcard *.cpp)
 OBJ_FILES = $(SRC_FILES:.cpp=.o)
 
-LDFLAGS :=
-
 ifneq (,$(RELEASE))
-  LDFLAGS += -static
-  CXXFLAGS += -flto
+	LDFLAGS += -static
+	CXXFLAGS += -flto
 endif
 
 .PHONY: clean clean

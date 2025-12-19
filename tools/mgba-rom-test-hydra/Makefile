@@ -2,10 +2,9 @@
 
 SRCS = main.c
 
-ifeq ($(OS),Windows_NT)
-EXE := .exe
-else
 EXE :=
+ifeq ($(OS),Windows_NT)
+	EXE := .exe
 endif
 
 all: mgba-rom-test-hydra$(EXE)

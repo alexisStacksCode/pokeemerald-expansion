@@ -3,10 +3,9 @@ CC ?= gcc
 
 SRCS = gbafix.c
 
-ifeq ($(OS),Windows_NT)
-EXE := .exe
-else
 EXE :=
+ifeq ($(OS),Windows_NT)
+	EXE := .exe
 endif
 
 all: gbafix$(EXE)

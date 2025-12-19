@@ -2,10 +2,9 @@
 
 SRCS = patchelf.c
 
-ifeq ($(OS),Windows_NT)
-EXE := .exe
-else
 EXE :=
+ifeq ($(OS),Windows_NT)
+	EXE := .exe
 endif
 
 all: patchelf$(EXE)

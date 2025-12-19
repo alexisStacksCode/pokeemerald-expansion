@@ -1,15 +1,13 @@
 CC ?= gcc
-
 CFLAGS = -Wall -Wextra -Werror -std=c11 -O2
 
 .PHONY: all clean
 
 SRCS = bin2c.c
 
-ifeq ($(OS),Windows_NT)
-EXE := .exe
-else
 EXE :=
+ifeq ($(OS),Windows_NT)
+	EXE := .exe
 endif
 
 all: bin2c$(EXE)
