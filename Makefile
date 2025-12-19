@@ -4,22 +4,6 @@ GAME_CODE    ?= BPEE
 BUILD_NAME   ?= emerald
 MAP_VERSION  ?= emerald
 
-ifeq (firered,$(MAKECMDGOALS))
-  	GAME_VERSION 	:= FIRERED
-	TITLE       	:= POKEMON FIRE
-	GAME_CODE   	:= BPRE
-	BUILD_NAME  	:= firered
-	MAP_VERSION 	:= firered
-else
-ifeq (leafgreen,$(MAKECMDGOALS))
-	GAME_VERSION 	:= LEAFGREEN
-	TITLE       	:= POKEMON LEAF
-	GAME_CODE   	:= BPGE
-	BUILD_NAME  	:= leafgreen
-	MAP_VERSION 	:= firered
-endif
-endif
-
 # GBA rom header
 MAKER_CODE  := 01
 REVISION    := 0
@@ -29,8 +13,6 @@ KEEP_TEMPS  ?= 0
 FILE_NAME := poke$(BUILD_NAME)
 BUILD_DIR := build
 
-# Compares the ROM to a checksum of the original - only makes sense using when non-modern
-COMPARE     ?= 0
 # Executes the Test Runner System that checks that all mechanics work as expected
 TEST         ?= 0
 # Enables -fanalyzer C flag to analyze in depth potential UBs
@@ -45,9 +27,6 @@ LTO          ?= 0
 # Enables LTO by default, but can be changed in the config.mk file
 RELEASE      ?= 0
 
-ifeq (compare,$(MAKECMDGOALS))
-  COMPARE := 1
-endif
 ifeq (check,$(MAKECMDGOALS))
   TEST := 1
 endif
@@ -264,7 +243,7 @@ MAKEFLAGS += --no-print-directory
 .DELETE_ON_ERROR:
 
 RULES_NO_SCAN += libagbsyscall clean clean-assets tidy tidymodern tidycheck tidyrelease generated clean-generated
-.PHONY: all rom agbcc modern compare check debug release
+.PHONY: all rom modern check debug release
 .PHONY: $(RULES_NO_SCAN)
 
 infoshell = $(foreach line, $(shell $1 | sed "s/ /__SPACE__/g"), $(info $(subst __SPACE__, ,$(line))))
@@ -333,15 +312,8 @@ $(shell mkdir -p $(SUBDIRS))
 
 # Pretend rules that are actually flags defer to `make all`
 modern: all
-compare: all
 debug: all
 release: all
-# Uncomment the next line, and then comment the 4 lines after it to reenable agbcc.
-#agbcc: all
-agbcc:
-	@echo "'make agbcc' is deprecated as of pokeemerald-expansion 1.9 and will be removed in 1.10."
-	@echo "Search for 'agbcc: all' in Makefile to reenable agbcc."
-	@exit 1
 
 LD_SCRIPT_TEST := ld_script_test.ld
 
@@ -367,10 +339,6 @@ check: $(TESTELF)
 
 # Other rules
 rom: $(ROM)
-ifeq ($(COMPARE),1)
-	@$(SHA1) rom.sha1
-endif
-
 syms: $(SYM)
 
 clean: tidy clean-tools clean-check-tools clean-generated clean-assets
@@ -573,9 +541,6 @@ $(ROM): $(ELF)
 	$(OBJCOPY) -O binary $< $@
 	$(FIX) $@ -p --silent
 
-emerald: all
-firered: all
-leafgreen: all
 # Symbol file (`make syms`)
 $(SYM): $(ELF)
 	$(OBJDUMP) -t $< | sort -u | grep -E "^0[2389]" | $(PERL) -p -e 's/^(\w{8}) (\w).{6} \S+\t(\w{8}) (\S+)$$/\1 \2 \3 \4/g' > $@
