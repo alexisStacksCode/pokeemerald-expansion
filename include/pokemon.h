@@ -421,13 +421,12 @@ struct SpeciesInfo
     u8 catchRate;
     u8 forceTeraType;
     u16 expYield; // expYield was changed from u8 to u16 for the new Exp System.
-    u8 evYield_HP:2;
-    u8 evYield_Attack:2;
-    u8 evYield_Defense:2;
-    u8 evYield_SpAttack:2;
-    u8 evYield_SpDefense:2;
-    u8 evYield_Speed:2;
-    u8 padding2:4;
+    u8 evYield_HP:4;
+    u8 evYield_Attack:4;
+    u8 evYield_Defense:4;
+    u8 evYield_SpAttack:4;
+    u8 evYield_SpDefense:4;
+    u8 evYield_Speed:4;
     u16 itemCommon;
     u16 itemRare;
     u8 genderRatio;

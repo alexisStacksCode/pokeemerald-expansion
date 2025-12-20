@@ -341,12 +341,12 @@ struct PokemonStats
     u16 baseDefense:12;
     u16 baseSpDefense:12;
     u8  differentEVs;
-    u8  evYield_HP;
-    u8  evYield_Speed;
-    u8  evYield_Attack;
-    u8  evYield_SpAttack;
-    u8  evYield_Defense;
-    u8  evYield_SpDefense;
+    u8  evYield_HP:4;
+    u8  evYield_Speed:4;
+    u8  evYield_Attack:4;
+    u8  evYield_SpAttack:4;
+    u8  evYield_Defense:4;
+    u8  evYield_SpDefense:4;
     u8  catchRate;
     enum GrowthRate growthRate:8;
     u8  eggGroup1;
