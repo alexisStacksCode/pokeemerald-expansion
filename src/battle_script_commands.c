@@ -326,7 +326,7 @@ static bool32 IsFinalStrikeEffect(enum MoveEffect moveEffect);
 static void TryUpdateRoundTurnOrder(void);
 static bool32 ChangeOrderTargetAfterAttacker(void);
 static bool32 SetTargetToNextPursuiter(u32 battlerDef);
-void ApplyExperienceMultipliers(s32 *expAmount, u8 expGetterMonId, u8 faintedBattler);
+void ApplyExperienceMultipliers(s32 *expAmount, u8 expGetterMonId, struct BattlePokemon *faintedBattler);
 static void RemoveAllWeather(void);
 static void RemoveAllTerrains(void);
 static bool32 CanAbilityPreventStatLoss(enum Ability abilityDef);
@@ -4578,8 +4578,9 @@ static void Cmd_getexp(void)
         break;
     case 1: // calculate experience points to redistribute
         {
+            struct SpeciesInfo battlerSpeciesInfo = gSpeciesInfo[gBattleMons[gBattlerFainted].species];
             u32 orderId = 0;
-            u32 calculatedExp = 0;
+            u32 calculatedExp = battlerSpeciesInfo.expYield;
             u32 *exp = &gBattleStruct->expValue;
             u32 sentInBits = gSentPokesToOpponent[(gBattlerFainted & 2) >> 1];
             u32 expShareBits = 0;
@@ -4614,14 +4615,17 @@ static void Cmd_getexp(void)
             if (orderId < PARTY_SIZE)
                 gBattleStruct->expGettersOrder[orderId] = PARTY_SIZE;
 
-            calculatedExp = gSpeciesInfo[gBattleMons[gBattlerFainted].species].expYield * gBattleMons[gBattlerFainted].level;
-            if (B_SCALED_EXP >= GEN_5 && B_SCALED_EXP != GEN_6)
-                calculatedExp /= 5;
-            else
-                calculatedExp /= 7;
+            if (!battlerSpeciesInfo.lockExpYield)
+            {
+                calculatedExp *= gBattleMons[gBattlerFainted].level;
+                if (B_SCALED_EXP >= GEN_5 && B_SCALED_EXP != GEN_6)
+                    calculatedExp /= 5;
+                else
+                    calculatedExp /= 7;
 
-            if (B_TRAINER_EXP_MULTIPLIER <= GEN_7 && gBattleTypeFlags & BATTLE_TYPE_TRAINER)
-                calculatedExp = (calculatedExp * 150) / 100;
+                if (B_TRAINER_EXP_MULTIPLIER <= GEN_7 && gBattleTypeFlags & BATTLE_TYPE_TRAINER)
+                    calculatedExp = (calculatedExp * 150) / 100;
+            }
 
             if (B_SPLIT_EXP < GEN_6)
             {
@@ -4704,7 +4708,7 @@ static void Cmd_getexp(void)
                         gBattleStruct->battlerExpReward += GetSoftLevelCapExpValue(gPlayerParty[*expMonId].level, gBattleStruct->expShareExpValue);;
                     }
 
-                    ApplyExperienceMultipliers(&gBattleStruct->battlerExpReward, *expMonId, gBattlerFainted);
+                    ApplyExperienceMultipliers(&gBattleStruct->battlerExpReward, *expMonId, &gBattleMons[gBattlerFainted]);
 
                     if (B_EXP_CAP_TYPE == EXP_CAP_HARD && gBattleStruct->battlerExpReward != 0)
                     {
@@ -14812,7 +14816,7 @@ u8 GetFirstFaintedPartyIndex(u8 battler)
     return PARTY_SIZE;
 }
 
-void ApplyExperienceMultipliers(s32 *expAmount, u8 expGetterMonId, u8 faintedBattler)
+void ApplyExperienceMultipliers(s32 *expAmount, u8 expGetterMonId, struct BattlePokemon *faintedBattler)
 {
     enum HoldEffect holdEffect = GetMonHoldEffect(&gPlayerParty[expGetterMonId]);
 
@@ -14827,12 +14831,12 @@ void ApplyExperienceMultipliers(s32 *expAmount, u8 expGetterMonId, u8 faintedBat
     if (CheckBagHasItem(ITEM_EXP_CHARM, 1)) //is also for other exp boosting Powers if/when implemented
         *expAmount = (*expAmount * 150) / 100;
 
-    if (B_SCALED_EXP >= GEN_5 && B_SCALED_EXP != GEN_6)
+    if (!gSpeciesInfo[faintedBattler->species].lockExpYield && B_SCALED_EXP >= GEN_5 && B_SCALED_EXP != GEN_6)
     {
         // Note: There is an edge case where if a pokemon receives a large amount of exp, it wouldn't be properly calculated
         //       because of multiplying by scaling factor(the value would simply be larger than an u32 can hold). Hence u64 is needed.
         u64 value = *expAmount;
-        u8 faintedLevel = gBattleMons[faintedBattler].level;
+        u8 faintedLevel = faintedBattler->level;
         u8 expGetterLevel = GetMonData(&gPlayerParty[expGetterMonId], MON_DATA_LEVEL);
 
         value *= sExperienceScalingFactors[(faintedLevel * 2) + 10];

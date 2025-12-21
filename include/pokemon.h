@@ -450,7 +450,8 @@ struct SpeciesInfo
     u16 trainerScale;
     u16 trainerOffset;
     const u8 *description;
-    enum BodyColor bodyColor:7;
+    enum BodyColor bodyColor:6;
+    bool8 lockExpYield:1;
     // Graphical Data
     bool8 noFlip:1;
     const u32 *frontPic;
