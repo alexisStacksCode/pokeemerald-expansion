@@ -29,6 +29,7 @@
 #include "rtc.h"
 #include "save.h"
 #include "scanline_effect.h"
+#include "m4a.h"
 #include "sound.h"
 #include "sprite.h"
 #include "strings.h"
@@ -550,6 +551,10 @@ enum
 #define MAIN_MENU_BORDER_TILE   0x1D5
 #define BIRCH_DLG_BASE_TILE_NUM 0xFC
 
+#if MAIN_MENU_MUSIC == TRUE
+bool8 gIsMainMenuBGMStopping;
+#endif
+
 static void CB2_MainMenu(void)
 {
     RunTasks();
@@ -602,9 +607,16 @@ static u32 InitMainMenu(bool8 returningFromOptionsMenu)
     ResetSpriteData();
     FreeAllSpritePalettes();
     if (returningFromOptionsMenu)
+    {
         BeginNormalPaletteFade(PALETTES_ALL, 0, 0x10, 0, RGB_BLACK); // fade to black
+    }
     else
+    {
+        #if MAIN_MENU_MUSIC == TRUE
+        gIsMainMenuBGMStopping = FALSE;
+        #endif
         BeginNormalPaletteFade(PALETTES_ALL, 0, 0x10, 0, RGB_WHITEALPHA); // fade to white
+    }
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sMainMenuBgTemplates, ARRAY_COUNT(sMainMenuBgTemplates));
     ChangeBgX(0, 0, BG_COORD_SET);
@@ -632,6 +644,16 @@ static u32 InitMainMenu(bool8 returningFromOptionsMenu)
     CreateTask(Task_MainMenuCheckSaveFile, 0);
 
     return 0;
+}
+
+static void PlayMainMenuBGM(void)
+{
+    #if MAIN_MENU_MUSIC == TRUE
+    if (IsBGMStopped())
+    {
+        PlayBGM(MUS_MAIN_MENU);
+    }
+    #endif
 }
 
 #define tMenuType data[0]
@@ -737,6 +759,7 @@ static void Task_MainMenuCheckBattery(u8 taskId)
 
         if (!(RtcGetErrorStatus() & RTC_ERR_FLAG_MASK))
         {
+            PlayMainMenuBGM();
             gTasks[taskId].func = Task_DisplayMainMenu;
         }
         else
@@ -754,6 +777,7 @@ static void Task_WaitForBatteryDryErrorWindow(u8 taskId)
     {
         ClearWindowTilemap(7);
         ClearMainMenuWindowTilemap(&sWindowTemplates_MainMenu[7]);
+        PlayMainMenuBGM();
         gTasks[taskId].func = Task_DisplayMainMenu;
     }
 }
@@ -909,7 +933,6 @@ static bool8 HandleMainMenuInput(u8 taskId)
     if (JOY_NEW(A_BUTTON))
     {
         PlaySE(SE_SELECT);
-        IsWirelessAdapterConnected();   // why bother calling this here? debug? Task_HandleMainMenuAPressed will check too
         BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 0x10, RGB_BLACK);
         gTasks[taskId].func = Task_HandleMainMenuAPressed;
     }
@@ -956,11 +979,131 @@ static void Task_HandleMainMenuInput(u8 taskId)
 
 static void Task_HandleMainMenuAPressed(u8 taskId)
 {
-    bool8 wirelessAdapterConnected;
-    u8 action;
+    u8 action = ACTION_INVALID;
+
+    switch (gTasks[taskId].tMenuType)
+    {
+        case HAS_NO_SAVED_GAME:
+        default:
+            switch (gTasks[taskId].tCurrItem)
+            {
+                case 0:
+                default:
+                    action = ACTION_NEW_GAME;
+                    break;
+                case 1:
+                    action = ACTION_OPTION;
+                    break;
+            }
+            break;
+        case HAS_SAVED_GAME:
+            switch (gTasks[taskId].tCurrItem)
+            {
+                case 0:
+                default:
+                    action = ACTION_CONTINUE;
+                    break;
+                case 1:
+                    action = ACTION_NEW_GAME;
+                    break;
+                case 2:
+                    action = ACTION_OPTION;
+                    break;
+            }
+            break;
+        case HAS_MYSTERY_GIFT:
+            switch (gTasks[taskId].tCurrItem)
+            {
+                case 0:
+                default:
+                    action = ACTION_CONTINUE;
+                    break;
+                case 1:
+                    action = ACTION_NEW_GAME;
+                    break;
+                case 2:
+                    action = ACTION_MYSTERY_GIFT;
+                    if (!IsWirelessAdapterConnected())
+                    {
+                        action = ACTION_INVALID;
+                        gTasks[taskId].tMenuType = HAS_NO_SAVED_GAME;
+                    }
+                    break;
+                case 3:
+                    action = ACTION_OPTION;
+                    break;
+            }
+            break;
+        case HAS_MYSTERY_EVENTS:
+            switch (gTasks[taskId].tCurrItem)
+            {
+                case 0:
+                default:
+                    action = ACTION_CONTINUE;
+                    break;
+                case 1:
+                    action = ACTION_NEW_GAME;
+                    break;
+                case 2:
+                    if (gTasks[taskId].tWirelessAdapterConnected)
+                    {
+                        action = ACTION_MYSTERY_GIFT;
+                        if (!IsWirelessAdapterConnected())
+                        {
+                            action = ACTION_INVALID;
+                            gTasks[taskId].tMenuType = HAS_NO_SAVED_GAME;
+                        }
+                    }
+                    else if (IsWirelessAdapterConnected())
+                    {
+                        action = ACTION_INVALID;
+                        gTasks[taskId].tMenuType = HAS_SAVED_GAME;
+                    }
+                    else
+                    {
+                        action = ACTION_EREADER;
+                    }
+                    break;
+                case 3:
+                    if (IsWirelessAdapterConnected())
+                    {
+                        action = ACTION_INVALID;
+                        gTasks[taskId].tMenuType = HAS_MYSTERY_GIFT;
+                    }
+                    else
+                    {
+                        action = ACTION_MYSTERY_EVENTS;
+                    }
+                    break;
+                case 4:
+                    action = ACTION_OPTION;
+                    break;
+            }
+            break;
+    }
+    switch (action)
+    {
+        default:
+            break;
+        case ACTION_CONTINUE:
+        case ACTION_NEW_GAME:
+        case ACTION_MYSTERY_GIFT:
+        case ACTION_MYSTERY_EVENTS:
+            #if MAIN_MENU_MUSIC == TRUE
+            if (!gIsMainMenuBGMStopping)
+            {
+                gIsMainMenuBGMStopping = TRUE;
+                FadeOutBGM(2);
+            }
+            #endif
+            break;
+    }
 
     if (!gPaletteFade.active)
     {
+        #if MAIN_MENU_MUSIC == TRUE
+        gIsMainMenuBGMStopping = FALSE;
+        #endif
         if (gTasks[taskId].tMenuType == HAS_MYSTERY_EVENTS)
             RemoveScrollIndicatorArrowPair(gTasks[taskId].tScrollArrowTaskId);
         ClearStdWindowAndFrame(0, TRUE);
@@ -971,107 +1114,6 @@ static void Task_HandleMainMenuAPressed(u8 taskId)
         ClearStdWindowAndFrame(5, TRUE);
         ClearStdWindowAndFrame(6, TRUE);
         ClearStdWindowAndFrame(7, TRUE);
-        wirelessAdapterConnected = IsWirelessAdapterConnected();
-        switch (gTasks[taskId].tMenuType)
-        {
-            case HAS_NO_SAVED_GAME:
-            default:
-                switch (gTasks[taskId].tCurrItem)
-                {
-                    case 0:
-                    default:
-                        action = ACTION_NEW_GAME;
-                        break;
-                    case 1:
-                        action = ACTION_OPTION;
-                        break;
-                }
-                break;
-            case HAS_SAVED_GAME:
-                switch (gTasks[taskId].tCurrItem)
-                {
-                    case 0:
-                    default:
-                        action = ACTION_CONTINUE;
-                        break;
-                    case 1:
-                        action = ACTION_NEW_GAME;
-                        break;
-                    case 2:
-                        action = ACTION_OPTION;
-                        break;
-                }
-                break;
-            case HAS_MYSTERY_GIFT:
-                switch (gTasks[taskId].tCurrItem)
-                {
-                    case 0:
-                    default:
-                        action = ACTION_CONTINUE;
-                        break;
-                    case 1:
-                        action = ACTION_NEW_GAME;
-                        break;
-                    case 2:
-                        action = ACTION_MYSTERY_GIFT;
-                        if (!wirelessAdapterConnected)
-                        {
-                            action = ACTION_INVALID;
-                            gTasks[taskId].tMenuType = HAS_NO_SAVED_GAME;
-                        }
-                        break;
-                    case 3:
-                        action = ACTION_OPTION;
-                        break;
-                }
-                break;
-            case HAS_MYSTERY_EVENTS:
-                switch (gTasks[taskId].tCurrItem)
-                {
-                    case 0:
-                    default:
-                        action = ACTION_CONTINUE;
-                        break;
-                    case 1:
-                        action = ACTION_NEW_GAME;
-                        break;
-                    case 2:
-                        if (gTasks[taskId].tWirelessAdapterConnected)
-                        {
-                            action = ACTION_MYSTERY_GIFT;
-                            if (!wirelessAdapterConnected)
-                            {
-                                action = ACTION_INVALID;
-                                gTasks[taskId].tMenuType = HAS_NO_SAVED_GAME;
-                            }
-                        }
-                        else if (wirelessAdapterConnected)
-                        {
-                            action = ACTION_INVALID;
-                            gTasks[taskId].tMenuType = HAS_SAVED_GAME;
-                        }
-                        else
-                        {
-                            action = ACTION_EREADER;
-                        }
-                        break;
-                    case 3:
-                        if (wirelessAdapterConnected)
-                        {
-                            action = ACTION_INVALID;
-                            gTasks[taskId].tMenuType = HAS_MYSTERY_GIFT;
-                        }
-                        else
-                        {
-                            action = ACTION_MYSTERY_EVENTS;
-                        }
-                        break;
-                    case 4:
-                        action = ACTION_OPTION;
-                        break;
-                }
-                break;
-        }
         ChangeBgY(0, 0, BG_COORD_SET);
         ChangeBgY(1, 0, BG_COORD_SET);
         switch (action)
@@ -1125,8 +1167,18 @@ static void Task_HandleMainMenuAPressed(u8 taskId)
 
 static void Task_HandleMainMenuBPressed(u8 taskId)
 {
+    #if MAIN_MENU_MUSIC == TRUE
+    if (!gIsMainMenuBGMStopping)
+    {
+        gIsMainMenuBGMStopping = TRUE;
+        m4aSongNumStop(MUS_MAIN_MENU);
+    }
+    #endif
     if (!gPaletteFade.active)
     {
+        #if MAIN_MENU_MUSIC == TRUE
+        gIsMainMenuBGMStopping = FALSE;
+        #endif
         if (gTasks[taskId].tMenuType == HAS_MYSTERY_EVENTS)
             RemoveScrollIndicatorArrowPair(gTasks[taskId].tScrollArrowTaskId);
         sCurrItemAndOptionMenuCheck = 0;

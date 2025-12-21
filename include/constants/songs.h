@@ -281,7 +281,7 @@
 // Music
 #define START_MUS                   350
 #define MUS_LOW_HEALTH              350
-#define MUS_GSC_ROUTE38             351 // MUS_FIELD13          // Unused, likely a test track.
+#define MUS_MAIN_MENU               351
 #define MUS_CAUGHT                  352 // MUS_KACHI22
 #define MUS_VICTORY_WILD            353 // MUS_KACHI2
 #define MUS_VICTORY_GYM_LEADER      354 // MUS_KACHI3           // Also used in Frontier Brain victories.
