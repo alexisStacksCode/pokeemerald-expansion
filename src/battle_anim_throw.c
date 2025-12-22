@@ -714,10 +714,6 @@ void AnimTask_BlueGradientUpHealthboxOnLevelUp(u8 taskId)
 
 static void AnimTask_BlueGradientUpHealthboxOnLevelUp_Step(u8 taskId)
 {
-    u8 spriteId1, spriteId2;
-    u8 battler;
-
-    battler = gBattleAnimAttacker;
     gTasks[taskId].data[13] += gTasks[taskId].data[1];
     gBattle_BG1_Y += (u16)gTasks[taskId].data[13] >> 8;
     gTasks[taskId].data[13] &= 0xFF;
@@ -760,9 +756,12 @@ static void AnimTask_BlueGradientUpHealthboxOnLevelUp_Step(u8 taskId)
                 DestroySprite(&gSprites[gTasks[taskId].data[0]]);
                 DestroySprite(&gSprites[gTasks[taskId].data[2]]);
                 SetAnimBgAttribute(1, BG_ANIM_AREA_OVERFLOW_MODE, 0);
-                spriteId1 = gSprites[gHealthboxSpriteIds[battler]].oam.affineParam;
-                spriteId2 = gSprites[gHealthboxSpriteIds[battler]].data[5];
-                gSprites[gHealthboxSpriteIds[battler]].oam.priority = 1;
+
+                struct Sprite *healthboxSprite = &gSprites[gHealthboxSpriteIds[gBattleAnimAttacker]];
+                u8 spriteId1 = healthboxSprite->oam.affineParam;
+                u8 spriteId2 = healthboxSprite->data[5];
+
+                healthboxSprite->oam.priority = 1;
                 gSprites[spriteId1].oam.priority = 1;
                 gSprites[spriteId2].oam.priority = 1;
                 DestroyAnimVisualTask(taskId);
@@ -774,22 +773,16 @@ static void AnimTask_BlueGradientUpHealthboxOnLevelUp_Step(u8 taskId)
 
 static void LoadHealthboxPalsForLevelUp(u8 *paletteId1, u8 *paletteId2, u8 battler)
 {
-    u8 healthBoxSpriteId;
-    u8 spriteId1, spriteId2;
-    u16 offset1, offset2;
-
-    healthBoxSpriteId = gHealthboxSpriteIds[battler];
-    spriteId1 = gSprites[healthBoxSpriteId].oam.affineParam;
-    spriteId2 = gSprites[healthBoxSpriteId].data[5];
     *paletteId1 = AllocSpritePalette(TAG_HEALTHBOX_PALS_1);
     *paletteId2 = AllocSpritePalette(TAG_HEALTHBOX_PALS_2);
 
-    offset1 = OBJ_PLTT_ID(gSprites[healthBoxSpriteId].oam.paletteNum);
-    offset2 = OBJ_PLTT_ID(gSprites[spriteId2].oam.paletteNum);
-    LoadPalette(&gPlttBufferUnfaded[offset1], OBJ_PLTT_ID(*paletteId1), PLTT_SIZE_4BPP);
-    LoadPalette(&gPlttBufferUnfaded[offset2], OBJ_PLTT_ID(*paletteId2), PLTT_SIZE_4BPP);
+    struct Sprite *healthboxSprite = &gSprites[gHealthboxSpriteIds[battler]];
+    u8 spriteId1 = healthboxSprite->oam.affineParam;
+    u8 spriteId2 = healthboxSprite->data[5];
 
-    gSprites[healthBoxSpriteId].oam.paletteNum = *paletteId1;
+    LoadPalette(&gPlttBufferUnfaded[OBJ_PLTT_ID(healthboxSprite->oam.paletteNum)], OBJ_PLTT_ID(*paletteId1), PLTT_SIZE_4BPP);
+    LoadPalette(&gPlttBufferUnfaded[OBJ_PLTT_ID(gSprites[spriteId2].oam.paletteNum)], OBJ_PLTT_ID(*paletteId2), PLTT_SIZE_4BPP);
+    healthboxSprite->oam.paletteNum = *paletteId1;
     gSprites[spriteId1].oam.paletteNum = *paletteId1;
     gSprites[spriteId2].oam.paletteNum = *paletteId2;
 }
@@ -803,19 +796,16 @@ void AnimTask_LoadHealthboxPalsForLevelUp(u8 taskId)
 
 static void FreeHealthboxPalsForLevelUp(u8 battler)
 {
-    u8 healthBoxSpriteId;
-    u8 spriteId1, spriteId2;
-    u8 paletteId1, paletteId2;
-
-    healthBoxSpriteId = gHealthboxSpriteIds[battler];
-    spriteId1 = gSprites[healthBoxSpriteId].oam.affineParam;
-    spriteId2 = gSprites[healthBoxSpriteId].data[5];
-
     FreeSpritePaletteByTag(TAG_HEALTHBOX_PALS_1);
     FreeSpritePaletteByTag(TAG_HEALTHBOX_PALS_2);
-    paletteId1 = IndexOfSpritePaletteTag(TAG_HEALTHBOX_PAL);
-    paletteId2 = IndexOfSpritePaletteTag(TAG_HEALTHBAR_PAL);
-    gSprites[healthBoxSpriteId].oam.paletteNum = paletteId1;
+
+    struct Sprite *healthboxSprite = &gSprites[gHealthboxSpriteIds[battler]];
+    u8 spriteId1 = healthboxSprite->oam.affineParam;
+    u8 spriteId2 = healthboxSprite->data[5];
+    u8 paletteId1 = IndexOfSpritePaletteTag(TAG_HEALTHBOX_PAL);
+    u8 paletteId2 = IndexOfSpritePaletteTag(TAG_HEALTHBAR_PAL);
+
+    healthboxSprite->oam.paletteNum = paletteId1;
     gSprites[spriteId1].oam.paletteNum = paletteId1;
     gSprites[spriteId2].oam.paletteNum = paletteId2;
 }
