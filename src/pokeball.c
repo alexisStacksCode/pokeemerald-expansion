@@ -77,9 +77,8 @@ static u16 GetBattlerPokeballItemId(u8 battler);
 #define GFX_TAG_BEAST_BALL   55026
 #define GFX_TAG_CHERISH_BALL 55027
 
-// TODO: [alexis] refactor health box stuff (in particular, associated code in pokeball.c)
-#define HEALTH_BOX_POS_X 119
-#define HEALTH_BOX_POS_X_SPEED 7
+#define HEALTHBOX_POS_X 119
+#define HEALTHBOX_POS_X_SPEED 7
 
 const struct CompressedSpriteSheet gBallSpriteSheets[POKEBALL_COUNT] =
 {
@@ -1518,9 +1517,9 @@ void StartHealthboxSlideIn(u8 battler)
 {
     struct Sprite *healthboxSprite = &gSprites[gHealthboxSpriteIds[battler]];
 
-    healthboxSprite->sSpeedX = HEALTH_BOX_POS_X_SPEED;
+    healthboxSprite->sSpeedX = HEALTHBOX_POS_X_SPEED;
     healthboxSprite->sSpeedY = 0;
-    healthboxSprite->x2 = HEALTH_BOX_POS_X;
+    healthboxSprite->x2 = HEALTHBOX_POS_X;
     healthboxSprite->y2 = 0;
     healthboxSprite->callback = SpriteCB_HealthboxSlideIn;
     if (!IsOnPlayerSide(battler))
