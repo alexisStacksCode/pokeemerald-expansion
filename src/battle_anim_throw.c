@@ -1709,7 +1709,7 @@ static void SpriteCB_Ball_Release_Wait(struct Sprite *sprite)
         gSprites[gBattlerSpriteIds[gBattleAnimTarget]].invisible = gBattleSpritesDataPtr->animationData->wildMonInvisible;
         sprite->sFrame = 0;
         sprite->callback = DestroySpriteAfterOneFrame;
-        gDoingBattleAnim = 0;
+        gDoingBattleAnim = FALSE;
         UpdateOamPriorityInAllHealthboxes(1, FALSE);
     }
 }
@@ -1751,7 +1751,7 @@ static void SpriteCB_Ball_Block_Step(struct Sprite *sprite)
     {
         sprite->sFrame = 0;
         sprite->callback = DestroySpriteAfterOneFrame;
-        gDoingBattleAnim = 0;
+        gDoingBattleAnim = FALSE;
         UpdateOamPriorityInAllHealthboxes(1, FALSE);
     }
 }
