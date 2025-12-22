@@ -76,7 +76,6 @@ void CB2_InitEndLinkBattle(void);
 u32 GetBattleBgTemplateData(u8 arrayId, u8 caseId);
 u32 GetBattleWindowTemplatePixelWidth(u32 windowsType, u32 tableId);
 void SpriteCB_WildMon(struct Sprite *sprite);
-void SpriteCallbackDummy_2(struct Sprite *sprite);
 void SpriteCB_FaintOpponentMon(struct Sprite *sprite);
 void SpriteCB_ShowAsMoveTarget(struct Sprite *sprite);
 void SpriteCB_HideAsMoveTarget(struct Sprite *sprite);

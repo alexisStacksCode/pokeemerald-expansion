@@ -3170,9 +3170,7 @@ void BtlController_HandleSwitchInSoundAndEnd(u32 battler)
 {
     if (!gBattleSpritesDataPtr->healthBoxesData[battler].specialAnimActive && !IsCryPlayingOrClearCrySongs())
     {
-        if (gSprites[gBattlerSpriteIds[battler]].callback == SpriteCallbackDummy
-         || gSprites[gBattlerSpriteIds[battler]].callback == SpriteCallbackDummy_2
-         || IsOnPlayerSide(battler))
+        if (gSprites[gBattlerSpriteIds[battler]].callback == SpriteCallbackDummy || IsOnPlayerSide(battler))
         {
             m4aMPlayVolumeControl(&gMPlayInfo_BGM, TRACKS_ALL, 0x100);
             if (IsControllerPlayer(battler))

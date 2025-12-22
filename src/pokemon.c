@@ -6450,21 +6450,12 @@ void DoMonFrontSpriteAnimation(struct Sprite *sprite, u16 species, bool8 noCry, 
         pan = 0;
         break;
     }
-    if (panModeAnimFlag & SKIP_FRONT_ANIM)
+
+    if (!noCry)
     {
-        // No animation, only check if cry needs to be played
-        if (!noCry)
-            PlayCry_Normal(species, pan);
-        sprite->callback = SpriteCallbackDummy;
+        PlayCry_Normal(species, pan);
     }
-    else
-    {
-        if (!noCry)
-        {
-            PlayCry_Normal(species, pan);
-        }
-        sprite->callback = SpriteCallbackDummy_2;
-    }
+    sprite->callback = SpriteCallbackDummy;
 }
 
 u8 GetOpposingLinkMultiBattlerId(bool8 rightSide, u8 multiplayerId)

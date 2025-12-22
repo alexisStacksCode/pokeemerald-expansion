@@ -2646,11 +2646,6 @@ static void SpriteCB_WildMonAnimate(struct Sprite *sprite)
     }
 }
 
-void SpriteCallbackDummy_2(struct Sprite *sprite)
-{
-
-}
-
 void SpriteCB_FaintOpponentMon(struct Sprite *sprite)
 {
     u8 battler = sprite->sBattler;
@@ -2719,7 +2714,7 @@ void SpriteCB_HideAsMoveTarget(struct Sprite *sprite)
 {
     sprite->invisible = sprite->data[4];
     sprite->data[4] = FALSE;
-    sprite->callback = SpriteCallbackDummy_2;
+    sprite->callback = SpriteCallbackDummy;
 }
 
 // This callback is frequently overwritten by SpriteCB_TrainerSlideIn
