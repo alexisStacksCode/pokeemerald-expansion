@@ -1406,9 +1406,9 @@ static void SpriteCB_ReleasedMonFlyOut(struct Sprite *sprite)
     if (sprite->animEnded && emergeAnimFinished && atFinalPosition)
     {
         if (gSprites[monSpriteId].sSpecies == SPECIES_EGG)
-            DoMonFrontSpriteAnimation(&gSprites[monSpriteId], gSprites[monSpriteId].sSpecies, TRUE, 0);
+            DoMonCry(&gSprites[monSpriteId], gSprites[monSpriteId].sSpecies, TRUE, 0);
         else
-            DoMonFrontSpriteAnimation(&gSprites[monSpriteId], gSprites[monSpriteId].sSpecies, FALSE, 0);
+            DoMonCry(&gSprites[monSpriteId], gSprites[monSpriteId].sSpecies, FALSE, 0);
 
         DestroySpriteAndFreeResources(sprite);
     }

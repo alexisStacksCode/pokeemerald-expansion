@@ -1362,9 +1362,9 @@ static void SpriteCB_GetOnScreenAndAnimate(struct Sprite *sprite)
         s16 species = sprite->tSpecies;
 
         if (species == SPECIES_EGG)
-            DoMonFrontSpriteAnimation(sprite, species, TRUE, 3);
+            DoMonCry(sprite, species, TRUE, 3);
         else
-            DoMonFrontSpriteAnimation(sprite, species, FALSE, 3);
+            DoMonCry(sprite, species, FALSE, 3);
     }
 }
 

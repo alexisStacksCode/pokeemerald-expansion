@@ -1683,5 +1683,5 @@ static void RestoreBgAfterAnim(void)
 
 static void EvoScene_DoMonCry(u8 monSpriteId, u16 speciesId)
 {
-    DoMonFrontSpriteAnimation(&gSprites[monSpriteId], speciesId, FALSE, 0);
+    DoMonCry(&gSprites[monSpriteId], speciesId, FALSE, 0);
 }
