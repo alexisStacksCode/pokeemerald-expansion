@@ -309,6 +309,8 @@
 #define B_SLEEP_CLAUSE                  FALSE      // Enables Sleep Clause all the time in every case, overriding B_FLAG_SLEEP_CLAUSE. Use that for modularity.
 #define B_PARTNER_MONS_MARKED_SEEN      TRUE       // If TRUE, if your double battle partner sends out a Pokémon you haven't encountered yet, it will be marked as SEEN in your Pokédex.
 
+#define B_HP_BAR_BEHAVIOR               GEN_3
+
 // Animation Settings
 #define B_NEW_SWORD_PARTICLE            TRUE     // If set to TRUE, it updates Swords Dance's particle.
 #define B_NEW_LEECH_SEED_PARTICLE       TRUE     // If set to TRUE, it updates Leech Seed's animation particle.

@@ -623,7 +623,6 @@ static const struct WindowTemplate sHealthboxWindowTemplate = {
 // oam.affineParam holds healthboxRight spriteId
 #define hMain_HealthBarSpriteId     data[5]
 #define hMain_Battler               data[6]
-#define hMain_Data7                 data[7]
 
 // data fields for healthboxRight
 #define hOther_HealthBoxSpriteId    data[5]
@@ -1241,7 +1240,6 @@ void SwapHpBarsWithHpText(void)
                         UpdateHealthboxAttribute(gHealthboxSpriteIds[i], mon, HEALTHBOX_NICK);
                 }
             }
-            gSprites[gHealthboxSpriteIds[i]].hMain_Data7 ^= 1;
         }
     }
 }
