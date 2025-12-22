@@ -32167,11 +32167,15 @@ SnatchMoveSwapMonForSubstitute:
 	goto SnatchMoveTrySwapToSubstituteEnd
 
 @ Healthbox blue flash effect on level up
+@ Extra code from: https://www.youtube.com/watch?v=qFnQL1jPz8w
 gBattleAnimSpecial_LevelUp::
 	playsewithpan SE_EXP_MAX, 0
 	createvisualtask AnimTask_LoadHealthboxPalsForLevelUp, 2
 	delay 0
 	createvisualtask AnimTask_FlashHealthboxOnLevelUp, 5, 0, 0
+	waitforvisualfinish
+	createvisualtask AnimTask_FlashHealthboxOnLevelUp, 5, 1, 5
+	createvisualtask AnimTask_BlueGradientUpHealthboxOnLevelUp, 5, 0
 	waitforvisualfinish
 	createvisualtask AnimTask_FreeHealthboxPalsForLevelUp, 2
 	end
