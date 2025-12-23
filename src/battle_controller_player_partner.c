@@ -173,8 +173,6 @@ void Controller_PlayerPartnerShowIntroHealthbox(u32 battler)
         StartHealthboxSlideIn(battler);
         SetHealthboxSpriteVisible(gHealthboxSpriteIds[battler]);
 
-        gBattleSpritesDataPtr->animationData->introAnimActive = FALSE;
-
         gBattlerControllerFuncs[battler] = Intro_WaitForHealthbox;
     }
 }

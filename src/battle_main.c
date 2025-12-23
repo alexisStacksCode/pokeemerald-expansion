@@ -2642,7 +2642,7 @@ static void SpriteCB_WildMonAnimate(struct Sprite *sprite)
 {
     if (!gPaletteFade.active)
     {
-        BattleAnimateFrontSprite(sprite, sprite->sSpeciesId, FALSE, 1);
+        DoMonCry(sprite, sprite->sSpeciesId, FALSE, 1);
     }
 }
 

@@ -6427,18 +6427,10 @@ const u8 *GetTrainerPartnerName(void)
 #define sAnimId    data[2]
 #define sAnimDelay data[3]
 
-void BattleAnimateFrontSprite(struct Sprite *sprite, u16 species, bool8 noCry, u8 panMode)
-{
-    if (gHitMarker & HITMARKER_NO_ANIMATIONS && !(gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK)))
-        DoMonCry(sprite, species, noCry, panMode | SKIP_FRONT_ANIM);
-    else
-        DoMonCry(sprite, species, noCry, panMode);
-}
-
 void DoMonCry(struct Sprite *sprite, u16 species, bool8 noCry, u8 panModeAnimFlag)
 {
     s8 pan;
-    switch (panModeAnimFlag & (u8)~SKIP_FRONT_ANIM) // Exclude anim flag to get pan mode
+    switch (panModeAnimFlag) // Exclude anim flag to get pan mode
     {
     case 0:
         pan = -25;
