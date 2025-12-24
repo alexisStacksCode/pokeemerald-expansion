@@ -20,7 +20,7 @@
 static void Task_DoPokeballSendOutAnim(u8 taskId);
 static inline void DoPokeballSendOutSoundEffect(u32 battler);
 static inline void *GetOpponentMonSendOutCallback(void);
-static inline bool32 IsBattlerPlayer(u32 battler);
+static inline bool32 IsBattlerOwnedByPlayer(u32 battler);
 static void SpriteCB_MonSendOut_1(struct Sprite *sprite);
 static void SpriteCB_MonSendOut_2(struct Sprite *sprite);
 static void SpriteCB_OpponentMonSendOut(struct Sprite *sprite);
@@ -667,13 +667,24 @@ static void Task_DoPokeballSendOutAnim(u8 taskId)
 
 static inline void DoPokeballSendOutSoundEffect(u32 battler)
 {
-    if (IsBattlerPlayer(battler) && B_PLAYER_THROW_BALLS_SOUND < GEN_5)
-        return;
+    #if B_PLAYER_THROW_BALLS_SOUND < GEN_5 || B_ENEMY_THROW_BALLS_SOUND < GEN_5
+    bool32 isBattlerOwnedByPlayer = IsBattlerOwnedByPlayer(battler);
 
-    if (!IsBattlerPlayer(battler) && B_ENEMY_THROW_BALLS_SOUND < GEN_5)
+    #if B_PLAYER_THROW_BALLS_SOUND < GEN_5
+    if (isBattlerOwnedByPlayer)
+    {
         return;
+    }
+    #endif
+    #if B_ENEMY_THROW_BALLS_SOUND < GEN_5
+    if (!isBattlerOwnedByPlayer)
+    {
+        return;
+    }
+    #endif
+    #endif
 
-     PlaySE(SE_BALL_THROW);
+    PlaySE(SE_BALL_THROW);
 }
 
 static inline void *GetOpponentMonSendOutCallback(void)
@@ -1174,16 +1185,16 @@ static void SpriteCB_BallThrow_CaptureMon(struct Sprite *sprite)
     }
 }
 
-static inline bool32 IsBattlerPlayer(u32 battler)
+static inline bool32 IsBattlerOwnedByPlayer(u32 battler)
 {
-    return (battler % B_POSITION_PLAYER_RIGHT) ? FALSE : TRUE;
+    return battler % B_POSITION_PLAYER_RIGHT ? FALSE : TRUE;
 }
 
 static void SpriteCB_MonSendOut_1(struct Sprite *sprite)
 {
-    bool32 isPlayer = IsBattlerPlayer(sprite->sBattler);
-    u32 coordX = (isPlayer) ? BATTLER_COORD_X_2 : BATTLER_COORD_X;
-    u32 coordY = (isPlayer) ? BATTLER_COORD_Y_PIC_OFFSET : BATTLER_COORD_Y;
+    bool32 isBattlerOwnedByPlayer = IsBattlerOwnedByPlayer(sprite->sBattler);
+    u32 coordX = isBattlerOwnedByPlayer ? BATTLER_COORD_X_2 : BATTLER_COORD_X;
+    u32 coordY = isBattlerOwnedByPlayer ? BATTLER_COORD_Y_PIC_OFFSET : BATTLER_COORD_Y;
 
     sprite->data[0] = 25;
     sprite->data[2] = GetBattlerSpriteCoord(sprite->sBattler, coordX);
@@ -1198,13 +1209,11 @@ static void SpriteCB_MonSendOut_1(struct Sprite *sprite)
 
 static void SpriteCB_MonSendOut_2(struct Sprite *sprite)
 {
-    u32 r6;
-    u32 r7;
-    bool32 rightPosition = (IsBattlerPlayer(sprite->sBattler)) ? B_POSITION_PLAYER_RIGHT : B_POSITION_OPPONENT_RIGHT;
-
     if (HIBYTE(sprite->data[7]) >= 35 && HIBYTE(sprite->data[7]) < 80 && !gTestRunnerHeadless)
     {
         s16 r4;
+        u32 r6;
+        u32 r7;
 
         if ((sprite->oam.affineParam & 0xFF00) == 0)
         {
@@ -1235,6 +1244,8 @@ static void SpriteCB_MonSendOut_2(struct Sprite *sprite)
     {
         if (TranslateAnimHorizontalArc(sprite))
         {
+            bool32 isBattlerOwnedByPlayer = IsBattlerOwnedByPlayer(sprite->sBattler);
+
             sprite->x += sprite->x2;
             sprite->y += sprite->y2;
             sprite->y2 = 0;
@@ -1242,10 +1253,14 @@ static void SpriteCB_MonSendOut_2(struct Sprite *sprite)
             sprite->sBattler = sprite->oam.affineParam & 0xFF;
             sprite->data[0] = 0;
 
-            if (IsDoubleBattle() && sprite->sBattler == GetBattlerAtPosition(rightPosition) && !gTestRunnerHeadless)
-                sprite->callback = SpriteCB_ReleaseMon2FromBall;
-            else
+            if (sprite->sBattler == GetBattlerAtPosition(isBattlerOwnedByPlayer ? B_POSITION_PLAYER_LEFT : B_POSITION_OPPONENT_LEFT))
+            {
                 sprite->callback = SpriteCB_ReleaseMonFromBall;
+            }
+            else if (IsDoubleBattle() && sprite->sBattler == GetBattlerAtPosition(isBattlerOwnedByPlayer ? B_POSITION_PLAYER_RIGHT : B_POSITION_OPPONENT_RIGHT) && !gTestRunnerHeadless)
+            {
+                sprite->callback = SpriteCB_ReleaseMon2FromBall;
+            }
 
             StartSpriteAffineAnim(sprite, 0);
         }
