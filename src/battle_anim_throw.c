@@ -780,7 +780,7 @@ void AnimTask_LoadHealthboxLevelUpPalettes(u8 taskId)
     u32 newHealthbarPaletteIndex = AllocSpritePalette(TAG_HEALTHBOX_PALS_2);
 
     LoadPalette(&gPlttBufferUnfaded[OBJ_PLTT_ID(healthboxLeftSprite->oam.paletteNum)], OBJ_PLTT_ID(newHealthboxPaletteIndex), PLTT_SIZE_4BPP);
-    LoadPalette(&gPlttBufferUnfaded[OBJ_PLTT_ID(healthbarSprite.oam.paletteNum)], OBJ_PLTT_ID(newHealthbarPaletteIndex), PLTT_SIZE_4BPP);
+    LoadPalette(&gPlttBufferUnfaded[OBJ_PLTT_ID(healthbarSprite->oam.paletteNum)], OBJ_PLTT_ID(newHealthbarPaletteIndex), PLTT_SIZE_4BPP);
     healthboxLeftSprite->oam.paletteNum = newHealthboxPaletteIndex;
     healthboxRightSprite->oam.paletteNum = newHealthboxPaletteIndex;
     healthbarSprite->oam.paletteNum = newHealthbarPaletteIndex;
@@ -803,47 +803,42 @@ void AnimTask_FreeHealthboxLevelUpPalettes(u8 taskId)
     DestroyAnimVisualTask(taskId);
 }
 
+#define tHealthboxPartToAnimate gTasks[taskId].data[10]
+#define tNextFlashStepFrames gTasks[taskId].data[0]
+#define tNextFlashStepMaxFrames gTasks[taskId].data[11]
+#define tIsFlashReversed gTasks[taskId].data[1]
+#define tFlashSteps gTasks[taskId].data[2]
+
 void AnimTask_FlashHealthboxOnLevelUp(u8 taskId)
 {
-    gTasks[taskId].data[10] = gBattleAnimArgs[0];
-    gTasks[taskId].data[11] = gBattleAnimArgs[1];
+    tHealthboxPartToAnimate = gBattleAnimArgs[0];
+    tNextFlashStepMaxFrames = gBattleAnimArgs[1];
     gTasks[taskId].func = AnimTask_FlashHealthboxOnLevelUp_Step;
 }
 
 static void AnimTask_FlashHealthboxOnLevelUp_Step(u8 taskId)
 {
-    u8 paletteNum;
-    u32 paletteOffset, colorOffset;
-
-    gTasks[taskId].data[0]++;
-    if (gTasks[taskId].data[0]++ >= gTasks[taskId].data[11])
+    tNextFlashStepFrames += 2;
+    if (tNextFlashStepFrames >= tNextFlashStepMaxFrames)
     {
-        gTasks[taskId].data[0] = 0;
-        paletteNum = IndexOfSpritePaletteTag(TAG_HEALTHBOX_PALS_1);
-        colorOffset = gTasks[taskId].data[10] == 0 ? 6 : 2;
-        switch (gTasks[taskId].data[1])
+        tNextFlashStepFrames = 0;
+        if (tIsFlashReversed == 0)
         {
-        case 0:
-            gTasks[taskId].data[2] += 2;
-            if (gTasks[taskId].data[2] > 16)
-                gTasks[taskId].data[2] = 16;
-
-            paletteOffset = OBJ_PLTT_ID(paletteNum);
-            BlendPalette(paletteOffset + colorOffset, 1, gTasks[taskId].data[2], RGB(20, 27, 31));
-            if (gTasks[taskId].data[2] == 16)
-                gTasks[taskId].data[1]++;
-            break;
-        case 1:
-            gTasks[taskId].data[2] -= 2;
-            if (gTasks[taskId].data[2] < 0)
-                gTasks[taskId].data[2] = 0;
-
-            paletteOffset = OBJ_PLTT_ID(paletteNum);
-            BlendPalette(paletteOffset + colorOffset, 1, gTasks[taskId].data[2], RGB(20, 27, 31));
-            if (gTasks[taskId].data[2] == 0)
-                DestroyAnimVisualTask(taskId);
-            break;
+            tFlashSteps += 2;
+            if (tFlashSteps == 16)
+            {
+                tIsFlashReversed = 1;
+            }
         }
+        else
+        {
+            tFlashSteps -= 2;
+            if (tFlashSteps == 0)
+            {
+                DestroyAnimVisualTask(taskId);
+            }
+        }
+        BlendPalette(OBJ_PLTT_ID(IndexOfSpritePaletteTag(TAG_HEALTHBOX_PALS_1)) + (tHealthboxPartToAnimate == 0 ? 6 : 2), 1, tFlashSteps, RGB(20, 27, 31));
     }
 }
 
