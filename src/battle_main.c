@@ -99,7 +99,6 @@ static void SpriteCB_WildMonShowHealthbox(struct Sprite *sprite);
 static void SpriteCB_WildMonAnimate(struct Sprite *sprite);
 static void SpriteCB_AnimFaintOpponent(struct Sprite *sprite);
 static void SpriteCB_BlinkVisible(struct Sprite *sprite);
-static void SpriteCB_Idle(struct Sprite *sprite);
 static void SpriteCB_BattleSpriteSlideLeft(struct Sprite *sprite);
 static void TurnValuesCleanUp(bool8 var0);
 static void SpriteCB_BounceEffect(struct Sprite *sprite);
@@ -2730,19 +2729,10 @@ static void SpriteCB_BattleSpriteSlideLeft(struct Sprite *sprite)
         sprite->x2 -= 2;
         if (sprite->x2 == 0)
         {
-            sprite->callback = SpriteCB_Idle;
+            sprite->callback = SpriteCallbackDummy;
             sprite->data[1] = 0;
         }
     }
-}
-
-static void UNUSED SetIdleSpriteCallback(struct Sprite *sprite)
-{
-    sprite->callback = SpriteCB_Idle;
-}
-
-static void SpriteCB_Idle(struct Sprite *sprite)
-{
 }
 
 #define sSpeedX data[1]
@@ -2885,7 +2875,7 @@ static void SpriteCB_TrainerThrowObject_Main(struct Sprite *sprite)
 {
     AnimSetCenterToCornerVecX(sprite);
     if (sprite->animEnded)
-        sprite->callback = SpriteCB_Idle;
+        sprite->callback = SpriteCallbackDummy;
 }
 
 // Sprite callback for a trainer back pic to throw an object
