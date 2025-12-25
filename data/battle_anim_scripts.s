@@ -32170,14 +32170,14 @@ SnatchMoveSwapMonForSubstitute:
 @ Extra code from: https://www.youtube.com/watch?v=qFnQL1jPz8w
 gBattleAnimSpecial_LevelUp::
 	playsewithpan SE_EXP_MAX, 0
-	createvisualtask AnimTask_LoadHealthboxPalsForLevelUp, 2
+	createvisualtask AnimTask_LoadHealthboxLevelUpPalettes, 2
 	delay 0
 	createvisualtask AnimTask_FlashHealthboxOnLevelUp, 5, 0, 0
 	waitforvisualfinish
 	createvisualtask AnimTask_FlashHealthboxOnLevelUp, 5, 1, 5
 	createvisualtask AnimTask_BlueGradientUpHealthboxOnLevelUp, 5, 0
 	waitforvisualfinish
-	createvisualtask AnimTask_FreeHealthboxPalsForLevelUp, 2
+	createvisualtask AnimTask_FreeHealthboxLevelUpPalettes, 2
 	end
 
 gBattleAnimSpecial_SwitchOutPlayerMon::
