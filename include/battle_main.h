@@ -66,6 +66,11 @@ enum FirstTurnEventsStates
     FIRST_TURN_EVENTS_END,
 };
 
+extern void DoBattlerDamagedAnim(u32 battler);
+#if B_HP_BAR_BEHAVIOR == GEN_3 || B_HP_BAR_BEHAVIOR == GEN_5
+extern void DoBattlerHealthboxAnim(u32 battler);
+#endif
+
 void CB2_InitBattle(void);
 void BattleMainCB2(void);
 void CB2_QuitRecordedBattle(void);

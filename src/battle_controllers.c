@@ -34,22 +34,6 @@
 #include "test/test.h"
 #include "test/test_runner_battle.h"
 
-#define HIT_ANIM_BATTLER_FRAMES 32
-#define HIT_ANIM_BATTLER_BLINK_INTERVAL 4
-#if B_HP_BAR_BEHAVIOR == GEN_3
-#define HIT_ANIM_HEALTHBOX_FRAMES 21
-#elif B_HP_BAR_BEHAVIOR == GEN_5
-#define HIT_ANIM_HEALTHBOX_FLASH_STEP 3
-#define HIT_ANIM_HEALTHBOX_FLASH_MAX_STEPS 17
-
-static const u32 sHitAnimHealthboxPaletteTags[MAX_POSITION_COUNT] = {
-    [B_POSITION_PLAYER_LEFT] = TAG_HEALTHBOX_PLAYER1_HIT_PAL,
-    [B_POSITION_PLAYER_RIGHT] = TAG_HEALTHBOX_PLAYER2_HIT_PAL,
-    [B_POSITION_OPPONENT_LEFT] = TAG_HEALTHBOX_OPPONENT1_HIT_PAL,
-    [B_POSITION_OPPONENT_RIGHT] = TAG_HEALTHBOX_OPPONENT2_HIT_PAL,
-};
-#endif
-
 static EWRAM_DATA u8 sLinkSendTaskId = 0;
 static EWRAM_DATA u8 sLinkReceiveTaskId = 0;
 
@@ -63,10 +47,6 @@ static void SetBattlePartyIds(void);
 static void Task_HandleSendLinkBuffersData(u8 taskId);
 static void Task_HandleCopyReceivedLinkBuffersData(u8 taskId);
 static void Task_StartSendOutAnim(u8 taskId);
-static void SpriteCB_HitAnimBattlerEffect(struct Sprite *sprite);
-#if B_HP_BAR_BEHAVIOR == GEN_3 || B_HP_BAR_BEHAVIOR == GEN_5
-static void SpriteCB_HitAnimHealthboxEffect(struct Sprite *sprite);
-#endif
 static void SpriteCB_FreePlayerSpriteLoadMonSprite(struct Sprite *sprite);
 static void SpriteCB_FreeOpponentSprite(struct Sprite *sprite);
 
@@ -2153,7 +2133,7 @@ void Controller_WaitForHealthBar(u32 battler)
         #if B_HP_BAR_BEHAVIOR == GEN_5
         if (healthboxSprite->data[7] == 1)
         {
-            // Tell the ongoing healthbox flash animation that it can stop.
+            // Tell the healthbox animation that it can stop.
             healthboxSprite->data[7] = 0;
         }
         #endif
@@ -2208,7 +2188,7 @@ static void Controller_WaitForPartyStatusSummary(u32 battler)
 static void Controller_HitAnimation(u32 battler)
 {
     #if B_HP_BAR_BEHAVIOR <= GEN_4
-    if (gSprites[gBattlerSpriteIds[battler]].data[1] == HIT_ANIM_BATTLER_FRAMES)
+    if (gSprites[gBattlerSpriteIds[battler]].callback == SpriteCallbackDummy)
     {
         BtlController_Complete(battler);
     }
@@ -2682,21 +2662,9 @@ void BtlController_HandleHitAnimation(u32 battler)
     }
     else
     {
-        gDoingBattleAnim = TRUE;
-        battlerSprite->data[1] = 0;
-        battlerSprite->callback = SpriteCB_HitAnimBattlerEffect;
-
-        #if B_HP_BAR_BEHAVIOR == GEN_3
-        u32 healthboxAnimSpriteId = CreateInvisibleSpriteWithCallback(SpriteCB_HitAnimHealthboxEffect);
-        gSprites[healthboxAnimSpriteId].data[0] = gHealthboxSpriteIds[battler];
-        gSprites[healthboxAnimSpriteId].data[1] = 1;
-        #elif B_HP_BAR_BEHAVIOR == GEN_5
-        u32 healthboxSpriteId = gHealthboxSpriteIds[battler];
-        gSprites[healthboxSpriteId].data[7] = 1;
-
-        u32 healthboxAnimSpriteId = CreateInvisibleSpriteWithCallback(SpriteCB_HitAnimHealthboxEffect);
-        gSprites[healthboxAnimSpriteId].data[0] = healthboxSpriteId;
-        gSprites[healthboxAnimSpriteId].data[1] = sHitAnimHealthboxPaletteTags[GetBattlerPosition(battler)];
+        DoBattlerDamagedAnim(battler);
+        #if B_HP_BAR_BEHAVIOR == GEN_3 || B_HP_BAR_BEHAVIOR == GEN_5
+        DoBattlerHealthboxAnim(battler);
         #endif
 
         gBattlerControllerFuncs[battler] = Controller_HitAnimation;
@@ -2899,118 +2867,6 @@ static void Task_StartSendOutAnim(u8 taskId)
 #undef tFramesToWait
 #undef tControllerFunc_1
 #undef tControllerFunc_2
-
-#define sAnimFrames sprite->data[1]
-
-static void SpriteCB_HitAnimBattlerEffect(struct Sprite *sprite)
-{
-    if (sAnimFrames == HIT_ANIM_BATTLER_FRAMES)
-    {
-        sAnimFrames = 0;
-        sprite->invisible = FALSE;
-        sprite->callback = SpriteCallbackDummy;
-        gDoingBattleAnim = FALSE;
-    }
-    else
-    {
-        if (sAnimFrames % HIT_ANIM_BATTLER_BLINK_INTERVAL == 0)
-        {
-            sprite->invisible = !sprite->invisible;
-        }
-        sAnimFrames++;
-    }
-}
-
-#undef sAnimFrames
-
-#if B_HP_BAR_BEHAVIOR == GEN_3
-#define sHealthboxSpriteId sprite->data[0]
-#define sYPosRelative sprite->data[1]
-#define sAnimFrames sprite->data[2]
-
-static void SpriteCB_HitAnimHealthboxEffect(struct Sprite *sprite)
-{
-    struct Sprite *healthboxSprite = &gSprites[sHealthboxSpriteId];
-
-    healthboxSprite->y2 = sYPosRelative;
-    sYPosRelative = -sYPosRelative;
-    sAnimFrames++;
-    if (sAnimFrames == HIT_ANIM_HEALTHBOX_FRAMES)
-    {
-        healthboxSprite->y2 = 0;
-        DestroySprite(sprite);
-    }
-}
-
-#undef sHealthboxSpriteId
-#undef sYPosRelative
-#undef sAnimFrames
-#elif B_HP_BAR_BEHAVIOR == GEN_5
-#define sHealthboxSpriteId sprite->data[0]
-#define sPaletteTag sprite->data[1]
-#define sAnimState sprite->data[2]
-#define sFlashSteps sprite->data[3]
-#define sIsFlashReversed sprite->data[4]
-
-static void SpriteCB_HitAnimHealthboxEffect(struct Sprite *sprite)
-{
-    struct Sprite *healthboxLeftSprite = &gSprites[sHealthboxSpriteId];
-    struct Sprite *healthboxRightSprite = &gSprites[healthboxLeftSprite->oam.affineParam];
-
-    switch (sAnimState)
-    {
-        default:
-        case 0: // Load new palette.
-            u32 newPaletteIndex = AllocSpritePalette(sPaletteTag);
-
-            LoadPaletteFast(&gPlttBufferUnfaded[OBJ_PLTT_ID(healthboxLeftSprite->oam.paletteNum)], OBJ_PLTT_ID(newPaletteIndex), PLTT_SIZE_4BPP);
-            healthboxLeftSprite->oam.paletteNum = newPaletteIndex;
-            healthboxRightSprite->oam.paletteNum = newPaletteIndex;
-            sAnimState = 1;
-            break;
-        case 1: // Animate healthbox colors.
-            if (!sIsFlashReversed)
-            {
-                sFlashSteps = min(sFlashSteps + HIT_ANIM_HEALTHBOX_FLASH_STEP, HIT_ANIM_HEALTHBOX_FLASH_MAX_STEPS);
-                if (sFlashSteps == HIT_ANIM_HEALTHBOX_FLASH_MAX_STEPS)
-                {
-                    sIsFlashReversed = 1;
-                }
-            }
-            else
-            {
-                sFlashSteps = max(sFlashSteps - HIT_ANIM_HEALTHBOX_FLASH_STEP, 0);
-                if (sFlashSteps == 0)
-                {
-                    if (healthboxLeftSprite->data[7] == 0)
-                    {
-                        sAnimState = 2;
-                    }
-                    else
-                    {
-                        sIsFlashReversed = FALSE;
-                    }
-                }
-            }
-            BlendPalette(OBJ_PLTT_ID(IndexOfSpritePaletteTag(sPaletteTag)) + 6, 1, sFlashSteps, RGB(30, 3, 1));
-            break;
-        case 2: // Unload new palette and destroy self.
-            u32 oldPaletteIndex = IndexOfSpritePaletteTag(TAG_HEALTHBOX_PAL);
-
-            FreeSpritePaletteByTag(sPaletteTag);
-            healthboxLeftSprite->oam.paletteNum = oldPaletteIndex;
-            healthboxRightSprite->oam.paletteNum = oldPaletteIndex;
-            DestroySprite(sprite);
-            break;
-    }
-}
-
-#undef sHealthboxSpriteId
-#undef sPaletteTag
-#undef sAnimState
-#undef sFlashSteps
-#undef sIsFlashReversed
-#endif
 
 static void SpriteCB_FreePlayerSpriteLoadMonSprite(struct Sprite *sprite)
 {

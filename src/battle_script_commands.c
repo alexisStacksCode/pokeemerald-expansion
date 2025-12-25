@@ -2293,6 +2293,13 @@ static void Cmd_healthbarupdate(void)
     switch (cmd->updateState)
     {
     case PASSIVE_HP_UPDATE:
+        #if B_HP_BAR_BEHAVIOR == GEN_5
+        // Play the healthbox animation only if the Pokemon took damage.
+        if (gBattleStruct->passiveHpUpdate[battler] > 0)
+        {
+            DoBattlerHealthboxAnim(battler);
+        }
+        #endif
         BtlController_EmitHealthBarUpdate(battler, B_COMM_TO_CONTROLLER, min(gBattleStruct->passiveHpUpdate[battler], 10000));
         MarkBattlerForControllerExec(battler);
         break;

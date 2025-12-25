@@ -78,6 +78,22 @@
 #include "cable_club.h"
 #include "test/test_runner_battle.h"
 
+#define ANIM_MON_DAMAGED_FRAMES 32
+#define ANIM_MON_DAMAGED_BLINK_INTERVAL 4
+#if B_HP_BAR_BEHAVIOR == GEN_3
+#define ANIM_HEALTHBOX_FRAMES 21
+#elif B_HP_BAR_BEHAVIOR == GEN_5
+#define ANIM_HEALTHBOX_FLASH_STEP 3
+#define ANIM_HEALTHBOX_FLASH_MAX_STEPS 17
+
+static const u32 sHealthboxAnimPaletteTags[MAX_POSITION_COUNT] = {
+    [B_POSITION_PLAYER_LEFT] = TAG_HEALTHBOX_PLAYER1_HIT_PAL,
+    [B_POSITION_PLAYER_RIGHT] = TAG_HEALTHBOX_PLAYER2_HIT_PAL,
+    [B_POSITION_OPPONENT_LEFT] = TAG_HEALTHBOX_OPPONENT1_HIT_PAL,
+    [B_POSITION_OPPONENT_RIGHT] = TAG_HEALTHBOX_OPPONENT2_HIT_PAL,
+};
+#endif
+
 extern const struct BgTemplate gBattleBgTemplates[];
 extern const struct WindowTemplate *const gBattleWindowTemplates[];
 
@@ -97,6 +113,10 @@ static void AskRecordBattle(void);
 static void SpriteCB_MoveWildMonToRight(struct Sprite *sprite);
 static void SpriteCB_WildMonShowHealthbox(struct Sprite *sprite);
 static void SpriteCB_WildMonAnimate(struct Sprite *sprite);
+static void SpriteCB_AnimMonDamaged(struct Sprite *sprite);
+#if B_HP_BAR_BEHAVIOR == GEN_3 || B_HP_BAR_BEHAVIOR == GEN_5
+static void SpriteCB_AnimHealthbox(struct Sprite *sprite);
+#endif
 static void SpriteCB_AnimFaintOpponent(struct Sprite *sprite);
 static void SpriteCB_BlinkVisible(struct Sprite *sprite);
 static void SpriteCB_BattleSpriteSlideLeft(struct Sprite *sprite);
@@ -2644,6 +2664,156 @@ static void SpriteCB_WildMonAnimate(struct Sprite *sprite)
         DoMonCry(sprite, sprite->sSpeciesId, FALSE, 1);
     }
 }
+
+void DoBattlerDamagedAnim(u32 battler)
+{
+    struct Sprite *battlerSprite = &gSprites[gBattlerSpriteIds[battler]];
+
+    gDoingBattleAnim = TRUE;
+    battlerSprite->data[1] = 0;
+    battlerSprite->callback = SpriteCB_AnimMonDamaged;
+}
+
+#define sAnimFrames sprite->data[1]
+
+static void SpriteCB_AnimMonDamaged(struct Sprite *sprite)
+{
+    if (sAnimFrames == ANIM_MON_DAMAGED_FRAMES)
+    {
+        sAnimFrames = 0;
+        sprite->invisible = FALSE;
+        sprite->callback = SpriteCallbackDummy;
+        gDoingBattleAnim = FALSE;
+    }
+    else
+    {
+        if (sAnimFrames % ANIM_MON_DAMAGED_BLINK_INTERVAL == 0)
+        {
+            sprite->invisible = !sprite->invisible;
+        }
+        sAnimFrames++;
+    }
+}
+
+#undef sAnimFrames
+
+#if B_HP_BAR_BEHAVIOR == GEN_3
+void DoBattlerHealthboxAnim(u32 battler)
+{
+    u32 healthboxSpriteId = gHealthboxSpriteIds[battler];
+    struct Sprite *healthboxSprite = &gSprites[healthboxSpriteId];
+    if (healthboxSprite->data[7] == 0)
+    {
+        healthboxSprite->data[7] = 1;
+
+        u32 healthboxAnimSpriteId = CreateInvisibleSpriteWithCallback(SpriteCB_AnimHealthbox);
+        gSprites[healthboxAnimSpriteId].data[0] = healthboxSpriteId;
+        gSprites[healthboxAnimSpriteId].data[1] = 1;
+    }
+}
+
+#define sHealthboxSpriteId sprite->data[0]
+#define sYPosRelative sprite->data[1]
+#define sAnimFrames sprite->data[2]
+
+static void SpriteCB_AnimHealthbox(struct Sprite *sprite)
+{
+    struct Sprite *healthboxSprite = &gSprites[sHealthboxSpriteId];
+
+    healthboxSprite->y2 = sYPosRelative;
+    sYPosRelative = -sYPosRelative;
+    sAnimFrames++;
+    if (sAnimFrames == ANIM_HEALTHBOX_FRAMES)
+    {
+        healthboxSprite->y2 = 0;
+        healthboxSprite->data[7] = 0;
+        DestroySprite(sprite);
+    }
+}
+
+#undef sHealthboxSpriteId
+#undef sYPosRelative
+#undef sAnimFrames
+#elif B_HP_BAR_BEHAVIOR == GEN_5
+void DoBattlerHealthboxAnim(u32 battler)
+{
+    u32 healthboxSpriteId = gHealthboxSpriteIds[battler];
+    struct Sprite *healthboxSprite = &gSprites[healthboxSpriteId];
+    if (healthboxSprite->data[7] == 0)
+    {
+        healthboxSprite->data[7] = 1;
+
+        u32 healthboxAnimSpriteId = CreateInvisibleSpriteWithCallback(SpriteCB_AnimHealthbox);
+        gSprites[healthboxAnimSpriteId].data[0] = healthboxSpriteId;
+        gSprites[healthboxAnimSpriteId].data[1] = sHealthboxAnimPaletteTags[GetBattlerPosition(battler)];
+    }
+}
+
+#define sHealthboxSpriteId sprite->data[0]
+#define sPaletteTag sprite->data[1]
+#define sAnimState sprite->data[2]
+#define sFlashSteps sprite->data[3]
+#define sIsFlashReversed sprite->data[4]
+
+static void SpriteCB_AnimHealthbox(struct Sprite *sprite)
+{
+    struct Sprite *healthboxLeftSprite = &gSprites[sHealthboxSpriteId];
+    struct Sprite *healthboxRightSprite = &gSprites[healthboxLeftSprite->oam.affineParam];
+
+    switch (sAnimState)
+    {
+        default:
+        case 0: // Load new palette.
+            u32 newPaletteIndex = AllocSpritePalette(sPaletteTag);
+
+            LoadPaletteFast(&gPlttBufferUnfaded[OBJ_PLTT_ID(healthboxLeftSprite->oam.paletteNum)], OBJ_PLTT_ID(newPaletteIndex), PLTT_SIZE_4BPP);
+            healthboxLeftSprite->oam.paletteNum = newPaletteIndex;
+            healthboxRightSprite->oam.paletteNum = newPaletteIndex;
+            sAnimState = 1;
+            break;
+        case 1: // Animate healthbox colors.
+            if (!sIsFlashReversed)
+            {
+                sFlashSteps = min(sFlashSteps + ANIM_HEALTHBOX_FLASH_STEP, ANIM_HEALTHBOX_FLASH_MAX_STEPS);
+                if (sFlashSteps == ANIM_HEALTHBOX_FLASH_MAX_STEPS)
+                {
+                    sIsFlashReversed = 1;
+                }
+            }
+            else
+            {
+                sFlashSteps = max(sFlashSteps - ANIM_HEALTHBOX_FLASH_STEP, 0);
+                if (sFlashSteps == 0)
+                {
+                    if (healthboxLeftSprite->data[7] == 0)
+                    {
+                        sAnimState = 2;
+                    }
+                    else
+                    {
+                        sIsFlashReversed = 0;
+                    }
+                }
+            }
+            BlendPalette(OBJ_PLTT_ID(IndexOfSpritePaletteTag(sPaletteTag)) + 6, 1, sFlashSteps, RGB(30, 3, 1));
+            break;
+        case 2: // Unload new palette and destroy self.
+            u32 oldPaletteIndex = IndexOfSpritePaletteTag(TAG_HEALTHBOX_PAL);
+
+            FreeSpritePaletteByTag(sPaletteTag);
+            healthboxLeftSprite->oam.paletteNum = oldPaletteIndex;
+            healthboxRightSprite->oam.paletteNum = oldPaletteIndex;
+            DestroySprite(sprite);
+            break;
+    }
+}
+
+#undef sHealthboxSpriteId
+#undef sPaletteTag
+#undef sAnimState
+#undef sFlashSteps
+#undef sIsFlashReversed
+#endif
 
 void SpriteCB_FaintOpponentMon(struct Sprite *sprite)
 {
