@@ -920,53 +920,42 @@ struct BattleScripting
 
 struct BattleSpriteInfo
 {
-    u16 invisible:1; // 0x1
-    u16 lowHpSong:1; // 0x2
-    u16 behindSubstitute:1; // 0x4
-    u16 flag_x8:1; // 0x8
-    u16 hpNumbersNoBars:1; // 0x10
+    bool8 invisible:1;
+    bool8 lowHpSong:1;
+    bool8 behindSubstitute:1;
+    bool8 isSubstituteToMonAnimDisabled:1;
+    bool8 hpNumbersNoBars:1;
+    u8 padding1:3;
     u16 transformSpecies;
 };
 
 struct BattleAnimationInfo
 {
     u16 animArg; // to fill up later
-    u8 field_2;
-    u8 field_3;
-    u8 field_4;
-    u8 field_5;
-    u8 field_6;
-    u8 field_7;
-    u8 ballThrowCaseId:6;
-    u8 isCriticalCapture:1;
-    u8 criticalCaptureSuccess:1;
-    u8 wildMonInvisible:1;
-    u8 field_9_x1C:4;
-    u8 field_9_x20:1;
-    u8 field_9_x40:1;
-    u8 field_9_x80:1;
+    u8 ballThrowCaseId;
+    bool8 isCriticalCapture:1;
+    bool8 criticalCaptureSuccess:1;
+    bool8 wildMonInvisible:1;
+    u8 partyStatusSummaryFrames:5; // [alexis] Not sure what to call this one (used to be field_9_x1C)...
     u8 numBallParticles;
-    u8 field_B;
     s16 ballSubpx;
-    u8 field_E;
-    u8 field_F;
 };
 
 struct BattleHealthboxInfo
 {
-    u8 partyStatusSummaryShown:1;
-    u8 healthboxIsBouncing:1;
-    u8 battlerIsBouncing:1;
-    u8 ballAnimActive:1; // 0x8
-    u8 statusAnimActive:1; // x10
-    u8 animFromTableActive:1; // x20
-    u8 specialAnimActive:1; // x40
-    u8 triedShinyMonAnim:1;
-    u8 finishedShinyMonAnim:1;
+    bool8 partyStatusSummaryShown:1;
+    bool8 healthboxIsBouncing:1;
+    bool8 battlerIsBouncing:1;
+    bool8 ballAnimActive:1;
+    bool8 statusAnimActive:1;
+    bool8 animFromTableActive:1;
+    bool8 specialAnimActive:1;
+    bool8 triedShinyMonAnim:1;
+    bool8 finishedShinyMonAnim:1;
     u8 opponentDrawPartyStatusSummaryDelay:4;
-    u8 bgmRestored:1;
-    u8 waitForCry:1;
-    u8 healthboxSlideInStarted:1;
+    bool8 bgmRestored:1;
+    bool8 waitForCry:1;
+    bool8 healthboxSlideInStarted:1;
     u8 healthboxBounceSpriteId;
     u8 battlerBounceSpriteId;
     u8 animationState;
@@ -978,8 +967,6 @@ struct BattleHealthboxInfo
 
     u8 soundTimer;
     u8 introEndDelay;
-    u8 field_A;
-    u8 field_B;
 };
 
 struct BattleBarInfo

@@ -2070,10 +2070,9 @@ static void Controller_DoMoveAnimation(u32 battler)
     switch (gBattleSpritesDataPtr->healthBoxesData[battler].animationState)
     {
     case 0:
-        if (gBattleSpritesDataPtr->battlerData[battler].behindSubstitute
-            && !gBattleSpritesDataPtr->battlerData[battler].flag_x8)
+        if (gBattleSpritesDataPtr->battlerData[battler].behindSubstitute && !gBattleSpritesDataPtr->battlerData[battler].isSubstituteToMonAnimDisabled)
         {
-            gBattleSpritesDataPtr->battlerData[battler].flag_x8 = 1;
+            gBattleSpritesDataPtr->battlerData[battler].isSubstituteToMonAnimDisabled = TRUE;
             InitAndLaunchSpecialAnimation(battler, battler, battler, B_ANIM_SUBSTITUTE_TO_MON);
         }
         gBattleSpritesDataPtr->healthBoxesData[battler].animationState = 1;
@@ -2096,7 +2095,7 @@ static void Controller_DoMoveAnimation(u32 battler)
             if (gBattleSpritesDataPtr->battlerData[battler].behindSubstitute && multihit < 2)
             {
                 InitAndLaunchSpecialAnimation(battler, battler, battler, B_ANIM_MON_TO_SUBSTITUTE);
-                gBattleSpritesDataPtr->battlerData[battler].flag_x8 = 0;
+                gBattleSpritesDataPtr->battlerData[battler].isSubstituteToMonAnimDisabled = FALSE;
             }
             gBattleSpritesDataPtr->healthBoxesData[battler].animationState = 3;
         }

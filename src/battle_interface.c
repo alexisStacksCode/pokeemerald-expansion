@@ -1468,7 +1468,7 @@ u8 CreatePartyStatusSummarySprites(u8 battler, struct HpAndStatus *partyInfo, bo
 
     if (isBattleStart)
     {
-        gBattleSpritesDataPtr->animationData->field_9_x1C++;
+        gBattleSpritesDataPtr->animationData->partyStatusSummaryFrames++;
     }
 
     PlaySE12WithPanning(SE_BALL_TRAY_ENTER, 0);
@@ -1558,8 +1558,8 @@ static void Task_HidePartyStatusSummary_BattleStart_2(u8 taskId)
         for (i = 0; i < PARTY_SIZE; i++)
             ballIconSpriteIds[i] = gTasks[taskId].tBallIconSpriteId(i);
 
-        gBattleSpritesDataPtr->animationData->field_9_x1C--;
-        if (gBattleSpritesDataPtr->animationData->field_9_x1C == 0)
+        gBattleSpritesDataPtr->animationData->partyStatusSummaryFrames--;
+        if (gBattleSpritesDataPtr->animationData->partyStatusSummaryFrames == 0)
         {
             DestroySpriteAndFreeResources(&gSprites[summaryBarSpriteId]);
             DestroySpriteAndFreeResources(&gSprites[ballIconSpriteIds[0]]);
