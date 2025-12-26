@@ -3056,7 +3056,7 @@ void SetMoveEffect(u32 battler, u32 effectBattler, enum MoveEffect moveEffect, c
     if (!primary && !affectsUser && IsMoveEffectBlockedByTarget(battlerAbility))
         moveEffect = MOVE_EFFECT_NONE;
     else if (!primary
-          && TestIfSheerForceAffected(gBattlerAttacker, gCurrentMove)
+          && IsSheerForceAffected(gCurrentMove, GetBattlerAbility(battler))
           && !(GetMoveEffect(gCurrentMove) == EFFECT_ORDER_UP && gBattleStruct->battlerState[gBattlerAttacker].commanderSpecies != SPECIES_NONE))
         moveEffect = MOVE_EFFECT_NONE;
     else if (!IsBattlerAlive(gEffectBattler) && !activateAfterFaint)
@@ -3220,9 +3220,9 @@ void SetMoveEffect(u32 battler, u32 effectBattler, enum MoveEffect moveEffect, c
         else
         {
             if (GetBattlerHoldEffect(gBattlerAttacker) == HOLD_EFFECT_GRIP_CLAW)
-                gDisableStructs[gEffectBattler].wrapTurns = B_BINDING_TURNS >= GEN_5 ? 7 : 5;
+                gDisableStructs[gEffectBattler].wrapTurns = GetConfig(CONFIG_BINDING_TURNS) >= GEN_5 ? 7 : 5;
             else
-                gDisableStructs[gEffectBattler].wrapTurns = B_BINDING_TURNS >= GEN_5 ? RandomUniform(RNG_WRAP, 4, 5) : RandomUniform(RNG_WRAP, 2, 5);
+                gDisableStructs[gEffectBattler].wrapTurns = GetConfig(CONFIG_BINDING_TURNS) >= GEN_5 ? RandomUniform(RNG_WRAP, 4, 5) : RandomUniform(RNG_WRAP, 2, 5);
             gBattleMons[gEffectBattler].volatiles.wrapped = TRUE;
             gBattleMons[gEffectBattler].volatiles.wrappedMove = gCurrentMove;
             gBattleMons[gEffectBattler].volatiles.wrappedBy = gBattlerAttacker;
@@ -3982,7 +3982,7 @@ void SetMoveEffect(u32 battler, u32 effectBattler, enum MoveEffect moveEffect, c
             {
                 gBattleMons[battler].volatiles.wrapped = TRUE;
                 if (GetBattlerHoldEffect(gBattlerAttacker) == HOLD_EFFECT_GRIP_CLAW)
-                    gDisableStructs[battler].wrapTurns = (B_BINDING_TURNS >= GEN_5) ? 7 : 5;
+                    gDisableStructs[battler].wrapTurns = (GetConfig(CONFIG_BINDING_TURNS) >= GEN_5) ? 7 : 5;
                 else
                     gDisableStructs[battler].wrapTurns = (Random() % 2) + 4;
                 // The Wrap effect does not expire when the user switches, so here's some cheese.
@@ -6411,7 +6411,7 @@ static void Cmd_moveend(void)
                 && gBattlerTarget != gBattlerAttacker
                 && !IsBattlerAlly(gBattlerTarget, gBattlerAttacker)
                 && gProtectStructs[gBattlerTarget].physicalBattlerId == gBattlerAttacker
-                && !TestIfSheerForceAffected(gBattlerAttacker, gCurrentMove))
+                && !IsSheerForceAffected(gCurrentMove, GetBattlerAbility(gBattlerAttacker)))
             {
                 gProtectStructs[gBattlerTarget].shellTrap = TRUE;
                 // Change move order in double battles, so the hit mon with shell trap moves immediately after being hit.
@@ -6671,7 +6671,7 @@ static void Cmd_moveend(void)
             gBattleScripting.moveendState++;
             break;
         case MOVEEND_SHEER_FORCE:
-            if (TestIfSheerForceAffected(gBattlerAttacker, gCurrentMove))
+            if (IsSheerForceAffected(gCurrentMove, GetBattlerAbility(gBattlerAttacker)))
                 gBattleScripting.moveendState = MOVEEND_EJECT_PACK;
             else
                 gBattleScripting.moveendState++;
@@ -7319,10 +7319,10 @@ static void Cmd_switchindataupdate(void)
     #if TESTING
     if (gTestRunnerEnabled)
     {
-        u32 side = GetBattlerSide(battler);
+        u32 array = (!IsPartnerMonFromSameTrainer(battler)) ? battler : GetBattlerSide(battler);
         u32 partyIndex = gBattlerPartyIndexes[battler];
-        if (TestRunner_Battle_GetForcedAbility(side, partyIndex))
-            gBattleMons[battler].ability = TestRunner_Battle_GetForcedAbility(side, partyIndex);
+        if (TestRunner_Battle_GetForcedAbility(array, partyIndex))
+            gBattleMons[battler].ability = TestRunner_Battle_GetForcedAbility(array, partyIndex);
     }
     #endif
 
@@ -11705,7 +11705,7 @@ static void Cmd_settailwind(void)
     if (!(gSideStatuses[side] & SIDE_STATUS_TAILWIND))
     {
         gSideStatuses[side] |= SIDE_STATUS_TAILWIND;
-        gSideTimers[side].tailwindTimer = (B_TAILWIND_TURNS >= GEN_5 ? 4 : 3);
+        gSideTimers[side].tailwindTimer = (GetConfig(CONFIG_TAILWIND_TURNS) >= GEN_5 ? 4 : 3);
         gBattlescriptCurrInstr = cmd->nextInstr;
     }
     else
@@ -11857,9 +11857,9 @@ static void Cmd_healpartystatus(void)
                 #if TESTING
                 if (gTestRunnerEnabled)
                 {
-                    u32 side = GetBattlerSide(gBattlerAttacker);
-                    if (TestRunner_Battle_GetForcedAbility(side, i))
-                        ability = TestRunner_Battle_GetForcedAbility(side, i);
+                    u32 array = (!IsPartnerMonFromSameTrainer(gBattlerAttacker)) ? gBattlerAttacker : GetBattlerSide(gBattlerAttacker);
+                    if (TestRunner_Battle_GetForcedAbility(array, i))
+                        ability = TestRunner_Battle_GetForcedAbility(array, i);
                 }
                 #endif
             }
@@ -12744,7 +12744,7 @@ static void Cmd_tryswapitems(void)
 
             if (GetBattlerAbility(gBattlerTarget) != ABILITY_GORILLA_TACTICS)
                 gBattleStruct->choicedMove[gBattlerTarget] = MOVE_NONE;
-            if (GetBattlerAbility(gBattlerTarget) != ABILITY_GORILLA_TACTICS)
+            if (GetBattlerAbility(gBattlerAttacker) != ABILITY_GORILLA_TACTICS)
                 gBattleStruct->choicedMove[gBattlerAttacker] = MOVE_NONE;
 
             gBattlescriptCurrInstr = cmd->nextInstr;
@@ -13289,47 +13289,50 @@ static void Cmd_settypebasedhalvers(void)
 
     bool8 worked = FALSE;
 
-    if (GetMoveEffect(gCurrentMove) == EFFECT_MUD_SPORT)
+    if (!gBattleStruct->isSkyBattle)
     {
-        if (B_SPORT_TURNS >= GEN_6)
+        if (GetMoveEffect(gCurrentMove) == EFFECT_MUD_SPORT)
         {
-            if (!(gFieldStatuses & STATUS_FIELD_MUDSPORT))
+            if (B_SPORT_TURNS >= GEN_6)
             {
-                gFieldStatuses |= STATUS_FIELD_MUDSPORT;
-                gFieldTimers.mudSportTimer = 5;
-                gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_WEAKEN_ELECTRIC;
-                worked = TRUE;
+                if (!(gFieldStatuses & STATUS_FIELD_MUDSPORT))
+                {
+                    gFieldStatuses |= STATUS_FIELD_MUDSPORT;
+                    gFieldTimers.mudSportTimer = 5;
+                    gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_WEAKEN_ELECTRIC;
+                    worked = TRUE;
+                }
+            }
+            else
+            {
+                if (!gBattleMons[gBattlerAttacker].volatiles.mudSport)
+                {
+                    gBattleMons[gBattlerAttacker].volatiles.mudSport = TRUE;
+                    gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_WEAKEN_ELECTRIC;
+                    worked = TRUE;
+                }
             }
         }
-        else
+        else // Water Sport
         {
-            if (!gBattleMons[gBattlerAttacker].volatiles.waterSport)
+            if (B_SPORT_TURNS >= GEN_6)
             {
-                gBattleMons[gBattlerAttacker].volatiles.waterSport = TRUE;
-                gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_WEAKEN_ELECTRIC;
-                worked = TRUE;
+                if (!(gFieldStatuses & STATUS_FIELD_WATERSPORT))
+                {
+                    gFieldStatuses |= STATUS_FIELD_WATERSPORT;
+                    gFieldTimers.waterSportTimer = 5;
+                    gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_WEAKEN_FIRE;
+                    worked = TRUE;
+                }
             }
-        }
-    }
-    else // Water Sport
-    {
-        if (B_SPORT_TURNS >= GEN_6)
-        {
-            if (!(gFieldStatuses & STATUS_FIELD_WATERSPORT))
+            else
             {
-                gFieldStatuses |= STATUS_FIELD_WATERSPORT;
-                gFieldTimers.waterSportTimer = 5;
-                gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_WEAKEN_FIRE;
-                worked = TRUE;
-            }
-        }
-        else
-        {
-            if (!gBattleMons[gBattlerAttacker].volatiles.mudSport)
-            {
-                gBattleMons[gBattlerAttacker].volatiles.mudSport = TRUE;
-                gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_WEAKEN_FIRE;
-                worked = TRUE;
+                if (!gBattleMons[gBattlerAttacker].volatiles.waterSport)
+                {
+                    gBattleMons[gBattlerAttacker].volatiles.waterSport = TRUE;
+                    gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_WEAKEN_FIRE;
+                    worked = TRUE;
+                }
             }
         }
     }
@@ -18019,4 +18022,30 @@ void BS_JumpIfGenConfigLowerThan(void)
         gBattlescriptCurrInstr = cmd->jumpInstr;
     else
         gBattlescriptCurrInstr = cmd->nextInstr;
+}
+
+// Used when the Pokemon faints before Toxic Spikes would normally be processed in the hazards queue.
+void BS_TryAbsorbToxicSpikesOnFaint(void)
+{
+    NATIVE_ARGS();
+    u32 battler = gBattlerFainted;
+    u32 side = GetBattlerSide(battler);
+
+    if (gSideTimers[side].toxicSpikesAmount == 0)
+    {
+        gBattlescriptCurrInstr = cmd->nextInstr;
+        return;
+    }
+
+    if (IsBattlerGrounded(battler, GetBattlerAbility(battler), GetBattlerHoldEffect(battler))
+     && IS_BATTLER_OF_TYPE(battler, TYPE_POISON))
+    {
+        gSideTimers[side].toxicSpikesAmount = 0;
+        RemoveHazardFromField(side, HAZARDS_TOXIC_SPIKES);
+        gEffectBattler = battler;
+        BattleScriptCall(BattleScript_ToxicSpikesAbsorbed);
+        return;
+    }
+
+    gBattlescriptCurrInstr = cmd->nextInstr;
 }
