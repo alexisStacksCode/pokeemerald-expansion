@@ -2107,15 +2107,14 @@ static void Controller_HandleTrainerSlideBack(u32 battler)
 void Controller_WaitForHealthBar(u32 battler)
 {
     u32 healthboxSpriteId = gHealthboxSpriteIds[battler];
-    #if B_HP_BAR_BEHAVIOR == GEN_4 || B_HP_BAR_BEHAVIOR == GEN_5
+    #if B_HP_BAR_BEHAVIOR == GEN_5 || B_HP_BAR_SPEED == 1
     struct Sprite *healthboxSprite = &gSprites[healthboxSpriteId];
     #endif
 
-    #if B_HP_BAR_BEHAVIOR == GEN_4
-    // Flip data[7] every frame. If it's 0, don't update the HP bar; this is an
-    // approximation of the (slower) Gen 4 HP bar animation.
-    healthboxSprite->data[7] ^= 1;
-    if (healthboxSprite->data[7] == 0)
+    #if B_HP_BAR_SPEED == 1
+    // data[4] is used to throttle HP bar updates.
+    healthboxSprite->data[4] ^= 1;
+    if (healthboxSprite->data[4] == 0)
     {
         return;
     }
@@ -2619,9 +2618,9 @@ void BtlController_HandleHealthBarUpdate(u32 battler)
     }
 
     #if B_HP_BAR_BEHAVIOR == GEN_4
-    // Reset data[7] to prevent a possible "dropped frame" effect when updating the
+    // Reset data[4] to prevent a possible "dropped frame" effect when updating the
     // HP bar on the first frame.
-    gSprites[healthboxSpriteId].data[7] = 0;
+    gSprites[healthboxSpriteId].data[4] = 0;
     #endif
     gBattlerControllerFuncs[battler] = Controller_WaitForHealthBar;
 }

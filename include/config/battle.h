@@ -269,8 +269,8 @@
 #define B_FAST_INTRO_PKMN_TEXT              TRUE  // If set to TRUE, battle intro texts print at the same time as animation of a Pokémon, as opposing to waiting for the animation to end.
 #define B_FAST_INTRO_NO_SLIDE               TRUE  // If set to TRUE, the slide animation that happens at the beginning of the battle is skipped.
 #define B_HP_BAR_BEHAVIOR                   GEN_3
-#define B_FAST_HP_DRAIN                     FALSE // If set to TRUE, HP bars will move faster.
-#define B_FAST_EXP_GROW                     FALSE // If set to TRUE, EXP bars will move faster.
+#define B_HP_BAR_SPEED                      0 // 0: vanilla | 1: slow | 2: fast | 3: pokeemerald-expansion fast
+#define B_EXP_BAR_SPEED                     0 // 0: vanilla | 1: pokeemerald-expansion fast
 #define B_SHOW_TARGETS                      TRUE  // If set to TRUE, all available targets, for moves hitting 2 or 3 Pokémon, will be shown before selecting a move.
 #define B_SHOW_CATEGORY_ICON                TRUE  // If set to TRUE, it will show an icon in the summary and move relearner showing the move's category.
 #define B_HIDE_HEALTHBOX_IN_ANIMS           TRUE  // If set to TRUE, hides healthboxes during move animations.

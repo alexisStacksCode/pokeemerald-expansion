@@ -2079,7 +2079,14 @@ s32 MoveBattleBar(u8 battler, u8 healthboxSpriteId, u8 whichBar, u8 unused)
 
     if (whichBar == HEALTH_BAR) // health bar
     {
-        u16 hpFraction = B_FAST_HP_DRAIN == FALSE ? 1 : max(gBattleSpritesDataPtr->battleBars[battler].maxValue / (B_HEALTHBAR_PIXELS / 2), 1);
+        #if B_HP_BAR_SPEED == 0 || B_HP_BAR_SPEED == 1
+        u32 hpFraction = 1;
+        #elif B_HP_BAR_SPEED == 2
+        u32 hpFraction = max(gBattleSpritesDataPtr->battleBars[battler].maxValue / B_HEALTHBAR_PIXELS, 1);
+        #elif B_HP_BAR_SPEED == 3
+        u32 hpFraction = max(gBattleSpritesDataPtr->battleBars[battler].maxValue / (B_HEALTHBAR_PIXELS / 2), 1);
+        #endif
+
         currentBarValue = CalcNewBarValue(gBattleSpritesDataPtr->battleBars[battler].maxValue,
                     gBattleSpritesDataPtr->battleBars[battler].oldValue,
                     gBattleSpritesDataPtr->battleBars[battler].receivedValue,
@@ -2091,8 +2098,6 @@ s32 MoveBattleBar(u8 battler, u8 healthboxSpriteId, u8 whichBar, u8 unused)
         u16 expFraction = GetScaledExpFraction(gBattleSpritesDataPtr->battleBars[battler].oldValue,
                     gBattleSpritesDataPtr->battleBars[battler].receivedValue,
                     gBattleSpritesDataPtr->battleBars[battler].maxValue, 8);
-        if (expFraction == 0)
-            expFraction = 1;
         expFraction = abs(gBattleSpritesDataPtr->battleBars[battler].receivedValue / expFraction);
 
         currentBarValue = CalcNewBarValue(gBattleSpritesDataPtr->battleBars[battler].maxValue,
@@ -2303,7 +2308,11 @@ static u8 GetScaledExpFraction(s32 oldValue, s32 receivedValue, s32 maxValue, u8
     s32 newVal, result;
     s8 oldToMax, newToMax;
 
-    scale *= (B_FAST_EXP_GROW) ? 2 : 8;
+    #if B_EXP_BAR_SPEED == 0
+    scale *= 8;
+    #elif B_EXP_BAR_SPEED == 1
+    scale *= 2;
+    #endif
     newVal = oldValue - receivedValue;
 
     if (newVal < 0)
@@ -2315,7 +2324,7 @@ static u8 GetScaledExpFraction(s32 oldValue, s32 receivedValue, s32 maxValue, u8
     newToMax = newVal * scale / maxValue;
     result = oldToMax - newToMax;
 
-    return abs(result);
+    return max(abs(result), 1);
 }
 
 u8 GetScaledHPFraction(s16 hp, s16 maxhp, u8 scale)
